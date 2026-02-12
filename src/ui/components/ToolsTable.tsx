@@ -17,7 +17,7 @@ import {
 } from "./ui/table";
 import { Button } from "./ui/button";
 import { useState } from "react";
-import CreateToolsDialog from "./ui/CreateToolsDialog";
+import CreateToolsDialog from "./CreateToolsDialog";
 
 const ToolsTable = ({ tools }: { tools: Tool[] }) => {
     const [openCreateToolsDialog, setOpenCreateToolsDialog] = useState(false);

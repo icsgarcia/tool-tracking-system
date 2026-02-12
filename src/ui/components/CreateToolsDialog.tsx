@@ -11,16 +11,16 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle,
-} from "./dialog";
+} from "./ui/dialog";
 import {
     Field,
     FieldGroup,
     FieldLabel,
     FieldSeparator,
     FieldSet,
-} from "./field";
-import { Input } from "./input";
-import { Button } from "./button";
+} from "./ui/field";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 import { useMutation } from "@tanstack/react-query";
 import api from "@/lib/api";
 

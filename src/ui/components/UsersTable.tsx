@@ -15,74 +15,100 @@ import {
     TableHeader,
     TableRow,
 } from "./ui/table";
+import CreateUsersDialog from "./CreateUsersDialog";
+import { useState } from "react";
+import { Button } from "./ui/button";
 
 const UsersTable = ({ users }: { users: User[] }) => {
+    const [openCreateUsersDialog, setOpenCreateUsersDialog] =
+        useState<boolean>(false);
     return (
-        <Card>
-            <CardHeader>
-                <div className="flex items-center justify-between">
-                    <div>
-                        <CardTitle>Users</CardTitle>
-                        <CardDescription>
-                            Manage all registered users
-                        </CardDescription>
+        <>
+            <Card>
+                <CardHeader>
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle>Users</CardTitle>
+                                <CardDescription>
+                                    Manage all registered users
+                                </CardDescription>
+                            </div>
+                        </div>
+                        <div>
+                            <Button
+                                onClick={() => {
+                                    setOpenCreateUsersDialog(true);
+                                }}
+                            >
+                                Add Users
+                            </Button>
+                        </div>
                     </div>
-                </div>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Name</TableHead>
-                            <TableHead>School No.</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Role</TableHead>
-                            <TableHead>Department</TableHead>
-                            <TableHead>Year</TableHead>
-                            <TableHead>Status</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {users.map((user) => (
-                            <TableRow key={user.id}>
-                                <TableCell className="font-medium">
-                                    {user.firstName} {user.middleName}{" "}
-                                    {user.lastName}
-                                </TableCell>
-                                <TableCell>{user.schoolNumber}</TableCell>
-                                <TableCell>{user.email}</TableCell>
-                                <TableCell>
-                                    <Badge variant="outline">{user.role}</Badge>
-                                </TableCell>
-                                <TableCell>{user.department || "—"}</TableCell>
-                                <TableCell>{user.yearLevel}</TableCell>
-                                <TableCell>
-                                    <Badge
-                                        variant={
-                                            user.status === "ACTIVE"
-                                                ? "default"
-                                                : "secondary"
-                                        }
-                                    >
-                                        {user.status}
-                                    </Badge>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                        {users.length === 0 && (
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
                             <TableRow>
-                                <TableCell
-                                    colSpan={7}
-                                    className="text-center text-gray-500"
-                                >
-                                    No users found
-                                </TableCell>
+                                <TableHead>Name</TableHead>
+                                <TableHead>School No.</TableHead>
+                                <TableHead>Email</TableHead>
+                                <TableHead>Role</TableHead>
+                                <TableHead>Department</TableHead>
+                                <TableHead>Year</TableHead>
+                                <TableHead>Status</TableHead>
                             </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
+                        </TableHeader>
+                        <TableBody>
+                            {users.map((user) => (
+                                <TableRow key={user.id}>
+                                    <TableCell className="font-medium">
+                                        {user.firstName} {user.middleName}{" "}
+                                        {user.lastName}
+                                    </TableCell>
+                                    <TableCell>{user.schoolNumber}</TableCell>
+                                    <TableCell>{user.email}</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">
+                                            {user.role}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        {user.department || "—"}
+                                    </TableCell>
+                                    <TableCell>{user.yearLevel}</TableCell>
+                                    <TableCell>
+                                        <Badge
+                                            variant={
+                                                user.status === "ACTIVE"
+                                                    ? "default"
+                                                    : "secondary"
+                                            }
+                                        >
+                                            {user.status}
+                                        </Badge>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                            {users.length === 0 && (
+                                <TableRow>
+                                    <TableCell
+                                        colSpan={7}
+                                        className="text-center text-gray-500"
+                                    >
+                                        No users found
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+            <CreateUsersDialog
+                open={openCreateUsersDialog}
+                onOpenChange={setOpenCreateUsersDialog}
+            />
+        </>
     );
 };
 
