@@ -1,9 +1,27 @@
+import Html5QrcodePlugin, {
+    type Html5QrcodePluginRef,
+} from "@/components/Html5QrcodeScannerPlugin";
+import { Button } from "@/components/ui/button";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import { Hash, LogOut, Mail } from "lucide-react";
+import { useRef } from "react";
 import { useLocation, useNavigate } from "react-router";
 
 const Dashboard = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const user = location.state?.user;
+    const isProcessing = useRef(false);
+    const scannerRef = useRef<Html5QrcodePluginRef>(null);
+
+    const onNewScanResult = async (decodedText: string) => {};
 
     if (!user) {
         return (
@@ -22,55 +40,72 @@ const Dashboard = () => {
     }
 
     return (
-        <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6">
-            <h1 className="text-2xl font-bold">
-                Welcome, {user.firstName} {user.lastName}!
-            </h1>
-
-            <div className="w-full max-w-md rounded-lg border p-6 shadow">
-                <div className="space-y-3">
-                    <p>
-                        <span className="font-semibold">School Number:</span>{" "}
-                        {user.schoolNumber}
-                    </p>
-                    <p>
-                        <span className="font-semibold">Name:</span>{" "}
+        <div className="min-h-svh container mx-auto p-4">
+            <div className="relative w-full rounded-lg border p-6 shadow mb-6">
+                <div>
+                    <p className="text-lg font-semibold">
                         {user.firstName} {user.middleName} {user.lastName}
                     </p>
+                    <p className="text-sm italic">{user.schoolNumber}</p>
+                    <p>{user.department}</p>
                     <p>
-                        <span className="font-semibold">Role:</span> {user.role}
-                    </p>
-                    <p>
-                        <span className="font-semibold">Department:</span>{" "}
-                        {user.department}
-                    </p>
-                    <p>
-                        <span className="font-semibold">Year Level:</span>{" "}
+                        <span className="font-semibold">Year</span>{" "}
                         {user.yearLevel}
                     </p>
-                    <p>
-                        <span className="font-semibold">Email:</span>{" "}
-                        {user.email}
-                    </p>
-                    {user.number && (
-                        <p>
-                            <span className="font-semibold">Contact:</span>{" "}
-                            {user.number}
-                        </p>
-                    )}
-                    <p>
-                        <span className="font-semibold">Status:</span>{" "}
-                        {user.status}
-                    </p>
+                    <div className="flex gap-8">
+                        <div className="flex gap-1">
+                            <Mail />
+                            <p>{user.email}</p>
+                        </div>
+
+                        {user.number && (
+                            <div className="flex gap-1">
+                                <Hash />
+                                <p>{user.number}</p>
+                            </div>
+                        )}
+                    </div>
+
+                    <Button
+                        onClick={() => navigate("/")}
+                        className=" absolute top-2 right-2 rounded bg-red-400 hover:bg-red-500"
+                    >
+                        <LogOut /> Logout
+                    </Button>
                 </div>
             </div>
-
-            <button
-                className="rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
-                onClick={() => navigate("/")}
-            >
-                Logout
-            </button>
+            <div className="flex justify-evenly gap-4">
+                <div>
+                    <Html5QrcodePlugin
+                        ref={scannerRef}
+                        fps={10}
+                        qrbox={250}
+                        disableFlip={false}
+                        qrCodeSuccessCallback={onNewScanResult}
+                    />
+                </div>
+                <div className="flex flex-col gap-4 p-4">
+                    <h2 className="text-xl font-semibold">Transactions</h2>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Name</TableHead>
+                                <TableHead>Quantity</TableHead>
+                                <TableHead>Borrowed Date</TableHead>
+                                <TableHead>Returned Date</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>Hammer</TableCell>
+                                <TableCell>1</TableCell>
+                                <TableCell>February 10, 2026</TableCell>
+                                <TableCell>February 12, 2026</TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </div>
+            </div>
         </div>
     );
 };
