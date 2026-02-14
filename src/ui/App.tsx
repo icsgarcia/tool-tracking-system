@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "sonner";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ function App() {
                     </Routes>
                 </BrowserRouter>
             </QueryClientProvider>
+            <Toaster richColors />
         </>
     );
 }

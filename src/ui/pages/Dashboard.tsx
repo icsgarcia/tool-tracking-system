@@ -13,6 +13,7 @@ import {
 import { Hash, LogOut, Mail } from "lucide-react";
 import { useRef } from "react";
 import { useLocation, useNavigate } from "react-router";
+import { toast } from "sonner";
 
 const Dashboard = () => {
     const location = useLocation();
@@ -67,7 +68,10 @@ const Dashboard = () => {
                     </div>
 
                     <Button
-                        onClick={() => navigate("/")}
+                        onClick={() => {
+                            toast.success("Logged out successfully.");
+                            navigate("/");
+                        }}
                         className=" absolute top-2 right-2 rounded bg-red-400 hover:bg-red-500"
                     >
                         <LogOut /> Logout

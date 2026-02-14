@@ -25,6 +25,7 @@ import { Button } from "./ui/button";
 import { useMutation } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { ScrollArea } from "./ui/scroll-area";
+import { toast } from "sonner";
 
 interface CreateUsersDialogType {
     open: boolean;
@@ -92,6 +93,7 @@ const CreateUsersDialog = ({ open, onOpenChange }: CreateUsersDialogType) => {
             return response.data;
         },
         onSuccess: () => {
+            toast.success("User created successfully!");
             handleOpenChange(false);
         },
     });
@@ -105,7 +107,10 @@ const CreateUsersDialog = ({ open, onOpenChange }: CreateUsersDialogType) => {
             });
             return response.data;
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
+            toast.success(
+                `Successfully created ${data?.users?.length ?? ""} users from file!`,
+            );
             handleOpenChange(false);
         },
     });

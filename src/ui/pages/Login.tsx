@@ -4,6 +4,7 @@ import Html5QrcodePlugin, {
 import { useScanUser } from "@/hooks/useUsers";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 const Login = () => {
     const [error, setError] = useState<string | null>(null);
@@ -24,6 +25,9 @@ const Login = () => {
         scanUser.mutate(decodedText, {
             onSuccess: (user) => {
                 setScanning(false);
+                toast.success(
+                    `Login successful! Welcome, ${user.firstName} ${user.lastName}`,
+                );
                 if (user.role === "ADMIN") {
                     navigate("/admin", { state: { user } });
                 } else {
@@ -31,9 +35,10 @@ const Login = () => {
                 }
             },
             onError: (err: any) => {
+                toast.error("Login failed. Please check your QR code.");
                 setError(
                     err.response?.data?.message ||
-                        "No user found with that QR code.",
+                        "Login failed. Please check your QR code.",
                 );
                 isProcessing.current = false;
                 setScanning(false);

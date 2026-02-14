@@ -9,6 +9,7 @@ import TransactionsTable from "@/components/TransactionsTable";
 import ToolsTable from "@/components/ToolsTable";
 import UsersTable from "@/components/UsersTable";
 import AdminOverview from "@/components/AdminOverview";
+import { toast } from "sonner";
 
 export interface User {
     id: string;
@@ -40,6 +41,7 @@ const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState<string>("overview");
 
     const handleLogout = () => {
+        toast.success("Logged out successfully.");
         navigate("/");
     };
 

@@ -23,10 +23,15 @@ enum Status {
   INACTIVE
 }
 
+enum TransactionStatus {
+  BORROWED
+  RETURNED
+}
+
 model User {
   id           String        @id @default(uuid())
-  qrCode       String
-  schoolNumber String
+  qrCode       String        @unique
+  schoolNumber String        @unique
   firstName    String
   middleName   String
   lastName     String
@@ -41,16 +46,20 @@ model User {
 
 model Tool {
   id           String        @id @default(uuid())
-  qrCode       String
+  qrCode       String        @unique
   name         String
   quantity     Int
   transactions Transaction[]
 }
 
 model Transaction {
-  id     String @id @default(uuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-  toolId String
-  tool   Tool   @relation(fields: [toolId], references: [id])
+  id         String            @id @default(uuid())
+  userId     String
+  toolId     String
+  status     TransactionStatus @default(BORROWED)
+  borrowedAt DateTime          @default(now())
+  returnedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+  tool Tool @relation(fields: [toolId], references: [id])
 }

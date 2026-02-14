@@ -23,6 +23,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useMutation } from "@tanstack/react-query";
 import api from "@/lib/api";
+import { toast } from "sonner";
 
 interface CreateToolsDialogType {
     open: boolean;
@@ -41,6 +42,7 @@ const CreateToolsDialog = ({ open, onOpenChange }: CreateToolsDialogType) => {
             return response.data;
         },
         onSuccess: () => {
+            toast.success("Tool created successfully!");
             handleOpenChange(false);
         },
     });
@@ -54,7 +56,10 @@ const CreateToolsDialog = ({ open, onOpenChange }: CreateToolsDialogType) => {
             });
             return response.data;
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
+            toast.success(
+                `Successfully created ${data?.tools?.length ?? ""} tools from file!`,
+            );
             handleOpenChange(false);
         },
     });
@@ -109,7 +114,6 @@ const CreateToolsDialog = ({ open, onOpenChange }: CreateToolsDialogType) => {
                                     <Input
                                         id="quantity"
                                         type="number"
-                                        min={1}
                                         max={9999}
                                         value={quantity}
                                         onChange={(e) => {
