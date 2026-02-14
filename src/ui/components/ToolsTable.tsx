@@ -18,9 +18,20 @@ import {
 import { Button } from "./ui/button";
 import { useState } from "react";
 import CreateToolsDialog from "./CreateToolsDialog";
+import QrImageDialog from "./QrImageDialog";
+
+interface SelectedQrCode {
+    name: string;
+    image: string;
+}
 
 const ToolsTable = ({ tools }: { tools: Tool[] }) => {
     const [openCreateToolsDialog, setOpenCreateToolsDialog] = useState(false);
+    const [openQrImageDialog, setOpenQrImageDialog] = useState(false);
+    const [selectedQrCode, setSelectedQrCode] = useState({
+        name: "",
+        image: "",
+    });
     return (
         <>
             <Card>
@@ -49,19 +60,30 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead>QR Image</TableHead>
                                 <TableHead>Name</TableHead>
-                                <TableHead>QR Code</TableHead>
                                 <TableHead>Quantity</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {tools.map((tool) => (
                                 <TableRow key={tool.id}>
+                                    <TableCell>
+                                        <img
+                                            src={tool.qrCodeImage}
+                                            alt={tool.name}
+                                            width={50}
+                                            onClick={() => {
+                                                setSelectedQrCode({
+                                                    name: tool.name,
+                                                    image: tool.qrCodeImage,
+                                                });
+                                                setOpenQrImageDialog(true);
+                                            }}
+                                        />
+                                    </TableCell>
                                     <TableCell className="font-medium">
                                         {tool.name}
-                                    </TableCell>
-                                    <TableCell className="max-w-50 truncate font-mono text-xs">
-                                        {tool.qrCode}
                                     </TableCell>
                                     <TableCell>
                                         <Badge variant="outline">
@@ -87,6 +109,12 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
             <CreateToolsDialog
                 open={openCreateToolsDialog}
                 onOpenChange={setOpenCreateToolsDialog}
+            />
+
+            <QrImageDialog
+                qrCode={selectedQrCode}
+                open={openQrImageDialog}
+                onOpenChange={setOpenQrImageDialog}
             />
         </>
     );

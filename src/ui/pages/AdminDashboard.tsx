@@ -13,6 +13,8 @@ import { toast } from "sonner";
 
 export interface User {
     id: string;
+    qrCode: string;
+    qrCodeImage: string;
     schoolNumber: string;
     firstName: string;
     middleName: string;
@@ -28,6 +30,7 @@ export interface User {
 export interface Tool {
     id: string;
     qrCode: string;
+    qrCodeImage: string;
     name: string;
     quantity: number;
 }

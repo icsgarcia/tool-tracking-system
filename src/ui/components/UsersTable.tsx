@@ -18,10 +18,16 @@ import {
 import CreateUsersDialog from "./CreateUsersDialog";
 import { useState } from "react";
 import { Button } from "./ui/button";
+import QrImageDialog from "./QrImageDialog";
 
 const UsersTable = ({ users }: { users: User[] }) => {
     const [openCreateUsersDialog, setOpenCreateUsersDialog] =
         useState<boolean>(false);
+    const [openQrImageDialog, setOpenQrImageDialog] = useState(false);
+    const [selectedQrCode, setSelectedQrCode] = useState({
+        name: "",
+        image: "",
+    });
     return (
         <>
             <Card>
@@ -50,6 +56,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead>QR Code</TableHead>
                                 <TableHead>Name</TableHead>
                                 <TableHead>School No.</TableHead>
                                 <TableHead>Email</TableHead>
@@ -62,6 +69,20 @@ const UsersTable = ({ users }: { users: User[] }) => {
                         <TableBody>
                             {users.map((user) => (
                                 <TableRow key={user.id}>
+                                    <TableCell>
+                                        <img
+                                            src={user.qrCodeImage}
+                                            alt={`${user.lastName} ${user.firstName} ${user.middleName}`}
+                                            width={50}
+                                            onClick={() => {
+                                                setSelectedQrCode({
+                                                    name: `${user.lastName} ${user.firstName} ${user.middleName}`,
+                                                    image: user.qrCodeImage,
+                                                });
+                                                setOpenQrImageDialog(true);
+                                            }}
+                                        />
+                                    </TableCell>
                                     <TableCell className="font-medium">
                                         {user.firstName} {user.middleName}{" "}
                                         {user.lastName}
@@ -107,6 +128,11 @@ const UsersTable = ({ users }: { users: User[] }) => {
             <CreateUsersDialog
                 open={openCreateUsersDialog}
                 onOpenChange={setOpenCreateUsersDialog}
+            />
+            <QrImageDialog
+                qrCode={selectedQrCode}
+                open={openQrImageDialog}
+                onOpenChange={setOpenQrImageDialog}
             />
         </>
     );

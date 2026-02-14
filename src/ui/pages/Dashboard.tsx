@@ -10,6 +10,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { useUserTransactions } from "@/hooks/useTransactions";
+import type { UserTransactions } from "@/types/userTransactions";
 import { Hash, LogOut, Mail } from "lucide-react";
 import { useRef } from "react";
 import { useLocation, useNavigate } from "react-router";
@@ -21,6 +23,7 @@ const Dashboard = () => {
     const user = location.state?.user;
     const isProcessing = useRef(false);
     const scannerRef = useRef<Html5QrcodePluginRef>(null);
+    const { data: userTransactions = [] } = useUserTransactions(user.id);
 
     const onNewScanResult = async (decodedText: string) => {};
 
@@ -100,12 +103,31 @@ const Dashboard = () => {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            <TableRow>
-                                <TableCell>Hammer</TableCell>
-                                <TableCell>1</TableCell>
-                                <TableCell>February 10, 2026</TableCell>
-                                <TableCell>February 12, 2026</TableCell>
-                            </TableRow>
+                            {userTransactions?.length > 0 ? (
+                                userTransactions.map((userTransaction) => (
+                                    <TableRow>
+                                        <TableCell>
+                                            {userTransaction.tool.name}
+                                        </TableCell>
+                                        <TableCell>1</TableCell>
+                                        <TableCell>
+                                            {userTransaction.borrowedAt}
+                                        </TableCell>
+                                        <TableCell>
+                                            {userTransaction.returnedAt}
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell
+                                        colSpan={4}
+                                        className="text-center text-gray-500"
+                                    >
+                                        No transactions found.
+                                    </TableCell>
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </div>
