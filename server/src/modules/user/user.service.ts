@@ -110,7 +110,34 @@ export class UserService {
 
   async findAllUsers() {
     const users = await this.prismaService.user.findMany();
-    return users;
+
+    if (users.length === 0) {
+      return [];
+    }
+
+    const userssWithQrCode = await Promise.all(
+      users.map(async (user) => {
+        const qrCodeBuffer = await QRCodeUtil.generateQRCodeBuffer(user.qrCode);
+        const qrCodeBase64 = `data:image/png;base64,${qrCodeBuffer.toString('base64')}`;
+        return {
+          id: user.id,
+          qrCode: user.qrCode,
+          qrCodeImage: qrCodeBase64,
+          schoolNumber: user.schoolNumber,
+          firstName: user.firstName,
+          middleName: user.middleName,
+          lastName: user.lastName,
+          role: user.role,
+          department: user.department,
+          yearLevel: user.yearLevel,
+          email: user.email,
+          number: user.number,
+          status: user.status,
+        };
+      }),
+    );
+
+    return userssWithQrCode;
   }
 
   async findUserById(id: string) {

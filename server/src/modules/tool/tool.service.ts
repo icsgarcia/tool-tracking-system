@@ -4,6 +4,7 @@ import { UpdateToolDto } from './dto/update-tool.dto';
 import * as XLSX from 'xlsx';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Tool } from 'generated/prisma/client';
+import { QRCodeUtil } from 'src/common/utils/qrcode';
 
 @Injectable()
 export class ToolService {
@@ -61,7 +62,25 @@ export class ToolService {
   async findAllTools() {
     const tools = await this.prismaService.tool.findMany();
 
-    return tools;
+    if (tools.length === 0) {
+      return [];
+    }
+
+    const toolsWithQrCode = await Promise.all(
+      tools.map(async (tool) => {
+        const qrCodeBuffer = await QRCodeUtil.generateQRCodeBuffer(tool.qrCode);
+        const qrCodeBase64 = `data:image/png;base64,${qrCodeBuffer.toString('base64')}`;
+        return {
+          id: tool.id,
+          qrCode: tool.qrCode,
+          qrCodeImage: qrCodeBase64,
+          name: tool.name,
+          quantity: tool.quantity,
+        };
+      }),
+    );
+
+    return toolsWithQrCode;
   }
 
   async findToolById(toolId: string) {
