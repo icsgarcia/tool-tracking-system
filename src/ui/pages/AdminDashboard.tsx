@@ -10,6 +10,7 @@ import ToolsTable from "@/components/ToolsTable";
 import UsersTable from "@/components/UsersTable";
 import AdminOverview from "@/components/AdminOverview";
 import { toast } from "sonner";
+import { useTransactions } from "@/hooks/useTransactions";
 
 export interface User {
     id: string;
@@ -41,6 +42,8 @@ const AdminDashboard = () => {
     const admin = location.state?.user;
     const { data: users = [], isLoading: usersLoading } = useUsers();
     const { data: tools = [], isLoading: toolsLoading } = useTools();
+    const { data: transactions = [], isLoading: transactionsLoading } =
+        useTransactions();
     const [activeTab, setActiveTab] = useState<string>("overview");
 
     const handleLogout = () => {
@@ -121,7 +124,9 @@ const AdminDashboard = () => {
 
                 {activeTab === "tools" && <ToolsTable tools={tools} />}
 
-                {activeTab === "transactions" && <TransactionsTable />}
+                {activeTab === "transactions" && (
+                    <TransactionsTable transactions={transactions} />
+                )}
 
                 {activeTab === "about" && <AboutUs />}
             </main>

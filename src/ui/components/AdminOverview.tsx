@@ -1,4 +1,3 @@
-import { Table } from "lucide-react";
 import {
     Card,
     CardContent,
@@ -7,6 +6,7 @@ import {
     CardTitle,
 } from "./ui/card";
 import {
+    Table,
     TableBody,
     TableCell,
     TableHead,

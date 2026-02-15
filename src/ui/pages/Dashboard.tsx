@@ -11,11 +11,11 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { useUserTransactions } from "@/hooks/useTransactions";
-import type { UserTransactions } from "@/types/userTransactions";
 import { Hash, LogOut, Mail } from "lucide-react";
 import { useRef } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
+import { useScanForTransaction } from "@/hooks/useTransactions";
 
 const Dashboard = () => {
     const location = useLocation();
@@ -24,8 +24,17 @@ const Dashboard = () => {
     const isProcessing = useRef(false);
     const scannerRef = useRef<Html5QrcodePluginRef>(null);
     const { data: userTransactions = [] } = useUserTransactions(user.id);
+    const scanForTransaction = useScanForTransaction();
 
-    const onNewScanResult = async (decodedText: string) => {};
+    const onNewScanResult = async (decodedText: string) => {
+        if (isProcessing.current) return;
+        isProcessing.current = true;
+
+        // Optionally stop the scanner
+        scannerRef.current?.stop();
+
+        scanForTransaction.mutate({ userId: user.id, toolQrCode: decodedText });
+    };
 
     if (!user) {
         return (
@@ -81,7 +90,7 @@ const Dashboard = () => {
                     </Button>
                 </div>
             </div>
-            <div className="flex justify-evenly gap-4">
+            <div className="flex flex-col md:flex-row justify-evenly gap-4">
                 <div>
                     <Html5QrcodePlugin
                         ref={scannerRef}
