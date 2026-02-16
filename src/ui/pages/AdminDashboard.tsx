@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useUsers } from "@/hooks/useUsers";
 import { useTools } from "@/hooks/useTools";
@@ -77,7 +76,11 @@ const AdminDashboard = () => {
 
                 <main>
                     <TabsContent value="overview">
-                        <AdminOverview users={users} tools={tools} />
+                        <AdminOverview
+                            users={users}
+                            tools={tools}
+                            admin={admin}
+                        />
                     </TabsContent>
                     <TabsContent value="users">
                         <UsersTable users={users} />

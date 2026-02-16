@@ -13,19 +13,44 @@ import {
     TableHeader,
     TableRow,
 } from "./ui/table";
-import { Badge } from "./ui/badge";
 import type { Tool, User } from "@/pages/AdminDashboard";
+import Html5QrcodePlugin, {
+    type Html5QrcodePluginRef,
+} from "./Html5QrcodeScannerPlugin";
+import { useRef } from "react";
+import {
+    useScanForTransaction,
+    useUserTransactions,
+} from "@/hooks/useTransactions";
 
 interface AdminOverviewType {
+    admin: User;
     users: User[];
     tools: Tool[];
 }
 
-const AdminOverview = ({ users, tools }: AdminOverviewType) => {
+const AdminOverview = ({ admin, users, tools }: AdminOverviewType) => {
+    const scannerRef = useRef<Html5QrcodePluginRef>(null);
+    const isProcessing = useRef(false);
+    const { data: userTransactions = [] } = useUserTransactions(admin.id);
+    const scanForTransaction = useScanForTransaction();
+
+    const onNewScanResult = async (decodedText: string) => {
+        if (isProcessing.current) return;
+        isProcessing.current = true;
+
+        // Optionally stop the scanner
+        scannerRef.current?.stop();
+
+        scanForTransaction.mutate({
+            userId: admin.id,
+            toolQrCode: decodedText,
+        });
+    };
     return (
         <div>
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mb-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 mb-4">
                 <Card>
                     <CardHeader>
                         <CardDescription>Total Users</CardDescription>
@@ -67,55 +92,84 @@ const AdminOverview = ({ users, tools }: AdminOverviewType) => {
                 </Card>
             </div>
 
-            {/* Recent Users */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Recent Users</CardTitle>
-                    <CardDescription>Latest registered users</CardDescription>
-                </CardHeader>
-                <CardContent>
+            <div className="flex flex-col md:flex-row justify-evenly gap-4">
+                <div>
+                    <Html5QrcodePlugin
+                        ref={scannerRef}
+                        fps={10}
+                        qrbox={250}
+                        disableFlip={false}
+                        qrCodeSuccessCallback={onNewScanResult}
+                    />
+                </div>
+                <div className="flex flex-col gap-4 p-4">
+                    <h2 className="text-xl font-semibold">Transactions</h2>
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>School No.</TableHead>
                                 <TableHead>Name</TableHead>
-                                <TableHead>Role</TableHead>
-                                <TableHead>Department</TableHead>
-                                <TableHead>Email</TableHead>
+                                <TableHead>Quantity</TableHead>
+                                <TableHead>Borrowed Date</TableHead>
+                                <TableHead>Returned Date</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {users.slice(0, 5).map((user) => (
-                                <TableRow key={user.id}>
-                                    <TableCell>{user.schoolNumber}</TableCell>
-                                    <TableCell className="font-medium">
-                                        {user.firstName} {user.lastName}
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge variant="outline">
-                                            {user.role}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        {user.department || "—"}
-                                    </TableCell>
-                                    <TableCell>{user.email || "—"}</TableCell>
-                                </TableRow>
-                            ))}
-                            {users.length === 0 && (
+                            {userTransactions?.length > 0 ? (
+                                userTransactions.map((userTransaction) => {
+                                    const borrowedDate =
+                                        userTransaction.borrowedAt;
+                                    const returnedDate =
+                                        userTransaction.returnedAt;
+                                    return (
+                                        <TableRow>
+                                            <TableCell>
+                                                {userTransaction.tool.name}
+                                            </TableCell>
+                                            <TableCell>1</TableCell>
+                                            <TableCell>
+                                                {new Date(
+                                                    borrowedDate,
+                                                ).toLocaleString("en-US", {
+                                                    year: "numeric",
+                                                    month: "short",
+                                                    day: "numeric",
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                })}
+                                            </TableCell>
+                                            <TableCell>
+                                                {returnedDate
+                                                    ? new Date(
+                                                          returnedDate,
+                                                      ).toLocaleString(
+                                                          "en-US",
+                                                          {
+                                                              year: "numeric",
+                                                              month: "short",
+                                                              day: "numeric",
+                                                              hour: "2-digit",
+                                                              minute: "2-digit",
+                                                          },
+                                                      )
+                                                    : ""}
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })
+                            ) : (
                                 <TableRow>
                                     <TableCell
-                                        colSpan={5}
+                                        colSpan={4}
                                         className="text-center text-gray-500"
                                     >
-                                        No users found
+                                        No transactions found.
                                     </TableCell>
                                 </TableRow>
                             )}
                         </TableBody>
                     </Table>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
         </div>
     );
 };
