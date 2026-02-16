@@ -7,18 +7,27 @@ import {
     CardHeader,
     CardTitle,
 } from "./ui/card";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "./ui/table";
+
 import CreateUsersDialog from "./CreateUsersDialog";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import QrImageDialog from "./QrImageDialog";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
+import { SearchIcon, ArrowUpDown } from "lucide-react";
+import { type ColumnDef, type FilterFn } from "@tanstack/react-table";
+import DataTable from "./DataTable";
+
+const globalFilterFn: FilterFn<User> = (row, _columnId, filterValue) => {
+    const search = filterValue.toLowerCase();
+    const user = row.original;
+    const fullName =
+        `${user.firstName} ${user.middleName} ${user.lastName}`.toLowerCase();
+    return (
+        fullName.includes(search) ||
+        user.schoolNumber.toLowerCase().includes(search) ||
+        user.email.toLowerCase().includes(search)
+    );
+};
 
 const UsersTable = ({ users }: { users: User[] }) => {
     const [openCreateUsersDialog, setOpenCreateUsersDialog] =
@@ -28,11 +37,175 @@ const UsersTable = ({ users }: { users: User[] }) => {
         name: "",
         image: "",
     });
+    const [globalFilter, setGlobalFilter] = useState("");
+
+    const userColumns: ColumnDef<User>[] = [
+        {
+            accessorKey: "qrCodeImage",
+            header: "QR Code",
+            cell: ({ row }) => {
+                const user = row.original;
+                return (
+                    <img
+                        src={user.qrCodeImage}
+                        alt={`${user.lastName} ${user.firstName} ${user.middleName}`}
+                        width={50}
+                        className="cursor-pointer"
+                        onClick={() => {
+                            setSelectedQrCode({
+                                name: `${user.lastName} ${user.firstName} ${user.middleName}`,
+                                image: user.qrCodeImage,
+                            });
+                            setOpenQrImageDialog(true);
+                        }}
+                    />
+                );
+            },
+        },
+        {
+            id: "name",
+            accessorFn: (row) =>
+                `${row.firstName} ${row.middleName} ${row.lastName}`,
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                    >
+                        Name
+                        <ArrowUpDown className="h-4 w-4" />
+                    </Button>
+                );
+            },
+            cell: ({ row }) => {
+                const user = row.original;
+                return (
+                    <span className="font-medium">
+                        {user.firstName} {user.middleName} {user.lastName}
+                    </span>
+                );
+            },
+        },
+        {
+            accessorKey: "schoolNumber",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                    >
+                        School Number
+                        <ArrowUpDown className="h-4 w-4" />
+                    </Button>
+                );
+            },
+        },
+        {
+            accessorKey: "email",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                    >
+                        Email
+                        <ArrowUpDown className="h-4 w-4" />
+                    </Button>
+                );
+            },
+        },
+        {
+            accessorKey: "role",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                    >
+                        Role
+                        <ArrowUpDown className="h-4 w-4" />
+                    </Button>
+                );
+            },
+            cell: ({ row }) => (
+                <Badge variant="outline">{row.original.role}</Badge>
+            ),
+        },
+        {
+            accessorKey: "department",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                    >
+                        Department
+                        <ArrowUpDown className="h-4 w-4" />
+                    </Button>
+                );
+            },
+            cell: ({ row }) => row.original.department || "—",
+        },
+        {
+            accessorKey: "yearLevel",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                    >
+                        Year Level
+                        <ArrowUpDown className="h-4 w-4" />
+                    </Button>
+                );
+            },
+        },
+        {
+            accessorKey: "status",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                    >
+                        Status
+                        <ArrowUpDown className="h-4 w-4" />
+                    </Button>
+                );
+            },
+            cell: ({ row }) => (
+                <Badge
+                    variant={
+                        row.original.status === "ACTIVE"
+                            ? "default"
+                            : "secondary"
+                    }
+                >
+                    {row.original.status}
+                </Badge>
+            ),
+        },
+    ];
+
     return (
         <>
             <Card>
                 <CardHeader>
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center mb-4">
                         <div className="flex items-center justify-between">
                             <div>
                                 <CardTitle>Users</CardTitle>
@@ -41,6 +214,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
                                 </CardDescription>
                             </div>
                         </div>
+
                         <div>
                             <Button
                                 onClick={() => {
@@ -51,78 +225,30 @@ const UsersTable = ({ users }: { users: User[] }) => {
                             </Button>
                         </div>
                     </div>
+                    <div className="flex items-center justify-between">
+                        <InputGroup className="w-6/12">
+                            <InputGroupInput
+                                id="inline-start-input"
+                                placeholder="Search by user's name, school no., or email..."
+                                value={globalFilter}
+                                onChange={(e) =>
+                                    setGlobalFilter(e.target.value)
+                                }
+                            />
+                            <InputGroupAddon align="inline-start">
+                                <SearchIcon className="text-muted-foreground" />
+                            </InputGroupAddon>
+                        </InputGroup>
+                    </div>
                 </CardHeader>
                 <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>QR Code</TableHead>
-                                <TableHead>Name</TableHead>
-                                <TableHead>School No.</TableHead>
-                                <TableHead>Email</TableHead>
-                                <TableHead>Role</TableHead>
-                                <TableHead>Department</TableHead>
-                                <TableHead>Year</TableHead>
-                                <TableHead>Status</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {users.map((user) => (
-                                <TableRow key={user.id}>
-                                    <TableCell>
-                                        <img
-                                            src={user.qrCodeImage}
-                                            alt={`${user.lastName} ${user.firstName} ${user.middleName}`}
-                                            width={50}
-                                            onClick={() => {
-                                                setSelectedQrCode({
-                                                    name: `${user.lastName} ${user.firstName} ${user.middleName}`,
-                                                    image: user.qrCodeImage,
-                                                });
-                                                setOpenQrImageDialog(true);
-                                            }}
-                                        />
-                                    </TableCell>
-                                    <TableCell className="font-medium">
-                                        {user.firstName} {user.middleName}{" "}
-                                        {user.lastName}
-                                    </TableCell>
-                                    <TableCell>{user.schoolNumber}</TableCell>
-                                    <TableCell>{user.email}</TableCell>
-                                    <TableCell>
-                                        <Badge variant="outline">
-                                            {user.role}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        {user.department || "—"}
-                                    </TableCell>
-                                    <TableCell>{user.yearLevel}</TableCell>
-                                    <TableCell>
-                                        <Badge
-                                            variant={
-                                                user.status === "ACTIVE"
-                                                    ? "default"
-                                                    : "secondary"
-                                            }
-                                        >
-                                            {user.status}
-                                        </Badge>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                            {users.length === 0 && (
-                                <TableRow>
-                                    <TableCell
-                                        colSpan={7}
-                                        className="text-center text-gray-500"
-                                    >
-                                        No users found
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                    <DataTable
+                        data={users}
+                        columns={userColumns}
+                        globalFilter={globalFilter}
+                        setGlobalFilter={setGlobalFilter}
+                        globalFilterFn={globalFilterFn}
+                    />
                 </CardContent>
             </Card>
             <CreateUsersDialog
