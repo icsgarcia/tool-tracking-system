@@ -23,9 +23,9 @@ interface AdminOverviewType {
 
 const AdminOverview = ({ users, tools }: AdminOverviewType) => {
     return (
-        <div className="space-y-6">
+        <div>
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mb-4">
                 <Card>
                     <CardHeader>
                         <CardDescription>Total Users</CardDescription>
@@ -65,26 +65,6 @@ const AdminOverview = ({ users, tools }: AdminOverviewType) => {
                         <p className="text-xs text-gray-500">0 pending</p>
                     </CardContent>
                 </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardDescription>Departments</CardDescription>
-                        <CardTitle className="text-3xl">
-                            {
-                                new Set(
-                                    users
-                                        .map((u) => u.department)
-                                        .filter(Boolean),
-                                ).size
-                            }
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-xs text-gray-500">
-                            Across all users
-                        </p>
-                    </CardContent>
-                </Card>
             </div>
 
             {/* Recent Users */}
@@ -97,20 +77,20 @@ const AdminOverview = ({ users, tools }: AdminOverviewType) => {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Name</TableHead>
                                 <TableHead>School No.</TableHead>
+                                <TableHead>Name</TableHead>
                                 <TableHead>Role</TableHead>
                                 <TableHead>Department</TableHead>
-                                <TableHead>Status</TableHead>
+                                <TableHead>Email</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {users.slice(0, 5).map((user) => (
                                 <TableRow key={user.id}>
+                                    <TableCell>{user.schoolNumber}</TableCell>
                                     <TableCell className="font-medium">
                                         {user.firstName} {user.lastName}
                                     </TableCell>
-                                    <TableCell>{user.schoolNumber}</TableCell>
                                     <TableCell>
                                         <Badge variant="outline">
                                             {user.role}
@@ -119,17 +99,7 @@ const AdminOverview = ({ users, tools }: AdminOverviewType) => {
                                     <TableCell>
                                         {user.department || "—"}
                                     </TableCell>
-                                    <TableCell>
-                                        <Badge
-                                            variant={
-                                                user.status === "ACTIVE"
-                                                    ? "default"
-                                                    : "secondary"
-                                            }
-                                        >
-                                            {user.status}
-                                        </Badge>
-                                    </TableCell>
+                                    <TableCell>{user.email || "—"}</TableCell>
                                 </TableRow>
                             ))}
                             {users.length === 0 && (

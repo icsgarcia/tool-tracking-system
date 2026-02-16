@@ -1,16 +1,16 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useUsers } from "@/hooks/useUsers";
 import { useTools } from "@/hooks/useTools";
 import AboutUs from "@/components/AboutUs";
 import TransactionsTable from "@/components/TransactionsTable";
-import ToolsTable from "@/components/ToolsTable";
 import UsersTable from "@/components/UsersTable";
 import AdminOverview from "@/components/AdminOverview";
 import { toast } from "sonner";
 import { useTransactions } from "@/hooks/useTransactions";
+import NavUser from "@/components/NavUser";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ToolsTable from "@/components/ToolsTable";
 
 export interface User {
     id: string;
@@ -44,7 +44,6 @@ const AdminDashboard = () => {
     const { data: tools = [], isLoading: toolsLoading } = useTools();
     const { data: transactions = [], isLoading: transactionsLoading } =
         useTransactions();
-    const [activeTab, setActiveTab] = useState<string>("overview");
 
     const handleLogout = () => {
         toast.success("Logged out successfully.");
@@ -60,76 +59,40 @@ const AdminDashboard = () => {
     ];
 
     return (
-        <div className="min-h-screen w-full bg-gray-50">
+        <div className="container mx-auto">
             {/* Header */}
-            <header className="border-b bg-white px-6 py-4">
+            <header className="border-b p-4">
                 <div className="mx-auto flex max-w-7xl items-center justify-between">
-                    <h1 className="text-xl font-bold">Asset Tracking System</h1>
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-3">
-                            <Avatar>
-                                <AvatarFallback>
-                                    {admin?.firstName?.[0] ?? "A"}
-                                    {admin?.lastName?.[0] ?? "D"}
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="hidden sm:block">
-                                <p className="text-sm font-medium">
-                                    {admin
-                                        ? `${admin.firstName} ${admin.lastName}`
-                                        : "Admin"}
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                    {admin?.role ?? "ADMIN"}
-                                </p>
-                            </div>
-                        </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleLogout}
-                        >
-                            Logout
-                        </Button>
-                    </div>
+                    <h1 className="text-xl font-bold">Tool Tracking System</h1>
+                    <NavUser admin={admin} onLogout={handleLogout} />
                 </div>
             </header>
 
-            {/* Navigation Tabs */}
-            <nav className="border-b bg-white px-6">
-                <div className="mx-auto flex max-w-7xl gap-1">
+            <Tabs defaultValue="overview">
+                <TabsList variant="line">
                     {tabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`px-4 py-3 text-sm font-medium transition-colors ${
-                                activeTab === tab.id
-                                    ? "border-b-2 border-blue-500 text-blue-600"
-                                    : "text-gray-500 hover:text-gray-700"
-                            }`}
-                        >
-                            {tab.label}
-                        </button>
+                        <TabsTrigger value={tab.id}>{tab.label}</TabsTrigger>
                     ))}
-                </div>
-            </nav>
+                </TabsList>
 
-            {/* Main Content */}
-            <main className="mx-auto max-w-7xl p-6">
-                {activeTab === "overview" && (
-                    <AdminOverview users={users} tools={tools} />
-                )}
-
-                {activeTab === "users" && <UsersTable users={users} />}
-
-                {activeTab === "tools" && <ToolsTable tools={tools} />}
-
-                {activeTab === "transactions" && (
-                    <TransactionsTable transactions={transactions} />
-                )}
-
-                {activeTab === "about" && <AboutUs />}
-            </main>
+                <main>
+                    <TabsContent value="overview">
+                        <AdminOverview users={users} tools={tools} />
+                    </TabsContent>
+                    <TabsContent value="users">
+                        <UsersTable users={users} />
+                    </TabsContent>
+                    <TabsContent value="tools">
+                        <ToolsTable tools={tools} />
+                    </TabsContent>
+                    <TabsContent value="transactions">
+                        <TransactionsTable transactions={transactions} />
+                    </TabsContent>
+                    <TabsContent value="about">
+                        <AboutUs />
+                    </TabsContent>
+                </main>
+            </Tabs>
         </div>
     );
 };
