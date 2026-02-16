@@ -1,7 +1,6 @@
 import Html5QrcodePlugin, {
     type Html5QrcodePluginRef,
 } from "@/components/Html5QrcodeScannerPlugin";
-import { Button } from "@/components/ui/button";
 import {
     Table,
     TableBody,
@@ -11,11 +10,11 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { useUserTransactions } from "@/hooks/useTransactions";
-import { Hash, LogOut, Mail } from "lucide-react";
 import { useRef } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { useScanForTransaction } from "@/hooks/useTransactions";
+import NavUser from "@/components/NavUser";
 
 const Dashboard = () => {
     const location = useLocation();
@@ -36,6 +35,11 @@ const Dashboard = () => {
         scanForTransaction.mutate({ userId: user.id, toolQrCode: decodedText });
     };
 
+    const handleLogout = () => {
+        toast.success("Logged out successfully.");
+        navigate("/");
+    };
+
     if (!user) {
         return (
             <div className="flex min-h-svh flex-col items-center justify-center gap-4">
@@ -53,43 +57,13 @@ const Dashboard = () => {
     }
 
     return (
-        <div className="min-h-svh container mx-auto p-4">
-            <div className="relative w-full rounded-lg border p-6 shadow mb-6">
-                <div>
-                    <p className="text-lg font-semibold">
-                        {user.firstName} {user.middleName} {user.lastName}
-                    </p>
-                    <p className="text-sm italic">{user.schoolNumber}</p>
-                    <p>{user.department}</p>
-                    <p>
-                        <span className="font-semibold">Year</span>{" "}
-                        {user.yearLevel}
-                    </p>
-                    <div className="flex gap-8">
-                        <div className="flex gap-1">
-                            <Mail />
-                            <p>{user.email}</p>
-                        </div>
-
-                        {user.number && (
-                            <div className="flex gap-1">
-                                <Hash />
-                                <p>{user.number}</p>
-                            </div>
-                        )}
-                    </div>
-
-                    <Button
-                        onClick={() => {
-                            toast.success("Logged out successfully.");
-                            navigate("/");
-                        }}
-                        className=" absolute top-2 right-2 rounded bg-red-400 hover:bg-red-500"
-                    >
-                        <LogOut /> Logout
-                    </Button>
+        <div className="container mx-auto p-4">
+            <header className="border-b p-4">
+                <div className="mx-auto flex max-w-7xl items-center justify-between">
+                    <h1 className="text-xl font-bold">Tool Tracking System</h1>
+                    <NavUser user={user} onLogout={handleLogout} />
                 </div>
-            </div>
+            </header>
             <div className="flex flex-col md:flex-row justify-evenly gap-4">
                 <div>
                     <Html5QrcodePlugin
@@ -113,20 +87,47 @@ const Dashboard = () => {
                         </TableHeader>
                         <TableBody>
                             {userTransactions?.length > 0 ? (
-                                userTransactions.map((userTransaction) => (
-                                    <TableRow>
-                                        <TableCell>
-                                            {userTransaction.tool.name}
-                                        </TableCell>
-                                        <TableCell>1</TableCell>
-                                        <TableCell>
-                                            {userTransaction.borrowedAt}
-                                        </TableCell>
-                                        <TableCell>
-                                            {userTransaction.returnedAt}
-                                        </TableCell>
-                                    </TableRow>
-                                ))
+                                userTransactions.map((userTransaction) => {
+                                    const borrowedDate =
+                                        userTransaction.borrowedAt;
+                                    const returnedDate =
+                                        userTransaction.returnedAt;
+                                    return (
+                                        <TableRow>
+                                            <TableCell>
+                                                {userTransaction.tool.name}
+                                            </TableCell>
+                                            <TableCell>1</TableCell>
+                                            <TableCell>
+                                                {new Date(
+                                                    borrowedDate,
+                                                ).toLocaleString("en-US", {
+                                                    year: "numeric",
+                                                    month: "short",
+                                                    day: "numeric",
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                })}
+                                            </TableCell>
+                                            <TableCell>
+                                                {returnedDate
+                                                    ? new Date(
+                                                          returnedDate,
+                                                      ).toLocaleString(
+                                                          "en-US",
+                                                          {
+                                                              year: "numeric",
+                                                              month: "short",
+                                                              day: "numeric",
+                                                              hour: "2-digit",
+                                                              minute: "2-digit",
+                                                          },
+                                                      )
+                                                    : ""}
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })
                             ) : (
                                 <TableRow>
                                     <TableCell

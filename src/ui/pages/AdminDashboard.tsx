@@ -63,7 +63,7 @@ const AdminDashboard = () => {
             <header className="border-b p-4">
                 <div className="mx-auto flex max-w-7xl items-center justify-between">
                     <h1 className="text-xl font-bold">Tool Tracking System</h1>
-                    <NavUser admin={admin} onLogout={handleLogout} />
+                    <NavUser user={admin} onLogout={handleLogout} />
                 </div>
             </header>
 

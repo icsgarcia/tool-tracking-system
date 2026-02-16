@@ -12,12 +12,12 @@ import {
 import type { User } from "@/pages/AdminDashboard";
 
 interface NavUserType {
-    admin: User;
+    user: User;
     onLogout: () => void;
 }
 
-const NavUser = ({ admin, onLogout }: NavUserType) => {
-    const initials = `${admin.firstName?.[0] ?? ""}${admin.lastName?.[0] ?? ""}`;
+const NavUser = ({ user, onLogout }: NavUserType) => {
+    const initials = `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`;
 
     return (
         <DropdownMenu>
@@ -29,8 +29,8 @@ const NavUser = ({ admin, onLogout }: NavUserType) => {
                         </AvatarFallback>
                     </Avatar>
                     <div className="hidden sm:grid flex-1 text-left text-sm leading-tight">
-                        <span className="truncate font-medium">{`${admin.firstName} ${admin.middleName} ${admin.lastName}`}</span>
-                        <span className="truncate text-xs">{admin.email}</span>
+                        <span className="truncate font-medium">{`${user.firstName} ${user.middleName} ${user.lastName}`}</span>
+                        <span className="truncate text-xs">{user.email}</span>
                     </div>
                     <ChevronsUpDown className="ml-auto size-4" />
                 </button>
@@ -49,10 +49,10 @@ const NavUser = ({ admin, onLogout }: NavUserType) => {
                         </Avatar>
                         <div className="grid flex-1 text-left text-sm leading-tight">
                             <span className="truncate font-medium">
-                                {`${admin.firstName} ${admin.middleName} ${admin.lastName}`}
+                                {`${user.firstName} ${user.middleName} ${user.lastName}`}
                             </span>
                             <span className="truncate text-xs">
-                                {admin.email}
+                                {user.email}
                             </span>
                         </div>
                     </div>
