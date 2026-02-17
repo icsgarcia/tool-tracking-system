@@ -39,10 +39,9 @@ const AdminDashboard = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const admin = location.state?.user;
-    const { data: users = [], isLoading: usersLoading } = useUsers();
-    const { data: tools = [], isLoading: toolsLoading } = useTools();
-    const { data: transactions = [], isLoading: transactionsLoading } =
-        useTransactions();
+    const { data: users = [] } = useUsers();
+    const { data: tools = [] } = useTools();
+    const { data: transactions = [] } = useTransactions();
 
     const handleLogout = () => {
         toast.success("Logged out successfully.");
