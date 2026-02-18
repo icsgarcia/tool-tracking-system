@@ -9,7 +9,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { useUserTransactions } from "@/hooks/useTransactions";
+import { useGetUserTransactions } from "@/hooks/useTransactions";
 import { useRef } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -22,7 +22,7 @@ const Dashboard = () => {
     const user = location.state?.user;
     const isProcessing = useRef(false);
     const scannerRef = useRef<Html5QrcodePluginRef>(null);
-    const { data: userTransactions = [] } = useUserTransactions(user.id);
+    const { data: userTransactions = [] } = useGetUserTransactions(user.id);
     const scanForTransaction = useScanForTransaction();
 
     const onNewScanResult = async (decodedText: string) => {

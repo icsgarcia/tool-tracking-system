@@ -1,6 +1,13 @@
 {
     "appId": "com.icsgarcia.tool-tracking-system",
     "files": ["dist-electron", "dist-react"],
+    "extraResources": [
+        "dist-electron/src/electron/preload.cjs",
+        {
+            "from": "node_modules/better-sqlite3",
+            "to": "node_modules/better-sqlite3"
+        }
+    ],
     "mac": {
         "target": "dmg"
     },

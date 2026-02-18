@@ -20,7 +20,7 @@ import Html5QrcodePlugin, {
 import { useRef } from "react";
 import {
     useScanForTransaction,
-    useUserTransactions,
+    useGetUserTransactions,
 } from "@/hooks/useTransactions";
 
 interface AdminOverviewType {
@@ -32,7 +32,7 @@ interface AdminOverviewType {
 const AdminOverview = ({ admin, users, tools }: AdminOverviewType) => {
     const scannerRef = useRef<Html5QrcodePluginRef>(null);
     const isProcessing = useRef(false);
-    const { data: userTransactions = [] } = useUserTransactions(admin.id);
+    const { data: userTransactions = [] } = useGetUserTransactions(admin.id);
     const scanForTransaction = useScanForTransaction();
 
     const onNewScanResult = async (decodedText: string) => {

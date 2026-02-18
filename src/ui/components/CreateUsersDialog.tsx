@@ -22,10 +22,8 @@ import {
 } from "./ui/field";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { useMutation } from "@tanstack/react-query";
-import api from "@/lib/api";
 import { ScrollArea } from "./ui/scroll-area";
-import { toast } from "sonner";
+import { useCreateUser, useCreateUserByFile } from "@/hooks/useUsers";
 
 interface CreateUsersDialogType {
     open: boolean;
@@ -58,6 +56,26 @@ const CreateUsersDialog = ({ open, onOpenChange }: CreateUsersDialogType) => {
     });
     const [file, setFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const createUser = useCreateUser();
+    const createUserByFile = useCreateUserByFile();
+
+    const resetForm = () => {
+        setUserData({
+            schoolNumber: "",
+            firstName: "",
+            middleName: "",
+            lastName: "",
+            role: "",
+            department: "",
+            yearLevel: 0,
+            email: "",
+            number: undefined,
+        });
+        setFile(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
+    };
 
     const handleOpenChange = (isOpen: boolean) => {
         if (!isOpen) {
@@ -87,40 +105,18 @@ const CreateUsersDialog = ({ open, onOpenChange }: CreateUsersDialogType) => {
         setFile(null);
     };
 
-    const createUser = useMutation({
-        mutationFn: async () => {
-            const response = await api.post("/user", userData);
-            return response.data;
-        },
-        onSuccess: () => {
-            toast.success("User created successfully!");
-            handleOpenChange(false);
-        },
-    });
-
-    const createUserByFile = useMutation({
-        mutationFn: async () => {
-            const formData = new FormData();
-            formData.append("file", file!);
-            const response = await api.post("/user/file", formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
-            return response.data;
-        },
-        onSuccess: (data) => {
-            toast.success(
-                `Successfully created ${data?.users?.length ?? ""} users from file!`,
-            );
-            handleOpenChange(false);
-        },
-    });
-
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (file) {
-            createUserByFile.mutate();
+            createUserByFile.mutate(file, {
+                onSuccess: () => resetForm(),
+                onError: () => resetForm(),
+            });
         } else if (userData) {
-            createUser.mutate();
+            createUser.mutate(userData, {
+                onSuccess: () => resetForm(),
+                onError: () => resetForm(),
+            });
         }
     };
     return (

@@ -3,7 +3,7 @@ import Html5QrcodePlugin, {
 } from "@/components/Html5QrcodeScannerPlugin";
 import { useScanUser } from "@/hooks/useUsers";
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 
 const Login = () => {
@@ -69,6 +69,7 @@ const Login = () => {
                     />
                 </div>
             )}
+            <Link to={"/register"}>Register</Link>
         </div>
     );
 };

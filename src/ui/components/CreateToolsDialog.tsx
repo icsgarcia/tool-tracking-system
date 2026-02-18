@@ -21,9 +21,7 @@ import {
 } from "./ui/field";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { useMutation } from "@tanstack/react-query";
-import api from "@/lib/api";
-import { toast } from "sonner";
+import { useCreateTool, useCreateToolByFile } from "@/hooks/useTools";
 
 interface CreateToolsDialogType {
     open: boolean;
@@ -35,34 +33,17 @@ const CreateToolsDialog = ({ open, onOpenChange }: CreateToolsDialogType) => {
     const [quantity, setQuantity] = useState(1);
     const [file, setFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const createTool = useCreateTool();
+    const createToolByFile = useCreateToolByFile();
 
-    const createTool = useMutation({
-        mutationFn: async () => {
-            const response = await api.post("/tool", { name, quantity });
-            return response.data;
-        },
-        onSuccess: () => {
-            toast.success("Tool created successfully!");
-            handleOpenChange(false);
-        },
-    });
-
-    const createToolByFile = useMutation({
-        mutationFn: async () => {
-            const formData = new FormData();
-            formData.append("file", file!);
-            const response = await api.post("/tool/file", formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
-            return response.data;
-        },
-        onSuccess: (data) => {
-            toast.success(
-                `Successfully created ${data?.tools?.length ?? ""} tools from file!`,
-            );
-            handleOpenChange(false);
-        },
-    });
+    const resetForm = () => {
+        setName("");
+        setQuantity(1);
+        setFile(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
+    };
 
     const handleOpenChange = (isOpen: boolean) => {
         if (!isOpen) {
@@ -77,9 +58,28 @@ const CreateToolsDialog = ({ open, onOpenChange }: CreateToolsDialogType) => {
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (file) {
-            createToolByFile.mutate();
+            createToolByFile.mutate(file, {
+                onSuccess: () => {
+                    handleOpenChange(false);
+                    resetForm();
+                },
+                onError: () => {
+                    resetForm();
+                },
+            });
         } else if (name) {
-            createTool.mutate();
+            createTool.mutate(
+                { name, quantity },
+                {
+                    onSuccess: () => {
+                        handleOpenChange(false);
+                        resetForm();
+                    },
+                    onError: () => {
+                        resetForm();
+                    },
+                },
+            );
         }
     };
 

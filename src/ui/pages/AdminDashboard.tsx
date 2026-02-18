@@ -1,12 +1,12 @@
 import { useLocation, useNavigate } from "react-router";
-import { useUsers } from "@/hooks/useUsers";
-import { useTools } from "@/hooks/useTools";
+import { useGetAllUsers } from "@/hooks/useUsers";
+import { useGetAllTools } from "@/hooks/useTools";
 import AboutUs from "@/components/AboutUs";
 import TransactionsTable from "@/components/TransactionsTable";
 import UsersTable from "@/components/UsersTable";
 import AdminOverview from "@/components/AdminOverview";
 import { toast } from "sonner";
-import { useTransactions } from "@/hooks/useTransactions";
+import { useGetAllTransactions } from "@/hooks/useTransactions";
 import NavUser from "@/components/NavUser";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ToolsTable from "@/components/ToolsTable";
@@ -39,9 +39,9 @@ const AdminDashboard = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const admin = location.state?.user;
-    const { data: users = [] } = useUsers();
-    const { data: tools = [] } = useTools();
-    const { data: transactions = [] } = useTransactions();
+    const { data: users = [] } = useGetAllUsers();
+    const { data: tools = [] } = useGetAllTools();
+    const { data: transactions = [] } = useGetAllTransactions();
 
     const handleLogout = () => {
         toast.success("Logged out successfully.");

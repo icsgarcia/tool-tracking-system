@@ -1,5 +1,247 @@
+import { useState, useRef, type FormEvent, type ChangeEvent } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+    Field,
+    FieldGroup,
+    FieldLabel,
+    FieldSeparator,
+    FieldSet,
+} from "@/components/ui/field";
+import { Card } from "@/components/ui/card";
+import {
+    useCreateUser,
+    useCreateUserByFile,
+    useGetUserQrCode,
+} from "@/hooks/useUsers";
+
+interface UserDataType {
+    schoolNumber: string;
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    role: string;
+    department: string;
+    yearLevel: number;
+    email: string;
+    number?: string;
+}
+
 const Register = () => {
-    return <div>Register</div>;
+    const [userData, setUserData] = useState<UserDataType>({
+        schoolNumber: "",
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        role: "",
+        department: "",
+        yearLevel: 0,
+        email: "",
+        number: undefined,
+    });
+    const [file, setFile] = useState<File | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const createUser = useCreateUser();
+    const createUserByFile = useCreateUserByFile();
+    const { data: qrcodeImage } = useGetUserQrCode(
+        "01f293b1-2594-465b-b2f7-2d46a477f476",
+    );
+
+    const resetForm = () => {
+        setUserData({
+            schoolNumber: "",
+            firstName: "",
+            middleName: "",
+            lastName: "",
+            role: "",
+            department: "",
+            yearLevel: 0,
+            email: "",
+            number: undefined,
+        });
+        setFile(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
+    };
+
+    const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const { name, value, type } = e.target;
+        setUserData((prev) => ({
+            ...prev,
+            [name]: type === "number" ? Number(value) : value,
+        }));
+        setFile(null);
+    };
+
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (file) {
+            createUserByFile.mutate(file, {
+                onSuccess: () => resetForm(),
+                onError: () => resetForm(),
+            });
+        } else if (userData) {
+            createUser.mutate(userData, {
+                onSuccess: () => resetForm(),
+                onError: () => resetForm(),
+            });
+        }
+    };
+
+    return (
+        <div className="container mx-auto">
+            <img src={qrcodeImage} alt="" />
+            <Card className="w-full max-w-xl mx-auto">
+                <h1>Create User</h1>
+                <p>Lorem, ipsum dolor.</p>
+                <div>
+                    <form onSubmit={handleSubmit}>
+                        <FieldSet>
+                            <FieldGroup>
+                                <Field>
+                                    <FieldLabel htmlFor="schoolNumber">
+                                        School Number
+                                    </FieldLabel>
+                                    <Input
+                                        id="schoolNumber"
+                                        name="schoolNumber"
+                                        value={userData?.schoolNumber}
+                                        onChange={handleOnChange}
+                                    />
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor="firstName">
+                                        First Name
+                                    </FieldLabel>
+                                    <Input
+                                        id="firstName"
+                                        name="firstName"
+                                        value={userData?.firstName}
+                                        onChange={handleOnChange}
+                                    />
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor="middleName">
+                                        Middle Name
+                                    </FieldLabel>
+                                    <Input
+                                        id="middleName"
+                                        name="middleName"
+                                        value={userData?.middleName}
+                                        onChange={handleOnChange}
+                                    />
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor="lastName">
+                                        Last Name
+                                    </FieldLabel>
+                                    <Input
+                                        id="lastName"
+                                        name="lastName"
+                                        value={userData?.lastName}
+                                        onChange={handleOnChange}
+                                    />
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor="role">Role</FieldLabel>
+                                    <Input
+                                        id="role"
+                                        name="role"
+                                        value={userData?.role}
+                                        onChange={handleOnChange}
+                                    />
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor="department">
+                                        Department
+                                    </FieldLabel>
+                                    <Input
+                                        id="department"
+                                        name="department"
+                                        value={userData?.department}
+                                        onChange={handleOnChange}
+                                    />
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor="yearLevel">
+                                        Year Level
+                                    </FieldLabel>
+                                    <Input
+                                        id="yearLevel"
+                                        name="yearLevel"
+                                        type="number"
+                                        min={0}
+                                        max={5}
+                                        value={userData?.yearLevel}
+                                        onChange={handleOnChange}
+                                    />
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor="email">
+                                        Email
+                                    </FieldLabel>
+                                    <Input
+                                        id="email"
+                                        name="email"
+                                        value={userData?.email}
+                                        onChange={handleOnChange}
+                                    />
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor="number">
+                                        Number
+                                    </FieldLabel>
+                                    <Input
+                                        id="number"
+                                        name="number"
+                                        value={userData?.number}
+                                        onChange={handleOnChange}
+                                    />
+                                </Field>
+                            </FieldGroup>
+                            <FieldSeparator>Or create user with</FieldSeparator>
+                            <Field>
+                                <FieldLabel htmlFor="file">
+                                    Excel File
+                                </FieldLabel>
+                                <Input
+                                    id="file"
+                                    name="file"
+                                    type="file"
+                                    accept=".xlsx,.xls"
+                                    ref={fileInputRef}
+                                    onChange={(e) => {
+                                        const file =
+                                            e.target.files?.[0] ?? null;
+                                        setFile(file);
+                                    }}
+                                />
+                            </Field>
+                            <Field>
+                                <Button
+                                    type="submit"
+                                    disabled={
+                                        createUser.isPending ||
+                                        createUserByFile.isPending ||
+                                        (!file &&
+                                            Object.values(userData).some(
+                                                (val) => val === undefined,
+                                            ))
+                                    }
+                                >
+                                    {createUser.isPending ||
+                                    createUserByFile.isPending
+                                        ? "Creating..."
+                                        : "Create User"}
+                                </Button>
+                            </Field>
+                        </FieldSet>
+                    </form>
+                </div>
+            </Card>
+        </div>
+    );
 };
 
 export default Register;

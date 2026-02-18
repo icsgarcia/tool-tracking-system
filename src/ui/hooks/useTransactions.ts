@@ -1,27 +1,18 @@
-import api from "@/lib/api";
 import type { Transactions, UserTransactions } from "@/types/transactions";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export const useTransactions = () => {
+export const useGetAllTransactions = () => {
     return useQuery<Transactions[]>({
         queryKey: ["transactions"],
-        queryFn: async () => {
-            const response = await api.get<Transactions[]>("/transaction");
-            return response.data;
-        },
+        queryFn: () => window.api.transaction.getAllTransactions(),
     });
 };
 
-export const useUserTransactions = (userId: string) => {
+export const useGetUserTransactions = (userId: string) => {
     return useQuery<UserTransactions[]>({
         queryKey: ["userTransactions", userId],
-        queryFn: async () => {
-            const response = await api.get<UserTransactions[]>(
-                `/transaction/user/${userId}`,
-            );
-            return response.data;
-        },
+        queryFn: () => window.api.transaction.getUserTransactions(userId),
         enabled: !!userId,
     });
 };
@@ -30,10 +21,8 @@ export const useScanForTransaction = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (data: { userId: string; toolQrCode: string }) => {
-            const response = await api.post("/transaction/scan", data);
-            return response.data;
-        },
+        mutationFn: (variables: { userId: string; toolQrCode: string }) =>
+            window.api.transaction.scanToolQrCode(variables),
         onSuccess: (data, variables) => {
             queryClient.invalidateQueries({
                 queryKey: ["transactions"],
