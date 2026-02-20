@@ -75,11 +75,7 @@ const AdminDashboard = () => {
 
                 <main>
                     <TabsContent value="overview">
-                        <AdminOverview
-                            users={users}
-                            tools={tools}
-                            admin={admin}
-                        />
+                        <AdminOverview users={users} tools={tools} />
                     </TabsContent>
                     <TabsContent value="users">
                         <UsersTable users={users} />

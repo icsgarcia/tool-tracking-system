@@ -1,6 +1,3 @@
-import Html5QrcodePlugin, {
-    type Html5QrcodePluginRef,
-} from "@/components/Html5QrcodeScannerPlugin";
 import {
     Table,
     TableBody,
@@ -10,29 +7,28 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { useGetUserTransactions } from "@/hooks/useTransactions";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { useScanForTransaction } from "@/hooks/useTransactions";
 import NavUser from "@/components/NavUser";
+import QrScan from "@/components/QrScan";
 
 const Dashboard = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const user = location.state?.user;
     const isProcessing = useRef(false);
-    const scannerRef = useRef<Html5QrcodePluginRef>(null);
     const { data: userTransactions = [] } = useGetUserTransactions(user.id);
     const scanForTransaction = useScanForTransaction();
+    const [error, setError] = useState<string | null>(null);
 
-    const onNewScanResult = async (decodedText: string) => {
+    const handleScan = (code: string) => {
         if (isProcessing.current) return;
         isProcessing.current = true;
+        setError(null);
 
-        // Optionally stop the scanner
-        scannerRef.current?.stop();
-
-        scanForTransaction.mutate({ userId: user.id, toolQrCode: decodedText });
+        scanForTransaction.mutate({ userId: user.id, toolQrCode: code });
     };
 
     const handleLogout = () => {
@@ -66,13 +62,12 @@ const Dashboard = () => {
             </header>
             <div className="flex flex-col md:flex-row justify-evenly gap-4">
                 <div>
-                    <Html5QrcodePlugin
-                        ref={scannerRef}
-                        fps={10}
-                        qrbox={250}
-                        disableFlip={false}
-                        qrCodeSuccessCallback={onNewScanResult}
-                    />
+                    {error && (
+                        <div className="rounded-md bg-red-100 px-4 py-3 text-red-700">
+                            {error}
+                        </div>
+                    )}
+                    <QrScan handleScan={handleScan} />
                 </div>
                 <div className="flex flex-col gap-4 p-4">
                     <h2 className="text-xl font-semibold">Transactions</h2>

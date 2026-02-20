@@ -1,9 +1,7 @@
-import Html5QrcodePlugin, {
-    type Html5QrcodePluginRef,
-} from "@/components/Html5QrcodeScannerPlugin";
+import QrScan from "@/components/QrScan";
 import { useScanUser } from "@/hooks/useUsers";
 import { useState, useRef } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 const Login = () => {
@@ -11,18 +9,14 @@ const Login = () => {
     const [scanning, setScanning] = useState(true);
     const navigate = useNavigate();
     const isProcessing = useRef(false);
-    const scannerRef = useRef<Html5QrcodePluginRef>(null);
     const scanUser = useScanUser();
 
-    const onNewScanResult = async (decodedText: string) => {
+    const handleScan = (code: string) => {
         if (isProcessing.current) return;
         isProcessing.current = true;
         setError(null);
 
-        // Stop camera immediately
-        scannerRef.current?.stop();
-
-        scanUser.mutate(decodedText, {
+        scanUser.mutate(code, {
             onSuccess: (user) => {
                 setScanning(false);
                 toast.success(
@@ -34,12 +28,9 @@ const Login = () => {
                     navigate("/dashboard", { state: { user } });
                 }
             },
-            onError: (err: any) => {
-                toast.error("Login failed. Please check your QR code.");
-                setError(
-                    err.response?.data?.message ||
-                        "Login failed. Please check your QR code.",
-                );
+            onError: () => {
+                toast.error("Login failed. Please check your QR/barcode.");
+                setError("Login failed. Please check your QR/barcode.");
                 isProcessing.current = false;
                 setScanning(false);
                 setTimeout(() => setScanning(true), 100);
@@ -49,8 +40,8 @@ const Login = () => {
 
     return (
         <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-4">
-            <h1 className="text-2xl font-bold">Asset Tracking System</h1>
-            <p className="text-gray-500">Scan your QR Code to login</p>
+            <h1 className="text-2xl font-bold">TOOL KEEPER</h1>
+            <p className="text-gray-500">Scan your QR/Barcode to login</p>
 
             {error && (
                 <div className="rounded-md bg-red-100 px-4 py-3 text-red-700">
@@ -58,18 +49,7 @@ const Login = () => {
                 </div>
             )}
 
-            {scanning && (
-                <div className="w-full max-w-md">
-                    <Html5QrcodePlugin
-                        ref={scannerRef}
-                        fps={10}
-                        qrbox={250}
-                        disableFlip={false}
-                        qrCodeSuccessCallback={onNewScanResult}
-                    />
-                </div>
-            )}
-            <Link to={"/register"}>Register</Link>
+            {scanning && <QrScan handleScan={handleScan} />}
         </div>
     );
 };
