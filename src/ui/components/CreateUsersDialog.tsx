@@ -24,6 +24,14 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
 import { useCreateUser, useCreateUserByFile } from "@/hooks/useUsers";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "./ui/select";
 
 interface CreateUsersDialogType {
     open: boolean;
@@ -179,23 +187,57 @@ const CreateUsersDialog = ({ open, onOpenChange }: CreateUsersDialogType) => {
                                         <FieldLabel htmlFor="role">
                                             Role
                                         </FieldLabel>
-                                        <Input
-                                            id="role"
-                                            name="role"
-                                            value={userData?.role}
-                                            onChange={handleOnChange}
-                                        />
+                                        <Select
+                                            value={userData.role}
+                                            onValueChange={(value) =>
+                                                setUserData((prev) => ({
+                                                    ...prev,
+                                                    role: value,
+                                                }))
+                                            }
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Role" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectItem value="ADMIN">
+                                                        ADMIN
+                                                    </SelectItem>
+                                                    <SelectItem value="STAFF">
+                                                        STAFF
+                                                    </SelectItem>
+                                                    <SelectItem value="STUDENT">
+                                                        STUDENT
+                                                    </SelectItem>
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
                                     </Field>
                                     <Field>
                                         <FieldLabel htmlFor="department">
                                             Department
                                         </FieldLabel>
-                                        <Input
-                                            id="department"
-                                            name="department"
-                                            value={userData?.department}
-                                            onChange={handleOnChange}
-                                        />
+                                        <Select
+                                            value={userData.department}
+                                            onValueChange={(value) =>
+                                                setUserData((prev) => ({
+                                                    ...prev,
+                                                    department: value,
+                                                }))
+                                            }
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Department" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectItem value="AMT">
+                                                        AMT
+                                                    </SelectItem>
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
                                     </Field>
                                     <Field>
                                         <FieldLabel htmlFor="yearLevel">
