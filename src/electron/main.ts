@@ -6,6 +6,8 @@ import { UserHandlers } from "./services/user.js";
 import { ToolHandlers } from "./services/tool.js";
 import { TransactionHandlers } from "./services/transaction.js";
 import { getPreloadPath } from "./pathResolver.js";
+import { checkOverdueTransactions } from "./jobs/transactionStatusJob.js";
+import cron from "node-cron";
 
 app.on("ready", async () => {
     await initDatabase();
@@ -13,6 +15,10 @@ app.on("ready", async () => {
     UserHandlers();
     ToolHandlers();
     TransactionHandlers();
+
+    cron.schedule("0 * * * *", () => {
+        checkOverdueTransactions();
+    });
 
     const mainWindow = new BrowserWindow({
         webPreferences: {
