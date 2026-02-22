@@ -62,18 +62,30 @@ export function ToolHandlers() {
             return [];
         }
 
-        const toolsWithQrCode = await Promise.all(
+        const updatedTools = await Promise.all(
             tools.map(async (tool) => {
+                const borrowedQuantity = await prisma.transaction.count({
+                    where: {
+                        toolId: tool.id,
+                        status: {
+                            in: ["BORROWED", "UNRETURNED"],
+                        },
+                    },
+                });
+
+                const availableQuantity = tool.quantity - borrowedQuantity;
                 const qrCodeBuffer = await QRCode.toBuffer(tool.qrCode);
                 const qrCodeBase64 = `data:image/png;base64,${qrCodeBuffer.toString("base64")}`;
                 return {
                     ...tool,
                     qrCodeImage: qrCodeBase64,
+                    borrowedQuantity,
+                    availableQuantity,
                 };
             }),
         );
 
-        return toolsWithQrCode;
+        return updatedTools;
     });
 
     // Get tool by ID

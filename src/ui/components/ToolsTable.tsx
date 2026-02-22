@@ -106,7 +106,41 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
                             column.toggleSorting(column.getIsSorted() === "asc")
                         }
                     >
-                        Quantity
+                        Total Quantity
+                        <ArrowUpDown className="h-4 w-4" />
+                    </Button>
+                );
+            },
+        },
+        {
+            id: "borrowedQuantity",
+            accessorKey: "borrowedQuantity",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                    >
+                        Checked Out
+                        <ArrowUpDown className="h-4 w-4" />
+                    </Button>
+                );
+            },
+        },
+        {
+            id: "availableQuantity",
+            accessorKey: "availableQuantity",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                    >
+                        Available
                         <ArrowUpDown className="h-4 w-4" />
                     </Button>
                 );

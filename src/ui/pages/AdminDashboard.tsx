@@ -33,6 +33,8 @@ export interface Tool {
     qrCodeImage: string;
     name: string;
     quantity: number;
+    borrowedQuantity: number;
+    availableQuantity: number;
 }
 
 const AdminDashboard = () => {
