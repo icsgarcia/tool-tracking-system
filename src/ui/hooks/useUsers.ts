@@ -72,3 +72,37 @@ export const useCreateUserByFile = () => {
         },
     });
 };
+
+export const useUpdateUser = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (userData: UpdateUserDto) =>
+            window.api.user.updateUserById(userData),
+        onSuccess: (data, userData) => {
+            toast.success(
+                data?.message ||
+                    `User "${userData.firstName} ${userData.lastName}" updated successfully!`,
+            );
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+        },
+        onError: (error) => {
+            toast.error(error?.message || "Failed to update user");
+        },
+    });
+};
+
+export const useDeleteUser = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (userId: string) => window.api.user.deleteUserById(userId),
+        onSuccess: (data) => {
+            toast.success(data?.message || "User deleted successfully!");
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+        },
+        onError: (error) => {
+            toast.error(error?.message || "Failed to delete user");
+        },
+    });
+};

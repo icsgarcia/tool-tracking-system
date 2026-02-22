@@ -12,8 +12,17 @@ import CreateToolsDialog from "./CreateToolsDialog";
 import QrImageDialog from "./QrImageDialog";
 import DataTable from "./DataTable";
 import type { ColumnDef, FilterFn } from "@tanstack/react-table";
-import { ArrowUpDown, SearchIcon } from "lucide-react";
+import { ArrowUpDown, Ellipsis, SearchIcon } from "lucide-react";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import DeleteToolDialog from "./DeleteToolDialog";
+import UpdateToolDialog from "./UpdateToolDialog";
 
 const globalFilterFn: FilterFn<Tool> = (row, _columnId, filterValue) => {
     const search = filterValue.toLowerCase();
@@ -30,6 +39,9 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
         image: "",
     });
     const [globalFilter, setGlobalFilter] = useState("");
+    const [selectedTool, setSelectedTool] = useState<Tool>();
+    const [openUpdateTool, setOpenUpdateTool] = useState(false);
+    const [openDeleteTool, setOpenDeleteTool] = useState(false);
 
     const toolColumns: ColumnDef<Tool>[] = [
         {
@@ -92,6 +104,38 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
                 );
             },
         },
+        {
+            accessorKey: "action",
+            header: "Action",
+            cell: ({ row }) => (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Ellipsis />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuGroup>
+                            <DropdownMenuItem
+                                onClick={() => {
+                                    setSelectedTool(row.original);
+                                    setOpenUpdateTool(true);
+                                }}
+                            >
+                                Edit Tool
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                                onClick={() => {
+                                    setSelectedTool(row.original);
+                                    setOpenDeleteTool(true);
+                                }}
+                            >
+                                Delete Tool
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            ),
+        },
     ];
     return (
         <>
@@ -151,6 +195,20 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
                 open={openQrImageDialog}
                 onOpenChange={setOpenQrImageDialog}
             />
+            {openUpdateTool && selectedTool && (
+                <UpdateToolDialog
+                    openUpdateTool={openUpdateTool}
+                    setOpenUpdateTool={setOpenUpdateTool}
+                    tool={selectedTool}
+                />
+            )}
+            {openDeleteTool && selectedTool && (
+                <DeleteToolDialog
+                    openDeleteTool={openDeleteTool}
+                    setOpenDeleteTool={setOpenDeleteTool}
+                    tool={selectedTool}
+                />
+            )}
         </>
     );
 };

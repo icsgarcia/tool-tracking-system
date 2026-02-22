@@ -3,6 +3,7 @@ import { getPrisma } from "../database/db.js";
 import QRCode from "qrcode";
 import * as XLSX from "xlsx";
 import { Role } from "../../../generated/prisma/enums.js";
+import { User } from "../../../generated/prisma/client.js";
 
 export function UserHandlers() {
     const prisma = getPrisma();
@@ -151,5 +152,64 @@ export function UserHandlers() {
         }
 
         return user;
+    });
+
+    ipcMain.handle("user:updateUserById", async (_, userData: User) => {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userData.id,
+            },
+        });
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        const qrCodeData = `USER-${userData.schoolNumber}-${Date.now()}`;
+
+        const updatedUser = await prisma.user.update({
+            where: {
+                id: userData.id,
+            },
+            data: {
+                qrCode: qrCodeData,
+                schoolNumber: userData.schoolNumber,
+                firstName: userData.firstName,
+                middleName: userData.middleName,
+                lastName: userData.lastName,
+                role: userData.role,
+                department: userData.department,
+                yearLevel: userData.yearLevel,
+                email: userData.email,
+                number: userData.number || null,
+            },
+        });
+
+        return {
+            message: `User "${updatedUser.firstName} ${updatedUser.lastName}" updated successfully.`,
+            user: updatedUser,
+        };
+    });
+
+    ipcMain.handle("user:deleteUserById", async (_, userId: string) => {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+        });
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        await prisma.user.delete({
+            where: {
+                id: userId,
+            },
+        });
+
+        return {
+            message: `User "${user.firstName} ${user.lastName}" deleted successfully.`,
+        };
     });
 }

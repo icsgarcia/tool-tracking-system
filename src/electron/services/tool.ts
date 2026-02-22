@@ -2,6 +2,7 @@ import { ipcMain } from "electron";
 import { getPrisma } from "../database/db.js";
 import QRCode from "qrcode";
 import * as XLSX from "xlsx";
+import { Tool } from "../../../generated/prisma/client.js";
 
 export function ToolHandlers() {
     const prisma = getPrisma();
@@ -86,5 +87,57 @@ export function ToolHandlers() {
         }
 
         return tool;
+    });
+
+    ipcMain.handle("tool:updateToolById", async (_, toolData: Tool) => {
+        const tool = await prisma.tool.findUnique({
+            where: {
+                id: toolData.id,
+            },
+        });
+
+        if (!tool) {
+            throw new Error("Tool not found");
+        }
+
+        const qrCodeData = `TOOL-${toolData.name}-${Date.now()}`;
+
+        const updatedTool = await prisma.tool.update({
+            where: {
+                id: toolData.id,
+            },
+            data: {
+                qrCode: qrCodeData,
+                name: toolData.name,
+                quantity: toolData.quantity,
+            },
+        });
+
+        return {
+            message: `Tool "${updatedTool.name}" updated successfully.`,
+            tool: updatedTool,
+        };
+    });
+
+    ipcMain.handle("tool:deleteToolById", async (_, toolId: string) => {
+        const tool = await prisma.tool.findUnique({
+            where: {
+                id: toolId,
+            },
+        });
+
+        if (!tool) {
+            throw new Error("Tool not found");
+        }
+
+        await prisma.tool.delete({
+            where: {
+                id: toolId,
+            },
+        });
+
+        return {
+            message: `Tool "${tool.name}" deleted successfully.`,
+        };
     });
 }

@@ -13,9 +13,18 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import QrImageDialog from "./QrImageDialog";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
-import { SearchIcon, ArrowUpDown } from "lucide-react";
+import { SearchIcon, ArrowUpDown, Ellipsis } from "lucide-react";
 import { type ColumnDef, type FilterFn } from "@tanstack/react-table";
 import DataTable from "./DataTable";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import DeleteUserDialog from "./DeleteUserDialog";
+import UpdateUserDialog from "./UpdateUserDialog";
 
 const globalFilterFn: FilterFn<User> = (row, _columnId, filterValue) => {
     const search = filterValue.toLowerCase();
@@ -38,6 +47,9 @@ const UsersTable = ({ users }: { users: User[] }) => {
         image: "",
     });
     const [globalFilter, setGlobalFilter] = useState("");
+    const [selectedUser, setSelectedUser] = useState<User>();
+    const [openDeleteUser, setOpenDeleteUser] = useState(false);
+    const [openUpdateUser, setOpenUpdateUser] = useState(false);
 
     const userColumns: ColumnDef<User>[] = [
         {
@@ -199,6 +211,38 @@ const UsersTable = ({ users }: { users: User[] }) => {
                 </Badge>
             ),
         },
+        {
+            accessorKey: "action",
+            header: "Action",
+            cell: ({ row }) => (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Ellipsis />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuGroup>
+                            <DropdownMenuItem
+                                onClick={() => {
+                                    setSelectedUser(row.original);
+                                    setOpenUpdateUser(true);
+                                }}
+                            >
+                                Edit User
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                                onClick={() => {
+                                    setSelectedUser(row.original);
+                                    setOpenDeleteUser(true);
+                                }}
+                            >
+                                Delete User
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            ),
+        },
     ];
 
     return (
@@ -260,6 +304,20 @@ const UsersTable = ({ users }: { users: User[] }) => {
                 open={openQrImageDialog}
                 onOpenChange={setOpenQrImageDialog}
             />
+            {openDeleteUser && selectedUser && (
+                <DeleteUserDialog
+                    openDeleteUser={openDeleteUser}
+                    setOpenDeleteUser={setOpenDeleteUser}
+                    user={selectedUser}
+                />
+            )}
+            {openUpdateUser && selectedUser && (
+                <UpdateUserDialog
+                    openUpdateUser={openUpdateUser}
+                    setOpenUpdateUser={setOpenUpdateUser}
+                    user={selectedUser}
+                />
+            )}
         </>
     );
 };

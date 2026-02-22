@@ -10,9 +10,17 @@ interface CreateUserDto {
     number?: string | null;
 }
 
+interface UpdateUserDto extends CreateUserDto {
+    id: string;
+}
+
 interface CreateToolDto {
     name: string;
     quantity: number;
+}
+
+interface UpdateToolDto extends CreateToolDto {
+    id: string;
 }
 
 interface Window {
@@ -25,12 +33,16 @@ interface Window {
             getAllUsers: () => Promise<any[]>;
             getUserById: (userId: string) => Promise<any>;
             getUserByQRCode: (qrCode: string) => Promise<any>;
+            updateUserById: (userData: UpdateUserDto) => Promise<any>;
+            deleteUserById: (userId: string) => Promise<any>;
         };
         tool: {
             createToolByFile: (fileBuffer: ArrayBuffer) => Promise<any>;
             createTool: (toolData: CreateToolDto) => Promise<any>;
             getAllTools: () => Promise<any[]>;
             getToolById: (toolId: string) => Promise<any>;
+            updateToolById: (toolData: UpdateToolDto) => Promise<any>;
+            deleteToolById: (toolId: string) => Promise<any>;
         };
         transaction: {
             getAllTransactions: () => Promise<any[]>;

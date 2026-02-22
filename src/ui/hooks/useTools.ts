@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { WindArrowDown } from "lucide-react";
 import { toast } from "sonner";
 
 export const useGetAllTools = () => {
@@ -48,6 +49,40 @@ export const useCreateToolByFile = () => {
         },
         onError: (error) => {
             toast.error(error.message || "Failed to create tools from file");
+        },
+    });
+};
+
+export const useUpdateTool = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (toolData: UpdateToolDto) =>
+            window.api.tool.updateToolById(toolData),
+        onSuccess: (data, toolData) => {
+            toast.success(
+                data?.message ||
+                    `Tool "${toolData.name}" updated successfully!`,
+            );
+            queryClient.invalidateQueries({ queryKey: ["tools"] });
+        },
+        onError: (error) => {
+            toast.error(error?.message || "Failed to update tool");
+        },
+    });
+};
+
+export const useDeleteTool = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (toolId: string) => window.api.tool.deleteToolById(toolId),
+        onSuccess: (data) => {
+            toast.success(data?.message || "Tool deleted successfully!");
+            queryClient.invalidateQueries({ queryKey: ["tools"] });
+        },
+        onError: (error) => {
+            toast.error(error?.message || "Failed to delete tool");
         },
     });
 };

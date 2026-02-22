@@ -8,10 +8,8 @@ import { TransactionHandlers } from "./services/transaction.js";
 import { getPreloadPath } from "./pathResolver.js";
 
 app.on("ready", async () => {
-    // Initialize database FIRST — creates tables if needed
     await initDatabase();
 
-    // Then register IPC handlers
     UserHandlers();
     ToolHandlers();
     TransactionHandlers();

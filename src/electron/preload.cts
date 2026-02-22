@@ -1,3 +1,5 @@
+import { Tool, User } from "../../generated/prisma/client";
+
 const electron = require("electron");
 
 electron.contextBridge.exposeInMainWorld("api", {
@@ -15,6 +17,10 @@ electron.contextBridge.exposeInMainWorld("api", {
             electron.ipcRenderer.invoke("user:getUserById", userId),
         getUserByQRCode: (qrCode: string) =>
             electron.ipcRenderer.invoke("user:getUserByQRCode", qrCode),
+        updateUserById: (userData: User) =>
+            electron.ipcRenderer.invoke("user:updateUserById", userData),
+        deleteUserById: (userId: string) =>
+            electron.ipcRenderer.invoke("user:deleteUserById", userId),
     },
 
     tool: {
@@ -25,6 +31,10 @@ electron.contextBridge.exposeInMainWorld("api", {
         getAllTools: () => electron.ipcRenderer.invoke("tool:getAllTools"),
         getToolById: (toolId: string) =>
             electron.ipcRenderer.invoke("tool:getToolById", toolId),
+        updateToolById: (toolData: Tool) =>
+            electron.ipcRenderer.invoke("tool:updateToolById", toolData),
+        deleteToolById: (toolId: string) =>
+            electron.ipcRenderer.invoke("tool:deleteToolById", toolId),
     },
 
     transaction: {
