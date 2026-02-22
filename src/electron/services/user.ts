@@ -212,4 +212,18 @@ export function UserHandlers() {
             message: `User "${user.firstName} ${user.lastName}" deleted successfully.`,
         };
     });
+
+    ipcMain.handle("user:deleteAllUsers", async (_, userId: string) => {
+        await prisma.user.deleteMany({
+            where: {
+                NOT: {
+                    id: userId,
+                },
+            },
+        });
+
+        return {
+            message: "All users except the logged in user have been deleted.",
+        };
+    });
 }

@@ -140,4 +140,12 @@ export function ToolHandlers() {
             message: `Tool "${tool.name}" deleted successfully.`,
         };
     });
+
+    ipcMain.handle("tool:deleteAllTools", async () => {
+        await prisma.tool.deleteMany();
+
+        return {
+            message: "All tools have been deleted.",
+        };
+    });
 }

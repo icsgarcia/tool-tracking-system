@@ -35,6 +35,7 @@ interface Window {
             getUserByQRCode: (qrCode: string) => Promise<any>;
             updateUserById: (userData: UpdateUserDto) => Promise<any>;
             deleteUserById: (userId: string) => Promise<any>;
+            deleteAllUsers: (userId: string) => Promise<any>;
         };
         tool: {
             createToolByFile: (fileBuffer: ArrayBuffer) => Promise<any>;
@@ -43,6 +44,7 @@ interface Window {
             getToolById: (toolId: string) => Promise<any>;
             updateToolById: (toolData: UpdateToolDto) => Promise<any>;
             deleteToolById: (toolId: string) => Promise<any>;
+            deleteAllTools: () => Promise<any>;
         };
         transaction: {
             getAllTransactions: () => Promise<any[]>;

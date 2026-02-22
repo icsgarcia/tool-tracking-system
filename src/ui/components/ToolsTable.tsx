@@ -12,7 +12,12 @@ import CreateToolsDialog from "./CreateToolsDialog";
 import QrImageDialog from "./QrImageDialog";
 import DataTable from "./DataTable";
 import type { ColumnDef, FilterFn } from "@tanstack/react-table";
-import { ArrowUpDown, Ellipsis, SearchIcon } from "lucide-react";
+import {
+    ArrowUpDown,
+    Ellipsis,
+    EllipsisVertical,
+    SearchIcon,
+} from "lucide-react";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 import {
     DropdownMenu,
@@ -23,6 +28,7 @@ import {
 } from "./ui/dropdown-menu";
 import DeleteToolDialog from "./DeleteToolDialog";
 import UpdateToolDialog from "./UpdateToolDialog";
+import DeleteAllToolsDialog from "./DeleteAllToolsDialog";
 
 const globalFilterFn: FilterFn<Tool> = (row, _columnId, filterValue) => {
     const search = filterValue.toLowerCase();
@@ -42,6 +48,8 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
     const [selectedTool, setSelectedTool] = useState<Tool>();
     const [openUpdateTool, setOpenUpdateTool] = useState(false);
     const [openDeleteTool, setOpenDeleteTool] = useState(false);
+    const [openDeleteAllToolsDialog, setOpenDeleteAllToolsDialog] =
+        useState(false);
 
     const toolColumns: ColumnDef<Tool>[] = [
         {
@@ -150,7 +158,7 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
                                 </CardDescription>
                             </div>
                         </div>
-                        <div>
+                        <div className="flex items-center justify-center gap-1">
                             <Button
                                 onClick={() => {
                                     setOpenCreateToolsDialog(true);
@@ -158,6 +166,27 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
                             >
                                 Add Tools
                             </Button>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant={"outline"}>
+                                        <EllipsisVertical />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuGroup>
+                                        <DropdownMenuItem
+                                            onClick={() =>
+                                                setOpenDeleteAllToolsDialog(
+                                                    true,
+                                                )
+                                            }
+                                            disabled={tools.length <= 0}
+                                        >
+                                            Delete all users
+                                        </DropdownMenuItem>
+                                    </DropdownMenuGroup>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
                     </div>
                     <div className="flex items-center justify-between">
@@ -207,6 +236,12 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
                     openDeleteTool={openDeleteTool}
                     setOpenDeleteTool={setOpenDeleteTool}
                     tool={selectedTool}
+                />
+            )}
+            {openDeleteAllToolsDialog && (
+                <DeleteAllToolsDialog
+                    openDeleteAllToolsDialog={openDeleteAllToolsDialog}
+                    setOpenDeleteAllToolsDialog={setOpenDeleteAllToolsDialog}
                 />
             )}
         </>

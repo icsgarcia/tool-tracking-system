@@ -106,3 +106,21 @@ export const useDeleteUser = () => {
         },
     });
 };
+
+export const useDeleteAllUsers = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (userId: string) => window.api.user.deleteAllUsers(userId),
+        onSuccess: (data) => {
+            toast.success(
+                data?.message ||
+                    "All users except the logged in user have been deleted successfully!",
+            );
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+        },
+        onError: (error) => {
+            toast.error(error?.message || "Failed to delete all users");
+        },
+    });
+};

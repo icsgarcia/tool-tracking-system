@@ -13,7 +13,12 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import QrImageDialog from "./QrImageDialog";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
-import { SearchIcon, ArrowUpDown, Ellipsis } from "lucide-react";
+import {
+    SearchIcon,
+    ArrowUpDown,
+    Ellipsis,
+    EllipsisVertical,
+} from "lucide-react";
 import { type ColumnDef, type FilterFn } from "@tanstack/react-table";
 import DataTable from "./DataTable";
 import {
@@ -25,6 +30,8 @@ import {
 } from "./ui/dropdown-menu";
 import DeleteUserDialog from "./DeleteUserDialog";
 import UpdateUserDialog from "./UpdateUserDialog";
+import DeleteAllUsersDialog from "./DeleteAllUsersDialog";
+import { useLocation } from "react-router";
 
 const globalFilterFn: FilterFn<User> = (row, _columnId, filterValue) => {
     const search = filterValue.toLowerCase();
@@ -39,6 +46,8 @@ const globalFilterFn: FilterFn<User> = (row, _columnId, filterValue) => {
 };
 
 const UsersTable = ({ users }: { users: User[] }) => {
+    const location = useLocation();
+    const user = location?.state?.user;
     const [openCreateUsersDialog, setOpenCreateUsersDialog] =
         useState<boolean>(false);
     const [openQrImageDialog, setOpenQrImageDialog] = useState(false);
@@ -50,6 +59,8 @@ const UsersTable = ({ users }: { users: User[] }) => {
     const [selectedUser, setSelectedUser] = useState<User>();
     const [openDeleteUser, setOpenDeleteUser] = useState(false);
     const [openUpdateUser, setOpenUpdateUser] = useState(false);
+    const [openDeleteAllUsersDialog, setOpenDeleteAllUsersDialog] =
+        useState(false);
 
     const userColumns: ColumnDef<User>[] = [
         {
@@ -259,7 +270,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
                             </div>
                         </div>
 
-                        <div>
+                        <div className="flex items-center justify-center gap-1">
                             <Button
                                 onClick={() => {
                                     setOpenCreateUsersDialog(true);
@@ -267,6 +278,27 @@ const UsersTable = ({ users }: { users: User[] }) => {
                             >
                                 Add Users
                             </Button>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant={"outline"}>
+                                        <EllipsisVertical />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuGroup>
+                                        <DropdownMenuItem
+                                            onClick={() =>
+                                                setOpenDeleteAllUsersDialog(
+                                                    true,
+                                                )
+                                            }
+                                            disabled={users.length <= 1}
+                                        >
+                                            Delete all users
+                                        </DropdownMenuItem>
+                                    </DropdownMenuGroup>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
                     </div>
                     <div className="flex items-center justify-between">
@@ -316,6 +348,13 @@ const UsersTable = ({ users }: { users: User[] }) => {
                     openUpdateUser={openUpdateUser}
                     setOpenUpdateUser={setOpenUpdateUser}
                     user={selectedUser}
+                />
+            )}
+            {openDeleteAllUsersDialog && (
+                <DeleteAllUsersDialog
+                    openDeleteAllUsersDialog={openDeleteAllUsersDialog}
+                    setOpenDeleteAllUsersDialog={setOpenDeleteAllUsersDialog}
+                    userId={user.id}
                 />
             )}
         </>

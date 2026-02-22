@@ -21,6 +21,8 @@ electron.contextBridge.exposeInMainWorld("api", {
             electron.ipcRenderer.invoke("user:updateUserById", userData),
         deleteUserById: (userId: string) =>
             electron.ipcRenderer.invoke("user:deleteUserById", userId),
+        deleteAllUsers: (userId: string) =>
+            electron.ipcRenderer.invoke("user:deleteAllUsers", userId),
     },
 
     tool: {
@@ -35,6 +37,8 @@ electron.contextBridge.exposeInMainWorld("api", {
             electron.ipcRenderer.invoke("tool:updateToolById", toolData),
         deleteToolById: (toolId: string) =>
             electron.ipcRenderer.invoke("tool:deleteToolById", toolId),
+        deleteAllTools: () =>
+            electron.ipcRenderer.invoke("tool:deleteAllTools"),
     },
 
     transaction: {
