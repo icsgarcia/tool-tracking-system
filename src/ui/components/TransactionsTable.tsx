@@ -1,4 +1,3 @@
-import type { Transactions } from "@/types/transactions";
 import {
     Card,
     CardContent,
@@ -77,7 +76,7 @@ const TransactionsTable = ({
                 const transaction = row.original;
                 return (
                     <span className="font-medium">
-                        {transaction.asset.name}
+                        {transaction.asset.assetName}
                     </span>
                 );
             },

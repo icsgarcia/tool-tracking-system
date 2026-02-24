@@ -11,40 +11,6 @@ import NavUser from "@/components/NavUser";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AssetsTable from "@/components/AssetsTable";
 
-export interface User {
-    id: string;
-    qrCode: string;
-    qrCodeImage: string;
-    schoolNumber: string;
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    role: string;
-    department: string;
-    yearLevel: number;
-    email: string;
-    number?: string;
-    status: string;
-}
-
-export interface Asset {
-    id: string;
-    temporaryTagNumber?: string;
-    qrCode: string;
-    qrCodeImage: string;
-    assetName: string;
-    assetDescription: string;
-    serialNumber?: string;
-    assetCategoryCode?: string;
-    roomName?: string;
-    locationCode?: string;
-    assetCount: number;
-    borrowedCount: number;
-    availableCount: number;
-    assetCondition?: string;
-    remarks?: string;
-}
-
 const AdminDashboard = () => {
     const location = useLocation();
     const navigate = useNavigate();

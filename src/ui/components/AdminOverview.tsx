@@ -5,7 +5,6 @@ import {
     CardHeader,
     CardTitle,
 } from "./ui/card";
-import type { Asset, User } from "@/pages/AdminDashboard";
 import { useRef, useState } from "react";
 import { useScanUser } from "@/hooks/useUsers";
 import { toast } from "sonner";

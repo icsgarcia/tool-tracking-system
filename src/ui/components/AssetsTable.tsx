@@ -1,4 +1,3 @@
-import type { Asset } from "@/pages/AdminDashboard";
 import {
     Card,
     CardContent,

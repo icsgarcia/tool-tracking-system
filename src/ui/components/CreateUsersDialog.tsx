@@ -38,20 +38,8 @@ interface CreateUsersDialogType {
     onOpenChange: Dispatch<SetStateAction<boolean>>;
 }
 
-interface UserDataType {
-    schoolNumber: string;
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    role: string;
-    department: string;
-    yearLevel: number;
-    email: string;
-    number?: string;
-}
-
 const CreateUsersDialog = ({ open, onOpenChange }: CreateUsersDialogType) => {
-    const [userData, setUserData] = useState<UserDataType>({
+    const [userData, setUserData] = useState<CreateUserDto>({
         schoolNumber: "",
         firstName: "",
         middleName: "",
@@ -60,7 +48,7 @@ const CreateUsersDialog = ({ open, onOpenChange }: CreateUsersDialogType) => {
         department: "",
         yearLevel: 0,
         email: "",
-        number: undefined,
+        number: "",
     });
     const [file, setFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);

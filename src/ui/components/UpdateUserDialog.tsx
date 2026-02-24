@@ -16,7 +16,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from "./ui/dialog";
-import type { User } from "@/pages/AdminDashboard";
 import { useUpdateUser } from "@/hooks/useUsers";
 import { ScrollArea } from "./ui/scroll-area";
 import { Field, FieldGroup, FieldLabel, FieldSet } from "./ui/field";

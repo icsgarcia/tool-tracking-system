@@ -1,17 +1,68 @@
+enum Status {
+    BORROWED = "BORROWED",
+    RETURNED = "RETURNED",
+}
+
+enum Role {
+    STUDENT = "STUDENT",
+    TEACHER = "TEACHER",
+    STAFF = "STAFF",
+    ADMIN = "ADMIN",
+}
+
+enum UserStatus {
+    ACTIVE = "ACTIVE",
+    INACTIVE = "INACTIVE",
+}
+
+interface User {
+    id: string;
+    qrCode: string;
+    qrCodeImage: string;
+    schoolNumber: string;
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    role: string;
+    department: string;
+    yearLevel: number;
+    email: string;
+    number?: string;
+    status: string;
+}
+
 interface CreateUserDto {
     schoolNumber: string;
     firstName: string;
     middleName: string;
     lastName: string;
-    role: Role;
+    role: string;
     department: string;
     yearLevel: number;
     email: string;
-    number?: string | null;
+    number?: string;
 }
 
 interface UpdateUserDto extends CreateUserDto {
     id: string;
+}
+
+interface Asset {
+    id: string;
+    temporaryTagNumber?: string;
+    qrCode: string;
+    qrCodeImage: string;
+    assetName: string;
+    assetDescription: string;
+    serialNumber?: string;
+    assetCategoryCode?: string;
+    roomName?: string;
+    locationCode?: string;
+    assetCount: number;
+    borrowedCount: number;
+    availableCount: number;
+    assetCondition?: string;
+    remarks?: string;
 }
 
 interface CreateAssetDto {
@@ -29,6 +80,38 @@ interface CreateAssetDto {
 
 interface UpdateAssetDto extends CreateAssetDto {
     id: string;
+}
+
+interface UserTransactions {
+    id: string;
+    userId: string;
+    assetId: string;
+    status: Status;
+    borrowedAt: string;
+    returnedAt?: string;
+    asset: {
+        id: string;
+        qrCode: string;
+        assetName: string;
+        assetCount: number;
+    };
+}
+
+interface Transactions extends UserTransactions {
+    user: {
+        id: string;
+        qrCode: string;
+        schoolNumber: string;
+        firstName: string;
+        middleName: string;
+        lastName: string;
+        role: string;
+        department: string;
+        yearLevel: number;
+        email: string;
+        number: string;
+        status: UserStatus;
+    };
 }
 
 interface Window {

@@ -8,7 +8,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from "./ui/dialog";
-import type { Asset } from "@/pages/AdminDashboard";
 import { Button } from "./ui/button";
 import { useDeleteAsset } from "@/hooks/useAssets";
 

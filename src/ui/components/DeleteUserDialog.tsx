@@ -10,7 +10,6 @@ import {
     DialogTitle,
 } from "./ui/dialog";
 import { useDeleteUser } from "@/hooks/useUsers";
-import type { User } from "@/pages/AdminDashboard";
 
 interface DeleteUserDialogProps {
     openDeleteUser: boolean;

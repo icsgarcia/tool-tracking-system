@@ -1,4 +1,3 @@
-import type { User } from "@/pages/AdminDashboard";
 import { Badge } from "./ui/badge";
 import {
     Card,

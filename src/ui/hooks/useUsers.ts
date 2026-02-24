@@ -33,17 +33,7 @@ export const useCreateUser = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: {
-            schoolNumber: string;
-            firstName: string;
-            middleName: string;
-            lastName: string;
-            role: string;
-            department: string;
-            yearLevel: number;
-            email: string;
-            number?: string | null;
-        }) => window.api.user.createUser(data),
+        mutationFn: (data: CreateUserDto) => window.api.user.createUser(data),
         onSuccess: () => {
             toast.success("User created successfully!");
             queryClient.invalidateQueries({ queryKey: ["users"] });

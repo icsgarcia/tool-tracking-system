@@ -9,7 +9,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { User } from "@/pages/AdminDashboard";
 
 interface NavUserType {
     user: User;

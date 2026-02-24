@@ -58,7 +58,7 @@ export function UserHandlers() {
                 firstName: userData.firstName,
                 middleName: userData.middleName,
                 lastName: userData.lastName,
-                role: userData.role,
+                role: userData.role as Role,
                 department: userData.department,
                 yearLevel: userData.yearLevel,
                 email: userData.email,
