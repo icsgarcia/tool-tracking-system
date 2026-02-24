@@ -19,6 +19,11 @@ const AdminDashboard = () => {
     const { data: assets = [] } = useGetAllAssets();
     const { data: transactions = [] } = useGetAllTransactions();
 
+    if (!admin || admin.role !== "ADMIN") {
+        navigate("/");
+        return null;
+    }
+
     const handleLogout = () => {
         toast.success("Logged out successfully.");
         navigate("/");
@@ -45,7 +50,11 @@ const AdminDashboard = () => {
 
                 <main>
                     <TabsContent value="overview">
-                        <AdminOverview users={users} assets={assets} />
+                        <AdminOverview
+                            admin={admin}
+                            users={users}
+                            assets={assets}
+                        />
                     </TabsContent>
                     <TabsContent value="users">
                         <UsersTable users={users} />

@@ -1,6 +1,10 @@
 import { Card, CardContent } from "./ui/card";
 
-const ProfileCard = () => {
+interface ProfileCardProps {
+    user: User;
+}
+
+const ProfileCard = ({ user }: ProfileCardProps) => {
     return (
         <Card className="max-w-xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
             <CardContent>
@@ -21,16 +25,16 @@ const ProfileCard = () => {
                     {/* Middle: User Info */}
                     <div className="flex-1 text-center md:text-left">
                         <p className="font-bold text-2xl text-gray-800 mb-1">
-                            Garcia
+                            {user.lastName}
                         </p>
                         <p className="font-semibold text-lg text-gray-600 mb-1">
-                            Ivan Christopher S.
+                            {user.firstName} {user.middleName.charAt(1)}
                         </p>
                         <p className="italic text-sm text-gray-400 mb-2">
-                            2019001072
+                            {user.schoolNumber}
                         </p>
                         <span className="inline-block bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full font-medium mb-2">
-                            AMT - 4
+                            {user.department} - {user.yearLevel}
                         </span>
                     </div>
                     {/* Right: Contact Info */}
@@ -40,14 +44,14 @@ const ProfileCard = () => {
                                 Email:
                             </span>{" "}
                             <br />
-                            icsgarcia2002@gmail.com
+                            {user.email}
                         </p>
                         <p>
                             <span className="font-medium text-gray-700">
                                 Phone:
                             </span>{" "}
                             <br />
-                            09274518883
+                            {user.number}
                         </p>
                     </div>
                 </div>

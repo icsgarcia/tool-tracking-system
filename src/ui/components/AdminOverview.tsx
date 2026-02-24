@@ -13,46 +13,51 @@ import QrScan from "./QrScan";
 import ProfileCard from "./ProfileCard";
 
 interface AdminOverviewType {
+    admin: User;
     users: User[];
     assets: Asset[];
 }
 
-const AdminOverview = ({ users, assets }: AdminOverviewType) => {
+const AdminOverview = ({ admin, users, assets }: AdminOverviewType) => {
     const navigate = useNavigate();
-    const [error, setError] = useState<string | null>(null);
-    const [scanning, setScanning] = useState(true);
-    const isProcessing = useRef(false);
     const scanUser = useScanUser();
+    const isProcessing = useRef(false);
+    const [error, setError] = useState<string | null>(null);
+    const [scanningUser, setScanningUser] = useState(true);
 
-    const handleScan = (code: string) => {
+    const handleScanUser = (code: string) => {
         if (isProcessing.current) return;
         isProcessing.current = true;
         setError(null);
 
         scanUser.mutate(code, {
             onSuccess: (user) => {
-                setScanning(false);
+                if (user.role !== "STUDENT") {
+                    toast.error("Only STUDENT users can be scanned here.");
+                    isProcessing.current = false;
+                    return;
+                }
+
+                setScanningUser(false);
+
                 toast.success(
                     `Login successful! Welcome, ${user.firstName} ${user.lastName}`,
                 );
-                if (user.role === "ADMIN") {
-                    navigate("/admin", { state: { user } });
-                } else {
-                    navigate("/dashboard", { state: { user } });
-                }
+
+                navigate("/dashboard", { state: { user, admin } });
             },
             onError: () => {
                 toast.error("Login failed. Please check your QR/barcode.");
                 setError("Login failed. Please check your QR/barcode.");
                 isProcessing.current = false;
-                setScanning(false);
-                setTimeout(() => setScanning(true), 100);
+                setScanningUser(false);
+                setTimeout(() => setScanningUser(true), 100);
             },
         });
     };
     return (
         <div className="flex flex-col gap-4 mt-4 mb-8">
-            <ProfileCard />
+            <ProfileCard user={admin} />
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 mb-4">
                 <Card>
                     <CardHeader>
@@ -99,9 +104,9 @@ const AdminOverview = ({ users, assets }: AdminOverviewType) => {
                     {error}
                 </div>
             )}
-            {scanning && (
+            {scanningUser && (
                 <QrScan
-                    handleScan={handleScan}
+                    handleScan={handleScanUser}
                     className="opacity-0 pointer-events-none absolute"
                 />
             )}

@@ -18,19 +18,25 @@ const Login = () => {
 
         scanUser.mutate(code, {
             onSuccess: (user) => {
+                if (user.role != "ADMIN") {
+                    toast.error("Only ADMIN users can log in here.");
+                    setError("Only ADMIN users can log in here.");
+                    isProcessing.current = false;
+                    setScanning(false);
+                    setTimeout(() => setScanning(true), 100);
+                    return;
+                }
+
                 setScanning(false);
                 toast.success(
                     `Login successful! Welcome, ${user.firstName} ${user.lastName}`,
                 );
-                if (user.role === "ADMIN") {
-                    navigate("/admin", { state: { user } });
-                } else {
-                    navigate("/dashboard", { state: { user } });
-                }
+
+                navigate("/admin", { state: { user } });
             },
             onError: () => {
-                toast.error("Login failed. Please check your QR/barcode.");
-                setError("Login failed. Please check your QR/barcode.");
+                toast.error("Login failed. Please check your QR code.");
+                setError("Login failed. Please check your QR code.");
                 isProcessing.current = false;
                 setScanning(false);
                 setTimeout(() => setScanning(true), 100);

@@ -20,6 +20,7 @@ const Dashboard = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const user = location.state?.user;
+    const admin = location.state?.admin;
     const isProcessing = useRef(false);
     const { data: userTransactions = [] } = useGetUserTransactions(user.id);
     const scanForTransaction = useScanForTransaction();
@@ -34,8 +35,13 @@ const Dashboard = () => {
     };
 
     const handleLogout = () => {
-        toast.success("Logged out successfully.");
-        navigate("/");
+        if (admin) {
+            toast.success("Logged out successfully.");
+
+            navigate("/admin", { state: { user: admin } });
+        } else {
+            navigate("/");
+        }
     };
 
     if (!user) {
@@ -59,7 +65,7 @@ const Dashboard = () => {
             <Header user={user} handleLogout={handleLogout} />
 
             <div className="flex flex-col gap-4 mt-4 mb-8">
-                <ProfileCard />
+                <ProfileCard user={user} />
 
                 <Card>
                     <CardHeader>
