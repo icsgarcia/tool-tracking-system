@@ -57,19 +57,24 @@ const UpdateUserDialog = ({
 
     const handleUpdateUser = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        updateUser.mutate(updateUserData);
+        updateUser.mutate(updateUserData, {
+            onSuccess: () => {
+                setOpenUpdateUser(false);
+            },
+            onError: () => {
+                setUpdateUserData(user);
+            },
+        });
     };
     return (
         <Dialog open={openUpdateUser} onOpenChange={setOpenUpdateUser}>
             <DialogContent>
                 <form onSubmit={handleUpdateUser}>
                     <DialogHeader>
-                        <DialogTitle>Lorem ipsum dolor sit amet.</DialogTitle>
+                        <DialogTitle>Update User</DialogTitle>
                         <DialogDescription>
-                            Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Commodi, veritatis eos. Voluptas natus neque
-                            quidem aperiam officiis provident laudantium
-                            aspernatur?
+                            Edit the user details below and click "Update User"
+                            to save changes.
                         </DialogDescription>
                     </DialogHeader>
                     <ScrollArea className=" h-100 rounded-md border">
@@ -129,7 +134,7 @@ const UpdateUserDialog = ({
                                             onValueChange={(value) =>
                                                 setUpdateUserData((prev) => ({
                                                     ...prev,
-                                                    role: value,
+                                                    role: value as Role,
                                                 }))
                                             }
                                         >

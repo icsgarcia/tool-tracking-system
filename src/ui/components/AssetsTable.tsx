@@ -274,8 +274,8 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                 </CardContent>
             </Card>
             <CreateAssetsDialog
-                open={openCreateAssetsDialog}
-                onOpenChange={setOpenCreateAssetsDialog}
+                openCreateAssetsDialog={openCreateAssetsDialog}
+                setOpenCreateAssetsDialog={setOpenCreateAssetsDialog}
             />
             <QrImageDialog
                 qrCode={selectedQrCode}

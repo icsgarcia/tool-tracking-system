@@ -26,11 +26,14 @@ import { useCreateAsset, useCreateAssetByFile } from "@/hooks/useAssets";
 import { ScrollArea } from "./ui/scroll-area";
 
 interface CreateAssetsDialogType {
-    open: boolean;
-    onOpenChange: Dispatch<SetStateAction<boolean>>;
+    openCreateAssetsDialog: boolean;
+    setOpenCreateAssetsDialog: Dispatch<SetStateAction<boolean>>;
 }
 
-const CreateAssetsDialog = ({ open, onOpenChange }: CreateAssetsDialogType) => {
+const CreateAssetsDialog = ({
+    openCreateAssetsDialog,
+    setOpenCreateAssetsDialog,
+}: CreateAssetsDialogType) => {
     const [assetData, setAssetData] = useState<CreateAssetDto>({
         temporaryTagNumber: "",
         assetName: "",
@@ -75,7 +78,7 @@ const CreateAssetsDialog = ({ open, onOpenChange }: CreateAssetsDialogType) => {
             resetAssetData();
             resetFile();
         }
-        onOpenChange(isOpen);
+        setOpenCreateAssetsDialog(isOpen);
     };
 
     const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -108,7 +111,6 @@ const CreateAssetsDialog = ({ open, onOpenChange }: CreateAssetsDialogType) => {
                     resetFile();
                 },
                 onError: () => {
-                    resetAssetData();
                     resetFile();
                 },
             });
@@ -116,11 +118,14 @@ const CreateAssetsDialog = ({ open, onOpenChange }: CreateAssetsDialogType) => {
     };
 
     return (
-        <Dialog open={open} onOpenChange={handleOpenChange}>
+        <Dialog open={openCreateAssetsDialog} onOpenChange={handleOpenChange}>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Create Asset</DialogTitle>
-                    <DialogDescription>Lorem, ipsum dolor.</DialogDescription>
+                    <DialogDescription>
+                        Fill out the form below or upload an Excel file to
+                        create assets.
+                    </DialogDescription>
                 </DialogHeader>
                 <ScrollArea className=" h-100 rounded-md border">
                     <div>
@@ -244,7 +249,6 @@ const CreateAssetsDialog = ({ open, onOpenChange }: CreateAssetsDialogType) => {
                                             const file =
                                                 e.target.files?.[0] ?? null;
                                             setFile(file);
-                                            assetData;
                                         }}
                                     />
                                 </Field>

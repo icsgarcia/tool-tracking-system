@@ -50,7 +50,14 @@ const UpdateAssetDialog = ({
 
     const handleUpdateAsset = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        updateAsset.mutate(updateAssetData);
+        updateAsset.mutate(updateAssetData, {
+            onSuccess: () => {
+                setOpenUpdateAsset(false);
+            },
+            onError: () => {
+                setUpdateAssetData(asset);
+            },
+        });
     };
     return (
         <Dialog open={openUpdateAsset} onOpenChange={setOpenUpdateAsset}>

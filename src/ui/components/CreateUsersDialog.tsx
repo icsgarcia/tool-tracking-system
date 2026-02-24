@@ -34,11 +34,14 @@ import {
 } from "./ui/select";
 
 interface CreateUsersDialogType {
-    open: boolean;
-    onOpenChange: Dispatch<SetStateAction<boolean>>;
+    openCreateUsersDialog: boolean;
+    setOpenCreateUsersDialog: Dispatch<SetStateAction<boolean>>;
 }
 
-const CreateUsersDialog = ({ open, onOpenChange }: CreateUsersDialogType) => {
+const CreateUsersDialog = ({
+    openCreateUsersDialog,
+    setOpenCreateUsersDialog,
+}: CreateUsersDialogType) => {
     const [userData, setUserData] = useState<CreateUserDto>({
         schoolNumber: "",
         firstName: "",
@@ -89,7 +92,7 @@ const CreateUsersDialog = ({ open, onOpenChange }: CreateUsersDialogType) => {
             setFile(null);
             if (fileInputRef.current) fileInputRef.current.value = "";
         }
-        onOpenChange(isOpen);
+        setOpenCreateUsersDialog(isOpen);
     };
 
     const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -105,22 +108,30 @@ const CreateUsersDialog = ({ open, onOpenChange }: CreateUsersDialogType) => {
         e.preventDefault();
         if (file) {
             createUserByFile.mutate(file, {
-                onSuccess: () => resetForm(),
+                onSuccess: () => {
+                    resetForm();
+                    setOpenCreateUsersDialog(false);
+                },
                 onError: () => resetForm(),
             });
         } else if (userData) {
             createUser.mutate(userData, {
-                onSuccess: () => resetForm(),
-                onError: () => resetForm(),
+                onSuccess: () => {
+                    resetForm();
+                    setOpenCreateUsersDialog(false);
+                },
             });
         }
     };
     return (
-        <Dialog open={open} onOpenChange={handleOpenChange}>
+        <Dialog open={openCreateUsersDialog} onOpenChange={handleOpenChange}>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Create User</DialogTitle>
-                    <DialogDescription>Lorem, ipsum dolor.</DialogDescription>
+                    <DialogDescription>
+                        Fill out the form below or upload an Excel file to
+                        create a user.
+                    </DialogDescription>
                 </DialogHeader>
                 <ScrollArea className=" h-100 rounded-md border">
                     <div>
@@ -180,7 +191,7 @@ const CreateUsersDialog = ({ open, onOpenChange }: CreateUsersDialogType) => {
                                             onValueChange={(value) =>
                                                 setUserData((prev) => ({
                                                     ...prev,
-                                                    role: value,
+                                                    role: value as Role,
                                                 }))
                                             }
                                         >
@@ -259,6 +270,7 @@ const CreateUsersDialog = ({ open, onOpenChange }: CreateUsersDialogType) => {
                                         <Input
                                             id="number"
                                             name="number"
+                                            max={5}
                                             value={userData?.number}
                                             onChange={handleOnChange}
                                         />

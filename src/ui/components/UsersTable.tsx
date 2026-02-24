@@ -327,8 +327,8 @@ const UsersTable = ({ users }: { users: User[] }) => {
                 </CardContent>
             </Card>
             <CreateUsersDialog
-                open={openCreateUsersDialog}
-                onOpenChange={setOpenCreateUsersDialog}
+                openCreateUsersDialog={openCreateUsersDialog}
+                setOpenCreateUsersDialog={setOpenCreateUsersDialog}
             />
             <QrImageDialog
                 qrCode={selectedQrCode}

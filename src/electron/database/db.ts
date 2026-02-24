@@ -108,7 +108,7 @@ async function seedDefaultAdmin() {
             middleName: "",
             lastName: "Administrator",
             role: "ADMIN",
-            department: "IT",
+            department: "AMT",
             yearLevel: 0,
             email: "admin@system.com",
             number: "",
@@ -125,9 +125,9 @@ async function seedDefaultAdmin() {
         margin: 2,
     });
 
-    console.log("[database] ✅ Default admin created!");
-    console.log("[database] ✅ Admin QR Code: ", qrCode);
-    console.log("[database] ✅ QR Code image saved to:", qrImagePath);
+    console.log("[database] Default admin created!");
+    console.log("[database] Admin QR Code: ", qrCode);
+    console.log("[database] QR Code image saved to:", qrImagePath);
 }
 
 export function getPrisma() {
