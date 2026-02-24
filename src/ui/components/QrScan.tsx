@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from "react";
 
 interface QrScanProps {
     handleScan: (code: string) => void;
+    className?: string;
 }
 
-const QrScan = ({ handleScan }: QrScanProps) => {
+const QrScan = ({ handleScan, className }: QrScanProps) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const [inputValue, setInputValue] = useState("");
 
@@ -30,8 +31,8 @@ const QrScan = ({ handleScan }: QrScanProps) => {
             value={inputValue}
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
-            className="w-full max-w-md border rounded px-4 py-2 text-lg"
-            placeholder="Scan your QR/Barcode here"
+            className={`w-full max-w-md border rounded px-4 py-2 text-lg ${className || ""}`}
+            placeholder="Scan your QR code here"
             autoFocus
         />
     );

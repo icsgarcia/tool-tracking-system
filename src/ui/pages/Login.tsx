@@ -39,17 +39,30 @@ const Login = () => {
     };
 
     return (
-        <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-4">
-            <h1 className="text-2xl font-bold">ASSET KEEPER</h1>
-            <p className="text-gray-500">Scan your QR/Barcode to login</p>
+        <div className="flex min-h-svh flex-col items-center justify-center gap-4 p-4">
+            <img
+                src="/logo3.png"
+                alt="tool-keeper-logo"
+                className="w-75 lg:w-120"
+            />
+            <div className="flex flex-col items-center justify-center">
+                <p className="text-gray-400 font-medium lg:text-xl">
+                    Scan your Admin QR code to login
+                </p>
 
-            {error && (
-                <div className="rounded-md bg-red-100 px-4 py-3 text-red-700">
-                    {error}
-                </div>
-            )}
+                {error && (
+                    <div className="rounded-md bg-red-100 px-4 py-3 text-red-700 mt-2">
+                        {error}
+                    </div>
+                )}
 
-            {scanning && <QrScan handleScan={handleScan} />}
+                {scanning && (
+                    <QrScan
+                        handleScan={handleScan}
+                        className="opacity-0 pointer-events-none absolute"
+                    />
+                )}
+            </div>
         </div>
     );
 };

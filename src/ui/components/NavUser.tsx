@@ -21,7 +21,7 @@ const NavUser = ({ user, onLogout }: NavUserType) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 rounded-lg p-2 hover:bg-gray-100 outline-none">
+                <button className="flex items-center gap-2 rounded-lg p-1 hover:bg-gray-100 outline-none">
                     <Avatar className="h-8 w-8 rounded-lg">
                         <AvatarFallback className="rounded-lg">
                             {initials}

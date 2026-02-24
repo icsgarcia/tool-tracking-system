@@ -11,8 +11,10 @@ import { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { useScanForTransaction } from "@/hooks/useTransactions";
-import NavUser from "@/components/NavUser";
 import QrScan from "@/components/QrScan";
+import ProfileCard from "@/components/ProfileCard";
+import Header from "@/components/Header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Dashboard = () => {
     const location = useLocation();
@@ -53,91 +55,97 @@ const Dashboard = () => {
     }
 
     return (
-        <div className="container mx-auto p-4">
-            <header className="border-b p-4">
-                <div className="mx-auto flex max-w-7xl items-center justify-between">
-                    <h1 className="text-xl font-bold">Asset Tracking System</h1>
-                    <NavUser user={user} onLogout={handleLogout} />
-                </div>
-            </header>
-            <div className="flex flex-col md:flex-row justify-evenly gap-4">
+        <div className="container mx-auto">
+            <Header user={user} handleLogout={handleLogout} />
+
+            <div className="flex flex-col gap-4 mt-4 mb-8">
+                <ProfileCard />
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Transactions</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Asset Name</TableHead>
+                                    <TableHead>Borrowed Quantity</TableHead>
+                                    <TableHead>Borrowed Date</TableHead>
+                                    <TableHead>Returned Date</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {userTransactions?.length > 0 ? (
+                                    userTransactions.map((userTransaction) => {
+                                        const borrowedDate =
+                                            userTransaction.borrowedAt;
+                                        const returnedDate =
+                                            userTransaction.returnedAt;
+                                        return (
+                                            <TableRow>
+                                                <TableCell>
+                                                    {
+                                                        userTransaction.asset
+                                                            .assetName
+                                                    }
+                                                </TableCell>
+                                                <TableCell>1</TableCell>
+                                                <TableCell>
+                                                    {new Date(
+                                                        borrowedDate,
+                                                    ).toLocaleString("en-US", {
+                                                        year: "numeric",
+                                                        month: "short",
+                                                        day: "numeric",
+                                                        hour: "2-digit",
+                                                        minute: "2-digit",
+                                                    })}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {returnedDate
+                                                        ? new Date(
+                                                              returnedDate,
+                                                          ).toLocaleString(
+                                                              "en-US",
+                                                              {
+                                                                  year: "numeric",
+                                                                  month: "short",
+                                                                  day: "numeric",
+                                                                  hour: "2-digit",
+                                                                  minute: "2-digit",
+                                                              },
+                                                          )
+                                                        : ""}
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })
+                                ) : (
+                                    <TableRow>
+                                        <TableCell
+                                            colSpan={4}
+                                            className="text-center text-gray-500 pt-6"
+                                        >
+                                            No transactions found.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+
                 <div>
                     {error && (
                         <div className="rounded-md bg-red-100 px-4 py-3 text-red-700">
                             {error}
                         </div>
                     )}
-                    <QrScan handleScan={handleScan} />
-                </div>
-                <div className="flex flex-col gap-4 p-4">
-                    <h2 className="text-xl font-semibold">Transactions</h2>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Quantity</TableHead>
-                                <TableHead>Borrowed Date</TableHead>
-                                <TableHead>Returned Date</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {userTransactions?.length > 0 ? (
-                                userTransactions.map((userTransaction) => {
-                                    const borrowedDate =
-                                        userTransaction.borrowedAt;
-                                    const returnedDate =
-                                        userTransaction.returnedAt;
-                                    return (
-                                        <TableRow>
-                                            <TableCell>
-                                                {
-                                                    userTransaction.asset
-                                                        .assetName
-                                                }
-                                            </TableCell>
-                                            <TableCell>1</TableCell>
-                                            <TableCell>
-                                                {new Date(
-                                                    borrowedDate,
-                                                ).toLocaleString("en-US", {
-                                                    year: "numeric",
-                                                    month: "short",
-                                                    day: "numeric",
-                                                    hour: "2-digit",
-                                                    minute: "2-digit",
-                                                })}
-                                            </TableCell>
-                                            <TableCell>
-                                                {returnedDate
-                                                    ? new Date(
-                                                          returnedDate,
-                                                      ).toLocaleString(
-                                                          "en-US",
-                                                          {
-                                                              year: "numeric",
-                                                              month: "short",
-                                                              day: "numeric",
-                                                              hour: "2-digit",
-                                                              minute: "2-digit",
-                                                          },
-                                                      )
-                                                    : ""}
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })
-                            ) : (
-                                <TableRow>
-                                    <TableCell
-                                        colSpan={4}
-                                        className="text-center text-gray-500"
-                                    >
-                                        No transactions found.
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                    <QrScan
+                        handleScan={handleScan}
+                        className="opacity-0 pointer-events-none absolute"
+                    />
                 </div>
             </div>
         </div>

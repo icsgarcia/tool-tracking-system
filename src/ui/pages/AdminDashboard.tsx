@@ -7,9 +7,9 @@ import UsersTable from "@/components/UsersTable";
 import AdminOverview from "@/components/AdminOverview";
 import { toast } from "sonner";
 import { useGetAllTransactions } from "@/hooks/useTransactions";
-import NavUser from "@/components/NavUser";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AssetsTable from "@/components/AssetsTable";
+import Header from "@/components/Header";
 
 const AdminDashboard = () => {
     const location = useLocation();
@@ -34,13 +34,7 @@ const AdminDashboard = () => {
 
     return (
         <div className="container mx-auto">
-            {/* Header */}
-            <header className="border-b p-4">
-                <div className="mx-auto flex max-w-7xl items-center justify-between">
-                    <h1 className="text-xl font-bold">Asset Tracking System</h1>
-                    <NavUser user={admin} onLogout={handleLogout} />
-                </div>
-            </header>
+            <Header user={admin} handleLogout={handleLogout} />
 
             <Tabs defaultValue="overview">
                 <TabsList variant="line">
