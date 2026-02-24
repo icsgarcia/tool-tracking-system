@@ -1,4 +1,4 @@
-import type { Tool } from "@/pages/AdminDashboard";
+import type { Asset } from "@/pages/AdminDashboard";
 import {
     Card,
     CardContent,
@@ -8,7 +8,7 @@ import {
 } from "./ui/card";
 import { Button } from "./ui/button";
 import { useState } from "react";
-import CreateToolsDialog from "./CreateToolsDialog";
+import CreateAssetsDialog from "./CreateAssetsDialog";
 import QrImageDialog from "./QrImageDialog";
 import DataTable from "./DataTable";
 import type { ColumnDef, FilterFn } from "@tanstack/react-table";
@@ -26,47 +26,47 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import DeleteToolDialog from "./DeleteToolDialog";
-import UpdateToolDialog from "./UpdateToolDialog";
-import DeleteAllToolsDialog from "./DeleteAllToolsDialog";
+import DeleteAssetDialog from "./DeleteAssetDialog";
+import UpdateAssetDialog from "./UpdateAssetDialog";
+import DeleteAllAssetsDialog from "./DeleteAllAssetsDialog";
 
-const globalFilterFn: FilterFn<Tool> = (row, _columnId, filterValue) => {
+const globalFilterFn: FilterFn<Asset> = (row, _columnId, filterValue) => {
     const search = filterValue.toLowerCase();
-    const tool = row.original;
+    const asset = row.original;
 
-    return tool.name.toLowerCase().includes(search);
+    return asset.assetName.toLowerCase().includes(search);
 };
 
-const ToolsTable = ({ tools }: { tools: Tool[] }) => {
-    const [openCreateToolsDialog, setOpenCreateToolsDialog] = useState(false);
+const AssetsTable = ({ assets }: { assets: Asset[] }) => {
+    const [openCreateAssetsDialog, setOpenCreateAssetsDialog] = useState(false);
     const [openQrImageDialog, setOpenQrImageDialog] = useState(false);
     const [selectedQrCode, setSelectedQrCode] = useState({
         name: "",
         image: "",
     });
     const [globalFilter, setGlobalFilter] = useState("");
-    const [selectedTool, setSelectedTool] = useState<Tool>();
-    const [openUpdateTool, setOpenUpdateTool] = useState(false);
-    const [openDeleteTool, setOpenDeleteTool] = useState(false);
-    const [openDeleteAllToolsDialog, setOpenDeleteAllToolsDialog] =
+    const [selectedAsset, setSelectedAsset] = useState<Asset>();
+    const [openUpdateAsset, setOpenUpdateAsset] = useState(false);
+    const [openDeleteAsset, setOpenDeleteAsset] = useState(false);
+    const [openDeleteAllAssetsDialog, setOpenDeleteAllAssetsDialog] =
         useState(false);
 
-    const toolColumns: ColumnDef<Tool>[] = [
+    const assetColumns: ColumnDef<Asset>[] = [
         {
             accessorKey: "qrCodeImage",
             header: "QR Code",
             cell: ({ row }) => {
-                const tool = row.original;
+                const asset = row.original;
                 return (
                     <img
-                        src={tool.qrCodeImage}
-                        alt={tool.name}
+                        src={asset.qrCodeImage}
+                        alt={asset.assetName}
                         width={50}
                         className="cursor-pointer"
                         onClick={() => {
                             setSelectedQrCode({
-                                name: tool.name,
-                                image: tool.qrCodeImage,
+                                name: asset.assetName,
+                                image: asset.qrCodeImage,
                             });
                             setOpenQrImageDialog(true);
                         }}
@@ -75,8 +75,8 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
             },
         },
         {
-            id: "name",
-            accessorKey: "name",
+            id: "temporaryTagNumber",
+            accessorKey: "temporaryTagNumber",
             header: ({ column }) => {
                 return (
                     <Button
@@ -85,19 +85,44 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
                             column.toggleSorting(column.getIsSorted() === "asc")
                         }
                     >
-                        Name
+                        Temporary Tag Number
                         <ArrowUpDown className="h-4 w-4" />
                     </Button>
                 );
             },
             cell: ({ row }) => {
-                const tool = row.original;
-                return <span className="font-medium">{tool.name}</span>;
+                const asset = row.original;
+                return (
+                    <span className="font-medium">
+                        {asset.temporaryTagNumber}
+                    </span>
+                );
             },
         },
         {
-            id: "quantity",
-            accessorKey: "quantity",
+            id: "assetName",
+            accessorKey: "assetName",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                    >
+                        Asset Name
+                        <ArrowUpDown className="h-4 w-4" />
+                    </Button>
+                );
+            },
+            cell: ({ row }) => {
+                const asset = row.original;
+                return <span className="font-medium">{asset.assetName}</span>;
+            },
+        },
+        {
+            id: "assetCount",
+            accessorKey: "assetCount",
             header: ({ column }) => {
                 return (
                     <Button
@@ -113,8 +138,8 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
             },
         },
         {
-            id: "borrowedQuantity",
-            accessorKey: "borrowedQuantity",
+            id: "borrowedCount",
+            accessorKey: "borrowedCount",
             header: ({ column }) => {
                 return (
                     <Button
@@ -130,8 +155,8 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
             },
         },
         {
-            id: "availableQuantity",
-            accessorKey: "availableQuantity",
+            id: "availableCount",
+            accessorKey: "availableCount",
             header: ({ column }) => {
                 return (
                     <Button
@@ -158,20 +183,20 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
                         <DropdownMenuGroup>
                             <DropdownMenuItem
                                 onClick={() => {
-                                    setSelectedTool(row.original);
-                                    setOpenUpdateTool(true);
+                                    setSelectedAsset(row.original);
+                                    setOpenUpdateAsset(true);
                                 }}
                             >
-                                Edit Tool
+                                Edit Asset
                             </DropdownMenuItem>
 
                             <DropdownMenuItem
                                 onClick={() => {
-                                    setSelectedTool(row.original);
-                                    setOpenDeleteTool(true);
+                                    setSelectedAsset(row.original);
+                                    setOpenDeleteAsset(true);
                                 }}
                             >
-                                Delete Tool
+                                Delete Asset
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                     </DropdownMenuContent>
@@ -186,19 +211,19 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
                     <div className="flex justify-between items-center mb-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <CardTitle>Tools</CardTitle>
+                                <CardTitle>Assets</CardTitle>
                                 <CardDescription>
-                                    Manage all tracked tools
+                                    Manage all tracked assets
                                 </CardDescription>
                             </div>
                         </div>
                         <div className="flex items-center justify-center gap-1">
                             <Button
                                 onClick={() => {
-                                    setOpenCreateToolsDialog(true);
+                                    setOpenCreateAssetsDialog(true);
                                 }}
                             >
-                                Add Tools
+                                Add Assets
                             </Button>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -210,13 +235,13 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
                                     <DropdownMenuGroup>
                                         <DropdownMenuItem
                                             onClick={() =>
-                                                setOpenDeleteAllToolsDialog(
+                                                setOpenDeleteAllAssetsDialog(
                                                     true,
                                                 )
                                             }
-                                            disabled={tools.length <= 0}
+                                            disabled={assets.length <= 0}
                                         >
-                                            Delete all users
+                                            Delete all assets
                                         </DropdownMenuItem>
                                     </DropdownMenuGroup>
                                 </DropdownMenuContent>
@@ -227,7 +252,7 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
                         <InputGroup className="w-6/12">
                             <InputGroupInput
                                 id="inline-start-input"
-                                placeholder="Search by tool's name..."
+                                placeholder="Search by asset's name..."
                                 value={globalFilter}
                                 onChange={(e) =>
                                     setGlobalFilter(e.target.value)
@@ -241,45 +266,45 @@ const ToolsTable = ({ tools }: { tools: Tool[] }) => {
                 </CardHeader>
                 <CardContent>
                     <DataTable
-                        data={tools}
-                        columns={toolColumns}
+                        data={assets}
+                        columns={assetColumns}
                         globalFilter={globalFilter}
                         setGlobalFilter={setGlobalFilter}
                         globalFilterFn={globalFilterFn}
                     />
                 </CardContent>
             </Card>
-            <CreateToolsDialog
-                open={openCreateToolsDialog}
-                onOpenChange={setOpenCreateToolsDialog}
+            <CreateAssetsDialog
+                open={openCreateAssetsDialog}
+                onOpenChange={setOpenCreateAssetsDialog}
             />
             <QrImageDialog
                 qrCode={selectedQrCode}
                 open={openQrImageDialog}
                 onOpenChange={setOpenQrImageDialog}
             />
-            {openUpdateTool && selectedTool && (
-                <UpdateToolDialog
-                    openUpdateTool={openUpdateTool}
-                    setOpenUpdateTool={setOpenUpdateTool}
-                    tool={selectedTool}
+            {openUpdateAsset && selectedAsset && (
+                <UpdateAssetDialog
+                    openUpdateAsset={openUpdateAsset}
+                    setOpenUpdateAsset={setOpenUpdateAsset}
+                    asset={selectedAsset}
                 />
             )}
-            {openDeleteTool && selectedTool && (
-                <DeleteToolDialog
-                    openDeleteTool={openDeleteTool}
-                    setOpenDeleteTool={setOpenDeleteTool}
-                    tool={selectedTool}
+            {openDeleteAsset && selectedAsset && (
+                <DeleteAssetDialog
+                    openDeleteAsset={openDeleteAsset}
+                    setOpenDeleteAsset={setOpenDeleteAsset}
+                    asset={selectedAsset}
                 />
             )}
-            {openDeleteAllToolsDialog && (
-                <DeleteAllToolsDialog
-                    openDeleteAllToolsDialog={openDeleteAllToolsDialog}
-                    setOpenDeleteAllToolsDialog={setOpenDeleteAllToolsDialog}
+            {openDeleteAllAssetsDialog && (
+                <DeleteAllAssetsDialog
+                    openDeleteAllAssetsDialog={openDeleteAllAssetsDialog}
+                    setOpenDeleteAllAssetsDialog={setOpenDeleteAllAssetsDialog}
                 />
             )}
         </>
     );
 };
 
-export default ToolsTable;
+export default AssetsTable;

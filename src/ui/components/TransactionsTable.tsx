@@ -59,7 +59,7 @@ const TransactionsTable = ({
             },
         },
         {
-            id: "toolName",
+            id: "assetName",
             header: ({ column }) => {
                 return (
                     <Button
@@ -76,7 +76,9 @@ const TransactionsTable = ({
             cell: ({ row }) => {
                 const transaction = row.original;
                 return (
-                    <span className="font-medium">{transaction.tool.name}</span>
+                    <span className="font-medium">
+                        {transaction.asset.name}
+                    </span>
                 );
             },
         },
@@ -168,7 +170,7 @@ const TransactionsTable = ({
                         <div>
                             <CardTitle>Transactions</CardTitle>
                             <CardDescription>
-                                Tool borrowing and return history
+                                Asset borrowing and return history
                             </CardDescription>
                         </div>
                     </div>
@@ -177,7 +179,7 @@ const TransactionsTable = ({
                     <InputGroup className="w-6/12 md:w-6/12 lg:w-4/12">
                         <InputGroupInput
                             id="inline-start-input"
-                            placeholder="Search by tool's name..."
+                            placeholder="Search by asset's name..."
                             value={globalFilter}
                             onChange={(e) => setGlobalFilter(e.target.value)}
                         />

@@ -14,12 +14,20 @@ interface UpdateUserDto extends CreateUserDto {
     id: string;
 }
 
-interface CreateToolDto {
-    name: string;
-    quantity: number;
+interface CreateAssetDto {
+    temporaryTagNumber?: string;
+    assetName: string;
+    assetDescription?: string;
+    serialNumber?: string;
+    assetCategoryCode?: string;
+    roomName?: string;
+    locationCode?: string;
+    assetCount: number;
+    assetCondition?: string;
+    remarks?: string;
 }
 
-interface UpdateToolDto extends CreateToolDto {
+interface UpdateAssetDto extends CreateAssetDto {
     id: string;
 }
 
@@ -37,21 +45,21 @@ interface Window {
             deleteUserById: (userId: string) => Promise<any>;
             deleteAllUsers: (userId: string) => Promise<any>;
         };
-        tool: {
-            createToolByFile: (fileBuffer: ArrayBuffer) => Promise<any>;
-            createTool: (toolData: CreateToolDto) => Promise<any>;
-            getAllTools: () => Promise<any[]>;
-            getToolById: (toolId: string) => Promise<any>;
-            updateToolById: (toolData: UpdateToolDto) => Promise<any>;
-            deleteToolById: (toolId: string) => Promise<any>;
-            deleteAllTools: () => Promise<any>;
+        asset: {
+            createAssetByFile: (fileBuffer: ArrayBuffer) => Promise<any>;
+            createAsset: (assetData: CreateAssetDto) => Promise<any>;
+            getAllAssets: () => Promise<any[]>;
+            getAssetById: (assetId: string) => Promise<any>;
+            updateAssetById: (assetData: UpdateAssetDto) => Promise<any>;
+            deleteAssetById: (assetId: string) => Promise<any>;
+            deleteAllAssets: () => Promise<any>;
         };
         transaction: {
             getAllTransactions: () => Promise<any[]>;
             getUserTransactions: (userId: string) => Promise<any>;
-            scanToolQrCode: (data: {
+            scanAssetQrCode: (data: {
                 userId: string;
-                toolQrCode: string;
+                assetQrCode: string;
             }) => Promise<any>;
         };
     };

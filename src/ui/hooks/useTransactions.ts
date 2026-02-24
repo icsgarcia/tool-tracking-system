@@ -21,8 +21,8 @@ export const useScanForTransaction = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (variables: { userId: string; toolQrCode: string }) =>
-            window.api.transaction.scanToolQrCode(variables),
+        mutationFn: (variables: { userId: string; assetQrCode: string }) =>
+            window.api.transaction.scanAssetQrCode(variables),
         onSuccess: (data, variables) => {
             queryClient.invalidateQueries({
                 queryKey: ["transactions"],

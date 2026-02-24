@@ -16,20 +16,20 @@ const AboutUs = () => {
             </CardHeader>
             <CardContent className="space-y-4">
                 <p className="text-sm text-gray-600">
-                    The Asset Tracking System is a tool management platform
-                    designed to track and manage tools, equipment, and other
+                    The Asset Tracking System is a asset management platform
+                    designed to track and manage assets, equipment, and other
                     assets within an organization. Users can borrow and return
-                    tools using QR code scanning.
+                    assets using QR code scanning.
                 </p>
                 <Separator />
                 <div className="space-y-2">
                     <h3 className="font-semibold">Features</h3>
                     <ul className="list-inside list-disc space-y-1 text-sm text-gray-600">
                         <li>
-                            QR code-based user login and tool identification
+                            QR code-based user login and asset identification
                         </li>
-                        <li>Bulk user and tool creation via Excel upload</li>
-                        <li>Real-time tool availability tracking</li>
+                        <li>Bulk user and asset creation via Excel upload</li>
+                        <li>Real-time asset availability tracking</li>
                         <li>Transaction history for borrowing and returns</li>
                         <li>Admin dashboard for system management</li>
                     </ul>

@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS "User" (
     "qrCode" TEXT NOT NULL,
     "schoolNumber" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
-    "middleName" TEXT NOT NULL,
+    "middleName" TEXT,
     "lastName" TEXT NOT NULL,
     "role" TEXT NOT NULL DEFAULT 'STUDENT',
     "department" TEXT NOT NULL,
@@ -27,24 +27,33 @@ CREATE TABLE IF NOT EXISTS "User" (
 
 CREATE UNIQUE INDEX IF NOT EXISTS "User_qrCode_key" ON "User"("qrCode");
 
-CREATE TABLE IF NOT EXISTS "Tool" (
+CREATE TABLE IF NOT EXISTS "Asset" (
     "id" TEXT NOT NULL PRIMARY KEY,
-    "qrCode" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "quantity" INTEGER NOT NULL
+    "temporaryTagNumber" TEXT UNIQUE,
+    "qrCode" TEXT NOT NULL UNIQUE,
+    "assetName" TEXT NOT NULL,
+    "assetDescription" TEXT,
+    "serialNumber" TEXT,
+    "assetCategoryCode" TEXT,
+    "roomName" TEXT,
+    "locationCode" TEXT,
+    "assetCount" INTEGER NOT NULL,
+    "assetCondition" TEXT,
+    "remarks" TEXT
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS "Tool_qrCode_key" ON "Tool"("qrCode");
+CREATE UNIQUE INDEX IF NOT EXISTS "Asset_temporaryTagNumber_key" ON "Asset"("temporaryTagNumber");
+CREATE UNIQUE INDEX IF NOT EXISTS "Asset_qrCode_key" ON "Asset"("qrCode");
 
 CREATE TABLE IF NOT EXISTS "Transaction" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "userId" TEXT NOT NULL,
-    "toolId" TEXT NOT NULL,
+    "assetId" TEXT NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'BORROWED',
     "borrowedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "returnedAt" DATETIME,
     CONSTRAINT "Transaction_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Transaction_toolId_fkey" FOREIGN KEY ("toolId") REFERENCES "Tool" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "Transaction_assetId_fkey" FOREIGN KEY ("assetId") REFERENCES "Asset" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 `;
 

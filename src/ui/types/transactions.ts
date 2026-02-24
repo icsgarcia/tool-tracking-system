@@ -18,15 +18,15 @@ enum UserStatus {
 export interface UserTransactions {
     id: string;
     userId: string;
-    toolId: string;
+    assetId: string;
     status: Status;
     borrowedAt: string;
     returnedAt?: string;
-    tool: {
+    asset: {
         id: string;
         qrCode: string;
-        name: string;
-        quantity: number;
+        assetName: string;
+        assetCount: number;
     };
 }
 

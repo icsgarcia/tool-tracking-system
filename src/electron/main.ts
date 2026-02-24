@@ -3,7 +3,7 @@ import path from "path";
 import { isDev } from "./util.js";
 import { closeDatabase, initDatabase } from "./database/db.js";
 import { UserHandlers } from "./services/user.js";
-import { ToolHandlers } from "./services/tool.js";
+import { AssetHandlers } from "./services/asset.js";
 import { TransactionHandlers } from "./services/transaction.js";
 import { getPreloadPath } from "./pathResolver.js";
 import { checkOverdueTransactions } from "./jobs/transactionStatusJob.js";
@@ -13,7 +13,7 @@ app.on("ready", async () => {
     await initDatabase();
 
     UserHandlers();
-    ToolHandlers();
+    AssetHandlers();
     TransactionHandlers();
 
     cron.schedule("0 * * * *", () => {

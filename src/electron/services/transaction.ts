@@ -7,7 +7,7 @@ export function TransactionHandlers() {
     ipcMain.handle("transaction:getAllTransactions", async () => {
         const transactions = await prisma.transaction.findMany({
             include: {
-                tool: true,
+                asset: true,
                 user: true,
             },
             orderBy: {
@@ -25,7 +25,7 @@ export function TransactionHandlers() {
                     userId,
                 },
                 include: {
-                    tool: true,
+                    asset: true,
                 },
                 orderBy: {
                     borrowedAt: "desc",
@@ -37,26 +37,26 @@ export function TransactionHandlers() {
     );
 
     ipcMain.handle(
-        "transaction:scanToolQrCode",
-        async (_, userId: string, toolQrCode: string) => {
-            const tool = await prisma.tool.findUnique({
-                where: { qrCode: toolQrCode },
+        "transaction:scanAssetQrCode",
+        async (_, userId: string, assetQrCode: string) => {
+            const asset = await prisma.asset.findUnique({
+                where: { qrCode: assetQrCode },
             });
 
-            if (!tool) {
-                throw new Error("Tool Not Found");
+            if (!asset) {
+                throw new Error("Asset Not Found");
             }
 
             const existingBorrow = await prisma.transaction.findFirst({
                 where: {
                     userId: userId,
-                    toolId: tool.id,
+                    assetId: asset.id,
                     status: "BORROWED",
                 },
             });
 
             if (existingBorrow) {
-                // Return the tool
+                // Return the asset
                 const updatedTransaction = await prisma.transaction.update({
                     where: { id: existingBorrow.id },
                     data: {
@@ -65,40 +65,40 @@ export function TransactionHandlers() {
                     },
                     include: {
                         user: true,
-                        tool: true,
+                        asset: true,
                     },
                 });
 
                 return {
-                    message: `Successfully returned "${tool.name}"`,
+                    message: `Successfully returned "${asset.assetName}"`,
                     transaction: updatedTransaction,
                 };
             } else {
-                // Borrow the tool
+                // Borrow the asset
                 const borrowedCount = await prisma.transaction.count({
                     where: {
-                        toolId: tool.id,
+                        assetId: asset.id,
                         status: "BORROWED",
                     },
                 });
 
-                if (borrowedCount >= tool.quantity) {
-                    throw new Error("No Available Tools To Borrow");
+                if (borrowedCount >= asset.assetCount) {
+                    throw new Error("No Available Assets To Borrow");
                 }
 
                 const transaction = await prisma.transaction.create({
                     data: {
                         userId: userId,
-                        toolId: tool.id,
+                        assetId: asset.id,
                     },
                     include: {
                         user: true,
-                        tool: true,
+                        asset: true,
                     },
                 });
 
                 return {
-                    message: `Successfully borrowed "${tool.name}"`,
+                    message: `Successfully borrowed "${asset.assetName}"`,
                     transaction,
                 };
             }

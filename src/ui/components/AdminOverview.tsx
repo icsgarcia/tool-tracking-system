@@ -5,7 +5,7 @@ import {
     CardHeader,
     CardTitle,
 } from "./ui/card";
-import type { Tool, User } from "@/pages/AdminDashboard";
+import type { Asset, User } from "@/pages/AdminDashboard";
 import { useRef, useState } from "react";
 import { useScanUser } from "@/hooks/useUsers";
 import { toast } from "sonner";
@@ -14,10 +14,10 @@ import QrScan from "./QrScan";
 
 interface AdminOverviewType {
     users: User[];
-    tools: Tool[];
+    assets: Asset[];
 }
 
-const AdminOverview = ({ users, tools }: AdminOverviewType) => {
+const AdminOverview = ({ users, assets }: AdminOverviewType) => {
     const navigate = useNavigate();
     const [error, setError] = useState<string | null>(null);
     const [scanning, setScanning] = useState(true);
@@ -71,14 +71,14 @@ const AdminOverview = ({ users, tools }: AdminOverviewType) => {
 
                 <Card>
                     <CardHeader>
-                        <CardDescription>Total Tools</CardDescription>
+                        <CardDescription>Total Assets</CardDescription>
                         <CardTitle className="text-3xl">
-                            {tools.length}
+                            {assets.length}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <p className="text-xs text-gray-500">
-                            {tools.reduce((sum, t) => sum + t.quantity, 0)}{" "}
+                            {assets.reduce((sum, t) => sum + t.assetCount, 0)}{" "}
                             total quantity
                         </p>
                     </CardContent>

@@ -1,4 +1,4 @@
-import { Tool, User } from "../../generated/prisma/client";
+import { Asset, User } from "../../generated/prisma/client";
 
 const electron = require("electron");
 
@@ -25,20 +25,20 @@ electron.contextBridge.exposeInMainWorld("api", {
             electron.ipcRenderer.invoke("user:deleteAllUsers", userId),
     },
 
-    tool: {
-        createToolByFile: (fileBuffer: ArrayBuffer) =>
-            electron.ipcRenderer.invoke("tool:createToolByFile", fileBuffer),
-        createTool: (toolData: CreateToolDto) =>
-            electron.ipcRenderer.invoke("tool:createTool", toolData),
-        getAllTools: () => electron.ipcRenderer.invoke("tool:getAllTools"),
-        getToolById: (toolId: string) =>
-            electron.ipcRenderer.invoke("tool:getToolById", toolId),
-        updateToolById: (toolData: Tool) =>
-            electron.ipcRenderer.invoke("tool:updateToolById", toolData),
-        deleteToolById: (toolId: string) =>
-            electron.ipcRenderer.invoke("tool:deleteToolById", toolId),
-        deleteAllTools: () =>
-            electron.ipcRenderer.invoke("tool:deleteAllTools"),
+    asset: {
+        createAssetByFile: (fileBuffer: ArrayBuffer) =>
+            electron.ipcRenderer.invoke("asset:createAssetByFile", fileBuffer),
+        createAsset: (assetData: CreateAssetDto) =>
+            electron.ipcRenderer.invoke("asset:createAsset", assetData),
+        getAllAssets: () => electron.ipcRenderer.invoke("asset:getAllAssets"),
+        getAssetById: (assetId: string) =>
+            electron.ipcRenderer.invoke("asset:getAssetById", assetId),
+        updateAssetById: (assetData: Asset) =>
+            electron.ipcRenderer.invoke("asset:updateAssetById", assetData),
+        deleteAssetById: (assetId: string) =>
+            electron.ipcRenderer.invoke("asset:deleteAssetById", assetId),
+        deleteAllAssets: () =>
+            electron.ipcRenderer.invoke("asset:deleteAllAssets"),
     },
 
     transaction: {
@@ -49,11 +49,11 @@ electron.contextBridge.exposeInMainWorld("api", {
                 "transaction:getUserTransactions",
                 userId,
             ),
-        scanToolQrCode: (data: { userId: string; toolQrCode: string }) =>
+        scanAssetQrCode: (data: { userId: string; assetQrCode: string }) =>
             electron.ipcRenderer.invoke(
-                "transaction:scanToolQrCode",
+                "transaction:scanAssetQrCode",
                 data.userId,
-                data.toolQrCode,
+                data.assetQrCode,
             ),
     },
 });

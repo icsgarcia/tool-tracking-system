@@ -28,7 +28,7 @@ const Dashboard = () => {
         isProcessing.current = true;
         setError(null);
 
-        scanForTransaction.mutate({ userId: user.id, toolQrCode: code });
+        scanForTransaction.mutate({ userId: user.id, assetQrCode: code });
     };
 
     const handleLogout = () => {
@@ -56,7 +56,7 @@ const Dashboard = () => {
         <div className="container mx-auto p-4">
             <header className="border-b p-4">
                 <div className="mx-auto flex max-w-7xl items-center justify-between">
-                    <h1 className="text-xl font-bold">Tool Tracking System</h1>
+                    <h1 className="text-xl font-bold">Asset Tracking System</h1>
                     <NavUser user={user} onLogout={handleLogout} />
                 </div>
             </header>
@@ -90,7 +90,10 @@ const Dashboard = () => {
                                     return (
                                         <TableRow>
                                             <TableCell>
-                                                {userTransaction.tool.name}
+                                                {
+                                                    userTransaction.asset
+                                                        .assetName
+                                                }
                                             </TableCell>
                                             <TableCell>1</TableCell>
                                             <TableCell>

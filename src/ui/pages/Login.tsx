@@ -40,7 +40,7 @@ const Login = () => {
 
     return (
         <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-4">
-            <h1 className="text-2xl font-bold">TOOL KEEPER</h1>
+            <h1 className="text-2xl font-bold">ASSET KEEPER</h1>
             <p className="text-gray-500">Scan your QR/Barcode to login</p>
 
             {error && (

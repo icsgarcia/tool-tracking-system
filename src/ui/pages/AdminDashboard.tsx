@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router";
 import { useGetAllUsers } from "@/hooks/useUsers";
-import { useGetAllTools } from "@/hooks/useTools";
+import { useGetAllAssets } from "@/hooks/useAssets";
 import AboutUs from "@/components/AboutUs";
 import TransactionsTable from "@/components/TransactionsTable";
 import UsersTable from "@/components/UsersTable";
@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { useGetAllTransactions } from "@/hooks/useTransactions";
 import NavUser from "@/components/NavUser";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ToolsTable from "@/components/ToolsTable";
+import AssetsTable from "@/components/AssetsTable";
 
 export interface User {
     id: string;
@@ -27,14 +27,22 @@ export interface User {
     status: string;
 }
 
-export interface Tool {
+export interface Asset {
     id: string;
+    temporaryTagNumber?: string;
     qrCode: string;
     qrCodeImage: string;
-    name: string;
-    quantity: number;
-    borrowedQuantity: number;
-    availableQuantity: number;
+    assetName: string;
+    assetDescription: string;
+    serialNumber?: string;
+    assetCategoryCode?: string;
+    roomName?: string;
+    locationCode?: string;
+    assetCount: number;
+    borrowedCount: number;
+    availableCount: number;
+    assetCondition?: string;
+    remarks?: string;
 }
 
 const AdminDashboard = () => {
@@ -42,7 +50,7 @@ const AdminDashboard = () => {
     const navigate = useNavigate();
     const admin = location.state?.user;
     const { data: users = [] } = useGetAllUsers();
-    const { data: tools = [] } = useGetAllTools();
+    const { data: assets = [] } = useGetAllAssets();
     const { data: transactions = [] } = useGetAllTransactions();
 
     const handleLogout = () => {
@@ -53,7 +61,7 @@ const AdminDashboard = () => {
     const tabs = [
         { id: "overview", label: "Overview" },
         { id: "users", label: "Users" },
-        { id: "tools", label: "Tools" },
+        { id: "assets", label: "Assets" },
         { id: "transactions", label: "Transactions" },
         { id: "about", label: "About" },
     ];
@@ -63,7 +71,7 @@ const AdminDashboard = () => {
             {/* Header */}
             <header className="border-b p-4">
                 <div className="mx-auto flex max-w-7xl items-center justify-between">
-                    <h1 className="text-xl font-bold">Tool Tracking System</h1>
+                    <h1 className="text-xl font-bold">Asset Tracking System</h1>
                     <NavUser user={admin} onLogout={handleLogout} />
                 </div>
             </header>
@@ -77,13 +85,13 @@ const AdminDashboard = () => {
 
                 <main>
                     <TabsContent value="overview">
-                        <AdminOverview users={users} tools={tools} />
+                        <AdminOverview users={users} assets={assets} />
                     </TabsContent>
                     <TabsContent value="users">
                         <UsersTable users={users} />
                     </TabsContent>
-                    <TabsContent value="tools">
-                        <ToolsTable tools={tools} />
+                    <TabsContent value="assets">
+                        <AssetsTable assets={assets} />
                     </TabsContent>
                     <TabsContent value="transactions">
                         <TransactionsTable transactions={transactions} />
