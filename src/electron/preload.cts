@@ -56,4 +56,9 @@ electron.contextBridge.exposeInMainWorld("api", {
                 data.assetQrCode,
             ),
     },
+
+    print: {
+        printComponent: (html: string) =>
+            electron.ipcRenderer.invoke("print", html),
+    },
 });

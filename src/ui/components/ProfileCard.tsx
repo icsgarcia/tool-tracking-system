@@ -1,14 +1,24 @@
+import { useRef } from "react";
 import { Card, CardContent } from "./ui/card";
+import PrintButton from "./PrintButton";
 
 interface ProfileCardProps {
     user: User;
 }
 
 const ProfileCard = ({ user }: ProfileCardProps) => {
+    const contentRef = useRef<HTMLDivElement>(null);
+
     return (
-        <Card className="max-w-xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+        <Card
+            ref={contentRef}
+            className="relative max-w-xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden"
+        >
+            <div className="absolute right-2 top-2 print:hidden">
+                <PrintButton contentRef={contentRef} />
+            </div>
             <CardContent>
-                <div className="flex flex-col md:flex-row items-center gap-6 p-6">
+                <div className="flex flex-col md:flex-row items-center gap-6 p-6 print:flex-row">
                     {/* Left: Images */}
                     <div className="flex flex-col items-center gap-4">
                         <img
@@ -23,7 +33,7 @@ const ProfileCard = ({ user }: ProfileCardProps) => {
                         />
                     </div>
                     {/* Middle: User Info */}
-                    <div className="flex-1 text-center md:text-left">
+                    <div className="flex-1 text-center md:text-left print:text-left">
                         <p className="font-bold text-2xl text-gray-800 mb-1">
                             {user.lastName}
                         </p>

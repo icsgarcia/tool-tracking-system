@@ -145,5 +145,8 @@ interface Window {
                 assetQrCode: string;
             }) => Promise<any>;
         };
+        print: {
+            printComponent: (html: string) => Promise<void>;
+        };
     };
 }

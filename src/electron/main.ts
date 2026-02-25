@@ -8,6 +8,7 @@ import { TransactionHandlers } from "./services/transaction.js";
 import { getPreloadPath } from "./pathResolver.js";
 import { checkOverdueTransactions } from "./jobs/transactionStatusJob.js";
 import cron from "node-cron";
+import { printHandlers } from "./services/print.js";
 
 app.on("ready", async () => {
     await initDatabase();
@@ -15,6 +16,7 @@ app.on("ready", async () => {
     UserHandlers();
     AssetHandlers();
     TransactionHandlers();
+    printHandlers();
 
     cron.schedule("0 * * * *", () => {
         checkOverdueTransactions();

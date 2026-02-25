@@ -7,11 +7,12 @@ import {
 } from "./ui/card";
 import { Badge } from "./ui/badge";
 import type { ColumnDef, FilterFn } from "@tanstack/react-table";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import DataTable from "./DataTable";
 import { ArrowUpDown, SearchIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
+import PrintButton from "./PrintButton";
 
 const globalFilterFn: FilterFn<Transactions> = (
     row,
@@ -30,6 +31,7 @@ const TransactionsTable = ({
     transactions: Transactions[];
 }) => {
     const [globalFilter, setGlobalFilter] = useState("");
+    const contentRef = useRef<HTMLDivElement>(null);
 
     const transactionColumns: ColumnDef<Transactions>[] = [
         {
@@ -47,7 +49,7 @@ const TransactionsTable = ({
                         }
                     >
                         Name
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
@@ -68,7 +70,7 @@ const TransactionsTable = ({
                         }
                     >
                         Name
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
@@ -93,7 +95,7 @@ const TransactionsTable = ({
                         }
                     >
                         Borrowed At
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
@@ -122,7 +124,7 @@ const TransactionsTable = ({
                         }
                     >
                         Returned At
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
@@ -151,7 +153,7 @@ const TransactionsTable = ({
                         }
                     >
                         Status
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
@@ -162,19 +164,21 @@ const TransactionsTable = ({
         },
     ];
     return (
-        <Card>
+        <Card ref={contentRef}>
             <CardHeader>
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between items-center mb-4 print:mb-0">
                     <div className="flex items-center justify-between">
                         <div>
-                            <CardTitle>Transactions</CardTitle>
-                            <CardDescription>
+                            <CardTitle className="print:font-bold print:text-3xl">
+                                Transactions
+                            </CardTitle>
+                            <CardDescription className="print:hidden">
                                 Asset borrowing and return history
                             </CardDescription>
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between print:hidden">
                     <InputGroup className="w-6/12 md:w-6/12 lg:w-4/12">
                         <InputGroupInput
                             id="inline-start-input"
@@ -186,6 +190,7 @@ const TransactionsTable = ({
                             <SearchIcon className="text-muted-foreground" />
                         </InputGroupAddon>
                     </InputGroup>
+                    <PrintButton contentRef={contentRef} />
                 </div>
             </CardHeader>
             <CardContent>

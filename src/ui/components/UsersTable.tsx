@@ -8,7 +8,7 @@ import {
 } from "./ui/card";
 
 import CreateUsersDialog from "./CreateUsersDialog";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "./ui/button";
 import QrImageDialog from "./QrImageDialog";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
@@ -31,6 +31,7 @@ import DeleteUserDialog from "./DeleteUserDialog";
 import UpdateUserDialog from "./UpdateUserDialog";
 import DeleteAllUsersDialog from "./DeleteAllUsersDialog";
 import { useLocation } from "react-router";
+import PrintButton from "./PrintButton";
 
 const globalFilterFn: FilterFn<User> = (row, _columnId, filterValue) => {
     const search = filterValue.toLowerCase();
@@ -47,6 +48,7 @@ const globalFilterFn: FilterFn<User> = (row, _columnId, filterValue) => {
 const UsersTable = ({ users }: { users: User[] }) => {
     const location = useLocation();
     const user = location?.state?.user;
+    const contentRef = useRef<HTMLDivElement>(null);
     const [openCreateUsersDialog, setOpenCreateUsersDialog] =
         useState<boolean>(false);
     const [openQrImageDialog, setOpenQrImageDialog] = useState(false);
@@ -97,7 +99,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
                         }
                     >
                         Name
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
@@ -121,7 +123,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
                         }
                     >
                         School Number
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
@@ -137,7 +139,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
                         }
                     >
                         Email
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
@@ -153,7 +155,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
                         }
                     >
                         Role
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
@@ -172,7 +174,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
                         }
                     >
                         Department
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
@@ -189,7 +191,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
                         }
                     >
                         Year Level
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
@@ -205,7 +207,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
                         }
                     >
                         Status
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
@@ -223,53 +225,56 @@ const UsersTable = ({ users }: { users: User[] }) => {
         },
         {
             accessorKey: "action",
-            header: "Action",
+            header: () => <span className="print:hidden">Action</span>,
             cell: ({ row }) => (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Ellipsis />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    setSelectedUser(row.original);
-                                    setOpenUpdateUser(true);
-                                }}
-                            >
-                                Edit User
-                            </DropdownMenuItem>
-
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    setSelectedUser(row.original);
-                                    setOpenDeleteUser(true);
-                                }}
-                            >
-                                Delete User
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="print:hidden">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Ellipsis />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuGroup>
+                                <DropdownMenuItem
+                                    onClick={() => {
+                                        setSelectedUser(row.original);
+                                        setOpenUpdateUser(true);
+                                    }}
+                                >
+                                    Edit User
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => {
+                                        setSelectedUser(row.original);
+                                        setOpenDeleteUser(true);
+                                    }}
+                                >
+                                    Delete User
+                                </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             ),
         },
     ];
 
     return (
         <>
-            <Card>
+            <Card ref={contentRef}>
                 <CardHeader>
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="flex justify-between items-center mb-4 print:mb-0">
                         <div className="flex items-center justify-between">
                             <div>
-                                <CardTitle>Users</CardTitle>
-                                <CardDescription>
+                                <CardTitle className="print:font-bold print:text-3xl">
+                                    Users
+                                </CardTitle>
+                                <CardDescription className="print:hidden">
                                     Manage all registered users
                                 </CardDescription>
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-center gap-1">
+                        <div className="flex items-center justify-center gap-1 print:hidden">
                             <Button
                                 onClick={() => {
                                     setOpenCreateUsersDialog(true);
@@ -300,7 +305,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
                             </DropdownMenu>
                         </div>
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between print:hidden">
                         <InputGroup className="w-6/12">
                             <InputGroupInput
                                 id="inline-start-input"
@@ -314,6 +319,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
                                 <SearchIcon className="text-muted-foreground" />
                             </InputGroupAddon>
                         </InputGroup>
+                        <PrintButton contentRef={contentRef} />
                     </div>
                 </CardHeader>
                 <CardContent>

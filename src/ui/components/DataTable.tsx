@@ -109,7 +109,7 @@ const DataTable = <TData, TValue>({
                     Page {table.getState().pagination.pageIndex + 1} of{" "}
                     {table.getPageCount()}
                 </p>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 print:hidden">
                     <Button
                         variant="outline"
                         size="sm"

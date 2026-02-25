@@ -6,7 +6,7 @@ import {
     CardTitle,
 } from "./ui/card";
 import { Button } from "./ui/button";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import CreateAssetsDialog from "./CreateAssetsDialog";
 import QrImageDialog from "./QrImageDialog";
 import DataTable from "./DataTable";
@@ -28,6 +28,7 @@ import {
 import DeleteAssetDialog from "./DeleteAssetDialog";
 import UpdateAssetDialog from "./UpdateAssetDialog";
 import DeleteAllAssetsDialog from "./DeleteAllAssetsDialog";
+import PrintButton from "./PrintButton";
 
 const globalFilterFn: FilterFn<Asset> = (row, _columnId, filterValue) => {
     const search = filterValue.toLowerCase();
@@ -49,6 +50,7 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
     const [openDeleteAsset, setOpenDeleteAsset] = useState(false);
     const [openDeleteAllAssetsDialog, setOpenDeleteAllAssetsDialog] =
         useState(false);
+    const contentRef = useRef<HTMLDivElement>(null);
 
     const assetColumns: ColumnDef<Asset>[] = [
         {
@@ -85,7 +87,7 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                         }
                     >
                         Temporary Tag Number
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
@@ -110,7 +112,7 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                         }
                     >
                         Asset Name
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
@@ -131,7 +133,7 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                         }
                     >
                         Total Quantity
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
@@ -148,7 +150,7 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                         }
                     >
                         Checked Out
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
@@ -165,58 +167,62 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                         }
                     >
                         Available
-                        <ArrowUpDown className="h-4 w-4" />
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
         },
         {
             accessorKey: "action",
-            header: "Action",
+            header: () => <span className="print:hidden">Action</span>,
             cell: ({ row }) => (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Ellipsis />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    setSelectedAsset(row.original);
-                                    setOpenUpdateAsset(true);
-                                }}
-                            >
-                                Edit Asset
-                            </DropdownMenuItem>
+                <div className="print:hidden">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Ellipsis />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuGroup>
+                                <DropdownMenuItem
+                                    onClick={() => {
+                                        setSelectedAsset(row.original);
+                                        setOpenUpdateAsset(true);
+                                    }}
+                                >
+                                    Edit Asset
+                                </DropdownMenuItem>
 
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    setSelectedAsset(row.original);
-                                    setOpenDeleteAsset(true);
-                                }}
-                            >
-                                Delete Asset
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                                <DropdownMenuItem
+                                    onClick={() => {
+                                        setSelectedAsset(row.original);
+                                        setOpenDeleteAsset(true);
+                                    }}
+                                >
+                                    Delete Asset
+                                </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             ),
         },
     ];
     return (
         <>
-            <Card>
+            <Card ref={contentRef}>
                 <CardHeader>
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="flex justify-between items-center mb-4 print:mb-0">
                         <div className="flex items-center justify-between">
                             <div>
-                                <CardTitle>Assets</CardTitle>
-                                <CardDescription>
+                                <CardTitle className="print:font-bold print:text-3xl">
+                                    Assets
+                                </CardTitle>
+                                <CardDescription className="print:hidden">
                                     Manage all tracked assets
                                 </CardDescription>
                             </div>
                         </div>
-                        <div className="flex items-center justify-center gap-1">
+                        <div className="flex items-center justify-center gap-1 print:hidden">
                             <Button
                                 onClick={() => {
                                     setOpenCreateAssetsDialog(true);
@@ -247,7 +253,7 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                             </DropdownMenu>
                         </div>
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between print:hidden">
                         <InputGroup className="w-6/12">
                             <InputGroupInput
                                 id="inline-start-input"
@@ -261,6 +267,7 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                                 <SearchIcon className="text-muted-foreground" />
                             </InputGroupAddon>
                         </InputGroup>
+                        <PrintButton contentRef={contentRef} />
                     </div>
                 </CardHeader>
                 <CardContent>
