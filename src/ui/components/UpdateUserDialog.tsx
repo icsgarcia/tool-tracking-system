@@ -17,7 +17,6 @@ import {
     DialogTitle,
 } from "./ui/dialog";
 import { useUpdateUser } from "@/hooks/useUsers";
-import { ScrollArea } from "./ui/scroll-area";
 import { Field, FieldGroup, FieldLabel, FieldSet } from "./ui/field";
 import { Input } from "./ui/input";
 import {
@@ -68,30 +67,32 @@ const UpdateUserDialog = ({
     };
     return (
         <Dialog open={openUpdateUser} onOpenChange={setOpenUpdateUser}>
-            <DialogContent>
-                <form onSubmit={handleUpdateUser}>
-                    <DialogHeader>
-                        <DialogTitle>Update User</DialogTitle>
-                        <DialogDescription>
-                            Edit the user details below and click "Update User"
-                            to save changes.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <ScrollArea className=" h-100 rounded-md border">
-                        <div>
-                            <FieldSet>
-                                <FieldGroup>
-                                    <Field>
-                                        <FieldLabel htmlFor="schoolNumber">
-                                            School Number
-                                        </FieldLabel>
-                                        <Input
-                                            id="schoolNumber"
-                                            name="schoolNumber"
-                                            value={updateUserData?.schoolNumber}
-                                            onChange={handleOnChange}
-                                        />
-                                    </Field>
+            <DialogContent className="max-w-lg w-[calc(100%-2rem)] max-h-[85svh] flex flex-col gap-0 p-0 overflow-hidden">
+                <DialogHeader className="shrink-0 px-4 pt-4 pb-2 sm:px-6 sm:pt-6">
+                    <DialogTitle className="text-base sm:text-lg">
+                        Update User
+                    </DialogTitle>
+                    <DialogDescription className="text-xs sm:text-sm">
+                        Edit the user details below and click "Update User" to
+                        save changes.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4 sm:px-6 sm:pb-6">
+                    <form onSubmit={handleUpdateUser}>
+                        <FieldSet>
+                            <FieldGroup>
+                                <Field>
+                                    <FieldLabel htmlFor="schoolNumber">
+                                        School Number
+                                    </FieldLabel>
+                                    <Input
+                                        id="schoolNumber"
+                                        name="schoolNumber"
+                                        value={updateUserData?.schoolNumber}
+                                        onChange={handleOnChange}
+                                    />
+                                </Field>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     <Field>
                                         <FieldLabel htmlFor="firstName">
                                             First Name
@@ -125,6 +126,8 @@ const UpdateUserDialog = ({
                                             onChange={handleOnChange}
                                         />
                                     </Field>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <Field>
                                         <FieldLabel htmlFor="role">
                                             Role
@@ -181,20 +184,22 @@ const UpdateUserDialog = ({
                                             </SelectContent>
                                         </Select>
                                     </Field>
-                                    <Field>
-                                        <FieldLabel htmlFor="yearLevel">
-                                            Year Level
-                                        </FieldLabel>
-                                        <Input
-                                            id="yearLevel"
-                                            name="yearLevel"
-                                            type="number"
-                                            min={0}
-                                            max={5}
-                                            value={updateUserData?.yearLevel}
-                                            onChange={handleOnChange}
-                                        />
-                                    </Field>
+                                </div>
+                                <Field>
+                                    <FieldLabel htmlFor="yearLevel">
+                                        Year Level
+                                    </FieldLabel>
+                                    <Input
+                                        id="yearLevel"
+                                        name="yearLevel"
+                                        type="number"
+                                        min={0}
+                                        max={5}
+                                        value={updateUserData?.yearLevel}
+                                        onChange={handleOnChange}
+                                    />
+                                </Field>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <Field>
                                         <FieldLabel htmlFor="email">
                                             Email
@@ -208,7 +213,7 @@ const UpdateUserDialog = ({
                                     </Field>
                                     <Field>
                                         <FieldLabel htmlFor="number">
-                                            Number
+                                            Phone Number
                                         </FieldLabel>
                                         <Input
                                             id="number"
@@ -217,21 +222,24 @@ const UpdateUserDialog = ({
                                             onChange={handleOnChange}
                                         />
                                     </Field>
-                                </FieldGroup>
-                            </FieldSet>
-                        </div>
-                    </ScrollArea>
-                    <DialogFooter>
-                        <DialogClose asChild>
-                            <Button>Cancel</Button>
-                        </DialogClose>
-                        <Button type="submit" disabled={updateUser.isPending}>
-                            {updateUser.isPending
-                                ? "Updating..."
-                                : "Update User"}
-                        </Button>
-                    </DialogFooter>
-                </form>
+                                </div>
+                            </FieldGroup>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button>Cancel</Button>
+                                </DialogClose>
+                                <Button
+                                    type="submit"
+                                    disabled={updateUser.isPending}
+                                >
+                                    {updateUser.isPending
+                                        ? "Updating..."
+                                        : "Update User"}
+                                </Button>
+                            </DialogFooter>
+                        </FieldSet>
+                    </form>
+                </div>
             </DialogContent>
         </Dialog>
     );

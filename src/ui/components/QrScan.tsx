@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { Input } from "./ui/input";
+import { cn } from "@/lib/utils";
 
 interface QrScanProps {
     handleScan: (code: string) => void;
@@ -10,7 +12,12 @@ const QrScan = ({ handleScan, className }: QrScanProps) => {
     const [inputValue, setInputValue] = useState("");
 
     useEffect(() => {
-        inputRef.current?.focus();
+        // Defer focus so it runs after any parent event (e.g. tab click)
+        // finishes processing — otherwise the tab trigger steals focus back.
+        const timer = setTimeout(() => {
+            inputRef.current?.focus();
+        }, 0);
+        return () => clearTimeout(timer);
     }, []);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,15 +32,14 @@ const QrScan = ({ handleScan, className }: QrScanProps) => {
     };
 
     return (
-        <input
+        <Input
             ref={inputRef}
             type="text"
             value={inputValue}
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
-            className={`w-full max-w-md border rounded px-4 py-2 text-lg ${className || ""}`}
+            className={cn("w-full max-w-md text-lg", className)}
             placeholder="Scan your QR code here"
-            autoFocus
         />
     );
 };

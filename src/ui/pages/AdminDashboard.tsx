@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useGetAllUsers } from "@/hooks/useUsers";
 import { useGetAllAssets } from "@/hooks/useAssets";
@@ -19,8 +20,13 @@ const AdminDashboard = () => {
     const { data: assets = [] } = useGetAllAssets();
     const { data: transactions = [] } = useGetAllTransactions();
 
+    useEffect(() => {
+        if (!admin || admin.role !== "ADMIN") {
+            navigate("/");
+        }
+    }, [admin, navigate]);
+
     if (!admin || admin.role !== "ADMIN") {
-        navigate("/");
         return null;
     }
 
@@ -38,17 +44,26 @@ const AdminDashboard = () => {
     ];
 
     return (
-        <div className="container mx-auto">
+        <div className="mx-auto max-w-7xl min-h-svh">
             <Header user={admin} handleLogout={handleLogout} />
 
-            <Tabs defaultValue="overview">
-                <TabsList variant="line">
-                    {tabs.map((tab) => (
-                        <TabsTrigger value={tab.id}>{tab.label}</TabsTrigger>
-                    ))}
-                </TabsList>
+            <Tabs defaultValue="overview" className="px-3 sm:px-4">
+                {/* Scrollable tabs wrapper for small screens */}
+                <div className="overflow-x-auto overflow-y-hidden -mx-3 px-3 sm:-mx-4 sm:px-4">
+                    <TabsList variant="line" className="w-max min-w-full">
+                        {tabs.map((tab) => (
+                            <TabsTrigger
+                                key={tab.id}
+                                value={tab.id}
+                                className="whitespace-nowrap text-sm sm:text-base"
+                            >
+                                {tab.label}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+                </div>
 
-                <main>
+                <main className="py-4 sm:py-6">
                     <TabsContent value="overview">
                         <AdminOverview
                             admin={admin}

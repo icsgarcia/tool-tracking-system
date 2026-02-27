@@ -86,7 +86,7 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                             column.toggleSorting(column.getIsSorted() === "asc")
                         }
                     >
-                        Temporary Tag Number
+                        Tag No.
                         <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
@@ -132,7 +132,7 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                             column.toggleSorting(column.getIsSorted() === "asc")
                         }
                     >
-                        Total Quantity
+                        Total Qty
                         <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
@@ -207,23 +207,24 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
             ),
         },
     ];
+
     return (
         <>
             <Card ref={contentRef}>
                 <CardHeader>
-                    <div className="flex justify-between items-center mb-4 print:mb-0">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <CardTitle className="print:font-bold print:text-3xl">
-                                    Assets
-                                </CardTitle>
-                                <CardDescription className="print:hidden">
-                                    Manage all tracked assets
-                                </CardDescription>
-                            </div>
+                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4 print:mb-0">
+                        <div>
+                            <CardTitle className="text-lg sm:text-xl print:font-bold print:text-3xl">
+                                Assets
+                            </CardTitle>
+                            <CardDescription className="print:hidden">
+                                Manage all tracked assets
+                            </CardDescription>
                         </div>
-                        <div className="flex items-center justify-center gap-1 print:hidden">
+                        <div className="flex items-center gap-1 print:hidden">
                             <Button
+                                size="sm"
+                                className="sm:size-default"
                                 onClick={() => {
                                     setOpenCreateAssetsDialog(true);
                                 }}
@@ -232,7 +233,11 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                             </Button>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant={"outline"}>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="sm:size-default"
+                                    >
                                         <EllipsisVertical />
                                     </Button>
                                 </DropdownMenuTrigger>
@@ -253,8 +258,8 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                             </DropdownMenu>
                         </div>
                     </div>
-                    <div className="flex items-center justify-between print:hidden">
-                        <InputGroup className="w-6/12">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between print:hidden">
+                        <InputGroup className="w-full sm:w-7/12 lg:w-4/12">
                             <InputGroupInput
                                 id="inline-start-input"
                                 placeholder="Search by asset's name..."

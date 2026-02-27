@@ -33,17 +33,19 @@ const DeleteAssetDialog = ({
 
     return (
         <Dialog open={openDeleteAsset} onOpenChange={setOpenDeleteAsset}>
-            <DialogContent>
-                <form onSubmit={handleDeleteAsset}>
+            <DialogContent className="max-w-md w-[calc(100%-2rem)] max-h-[85svh] flex flex-col gap-0 p-0 overflow-hidden">
+                <form onSubmit={handleDeleteAsset} className="flex flex-col gap-4 p-4 sm:p-6">
                     <DialogHeader>
-                        <DialogTitle>Confirm Asset Deletion</DialogTitle>
-                        <DialogDescription>
+                        <DialogTitle className="text-base sm:text-lg">
+                            Confirm Asset Deletion
+                        </DialogTitle>
+                        <DialogDescription className="text-xs sm:text-sm">
                             Are you sure you want to delete this asset? This
                             action cannot be undone and will permanently remove
                             the asset and all associated data.
                         </DialogDescription>
                     </DialogHeader>
-                    <div>
+                    <div className="space-y-1 rounded-md border p-3 text-sm">
                         <p>
                             <span className="font-bold">
                                 Temporary Tag Number:

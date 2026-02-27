@@ -32,8 +32,10 @@ const AdminOverview = ({ admin, users, assets }: AdminOverviewType) => {
 
         scanUser.mutate(code, {
             onSuccess: (user) => {
-                if (user.role !== "STUDENT") {
-                    toast.error("Only STUDENT users can be scanned here.");
+                if (user.role !== "STUDENT" && user.role !== "STAFF") {
+                    toast.error(
+                        "Only STUDENT or STAFF users can be scanned here.",
+                    );
                     isProcessing.current = false;
                     return;
                 }
@@ -55,18 +57,22 @@ const AdminOverview = ({ admin, users, assets }: AdminOverviewType) => {
             },
         });
     };
+
     return (
         <div className="flex flex-col gap-4 mt-4 mb-8">
             <ProfileCard user={admin} />
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 mb-4">
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 sm:gap-4 mb-4">
                 <Card>
-                    <CardHeader>
-                        <CardDescription>Total Users</CardDescription>
-                        <CardTitle className="text-3xl">
+                    <CardHeader className="p-4 sm:p-6">
+                        <CardDescription className="text-xs sm:text-sm">
+                            Total Users
+                        </CardDescription>
+                        <CardTitle className="text-2xl sm:text-3xl">
                             {users.length}
                         </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 pt-0">
                         <p className="text-xs text-gray-500">
                             {users.filter((u) => u.status === "ACTIVE").length}{" "}
                             active
@@ -75,13 +81,15 @@ const AdminOverview = ({ admin, users, assets }: AdminOverviewType) => {
                 </Card>
 
                 <Card>
-                    <CardHeader>
-                        <CardDescription>Total Assets</CardDescription>
-                        <CardTitle className="text-3xl">
+                    <CardHeader className="p-4 sm:p-6">
+                        <CardDescription className="text-xs sm:text-sm">
+                            Total Assets
+                        </CardDescription>
+                        <CardTitle className="text-2xl sm:text-3xl">
                             {assets.length}
                         </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 pt-0">
                         <p className="text-xs text-gray-500">
                             {assets.reduce((sum, t) => sum + t.assetCount, 0)}{" "}
                             total quantity
@@ -90,17 +98,22 @@ const AdminOverview = ({ admin, users, assets }: AdminOverviewType) => {
                 </Card>
 
                 <Card>
-                    <CardHeader>
-                        <CardDescription>Transactions</CardDescription>
-                        <CardTitle className="text-3xl">0</CardTitle>
+                    <CardHeader className="p-4 sm:p-6">
+                        <CardDescription className="text-xs sm:text-sm">
+                            Transactions
+                        </CardDescription>
+                        <CardTitle className="text-2xl sm:text-3xl">
+                            0
+                        </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 pt-0">
                         <p className="text-xs text-gray-500">0 pending</p>
                     </CardContent>
                 </Card>
             </div>
+
             {error && (
-                <div className="rounded-md bg-red-100 px-4 py-3 text-red-700">
+                <div className="rounded-md bg-red-100 px-4 py-3 text-sm text-red-700">
                     {error}
                 </div>
             )}

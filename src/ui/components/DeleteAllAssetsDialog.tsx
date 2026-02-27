@@ -35,11 +35,13 @@ const DeleteAllAssetsDialog = ({
             open={openDeleteAllAssetsDialog}
             onOpenChange={setOpenDeleteAllAssetsDialog}
         >
-            <DialogContent>
-                <form onSubmit={handleDeleteAllAssets}>
+            <DialogContent className="max-w-md w-[calc(100%-2rem)] max-h-[85svh] flex flex-col gap-0 p-0 overflow-hidden">
+                <form onSubmit={handleDeleteAllAssets} className="flex flex-col gap-4 p-4 sm:p-6">
                     <DialogHeader>
-                        <DialogTitle>Confirm Delete All Assets</DialogTitle>
-                        <DialogDescription>
+                        <DialogTitle className="text-base sm:text-lg">
+                            Confirm Delete All Assets
+                        </DialogTitle>
+                        <DialogDescription className="text-xs sm:text-sm">
                             Are you sure you want to delete all assets? This
                             action cannot be undone and will permanently remove
                             all assets and their associated data.
@@ -49,7 +51,11 @@ const DeleteAllAssetsDialog = ({
                         <DialogClose asChild>
                             <Button>Close</Button>
                         </DialogClose>
-                        <Button type="submit">Delete all assets</Button>
+                        <Button type="submit" disabled={deleteAllAssets.isPending}>
+                            {deleteAllAssets.isPending
+                                ? "Deleting..."
+                                : "Delete all assets"}
+                        </Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

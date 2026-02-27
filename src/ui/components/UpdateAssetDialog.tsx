@@ -19,7 +19,6 @@ import {
 import { useUpdateAsset } from "@/hooks/useAssets";
 import { Field, FieldGroup, FieldLabel, FieldSet } from "./ui/field";
 import { Input } from "./ui/input";
-import { ScrollArea } from "./ui/scroll-area";
 
 interface UpdateAssetDialogProps {
     openUpdateAsset: boolean;
@@ -61,19 +60,21 @@ const UpdateAssetDialog = ({
     };
     return (
         <Dialog open={openUpdateAsset} onOpenChange={setOpenUpdateAsset}>
-            <DialogContent>
-                <form onSubmit={handleUpdateAsset}>
-                    <DialogHeader>
-                        <DialogTitle>Update Asset</DialogTitle>
-                        <DialogDescription>
-                            Update the asset details below and click "Update
-                            Asset" to save changes.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <ScrollArea className=" h-100 rounded-md border">
-                        <div>
-                            <FieldSet>
-                                <FieldGroup>
+            <DialogContent className="max-w-lg w-[calc(100%-2rem)] max-h-[85svh] flex flex-col gap-0 p-0 overflow-hidden">
+                <DialogHeader className="shrink-0 px-4 pt-4 pb-2 sm:px-6 sm:pt-6">
+                    <DialogTitle className="text-base sm:text-lg">
+                        Update Asset
+                    </DialogTitle>
+                    <DialogDescription className="text-xs sm:text-sm">
+                        Update the asset details below and click "Update Asset"
+                        to save changes.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4 sm:px-6 sm:pb-6">
+                    <form onSubmit={handleUpdateAsset}>
+                        <FieldSet>
+                            <FieldGroup>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <Field>
                                         <FieldLabel htmlFor="temporaryTagNumber">
                                             Temporary Tag Number
@@ -84,19 +85,6 @@ const UpdateAssetDialog = ({
                                             value={
                                                 updateAssetData.temporaryTagNumber ||
                                                 ""
-                                            }
-                                            onChange={handleOnChange}
-                                        />
-                                    </Field>
-                                    <Field>
-                                        <FieldLabel htmlFor="assetName">
-                                            Asset Name
-                                        </FieldLabel>
-                                        <Input
-                                            id="assetName"
-                                            name="assetName"
-                                            value={
-                                                updateAssetData.assetName || ""
                                             }
                                             onChange={handleOnChange}
                                         />
@@ -115,6 +103,19 @@ const UpdateAssetDialog = ({
                                             onChange={handleOnChange}
                                         />
                                     </Field>
+                                </div>
+                                <Field>
+                                    <FieldLabel htmlFor="assetName">
+                                        Asset Name
+                                    </FieldLabel>
+                                    <Input
+                                        id="assetName"
+                                        name="assetName"
+                                        value={updateAssetData.assetName || ""}
+                                        onChange={handleOnChange}
+                                    />
+                                </Field>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <Field>
                                         <FieldLabel htmlFor="assetCategoryCode">
                                             Asset Category Code
@@ -129,6 +130,23 @@ const UpdateAssetDialog = ({
                                             onChange={handleOnChange}
                                         />
                                     </Field>
+                                    <Field>
+                                        <FieldLabel htmlFor="assetCount">
+                                            Asset Count
+                                        </FieldLabel>
+                                        <Input
+                                            id="assetCount"
+                                            name="assetCount"
+                                            type="number"
+                                            max={9999}
+                                            value={
+                                                updateAssetData.assetCount || 0
+                                            }
+                                            onChange={handleOnChange}
+                                        />
+                                    </Field>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <Field>
                                         <FieldLabel htmlFor="roomName">
                                             Room Name
@@ -156,67 +174,48 @@ const UpdateAssetDialog = ({
                                             onChange={handleOnChange}
                                         />
                                     </Field>
-                                    <Field>
-                                        <FieldLabel htmlFor="assetCount">
-                                            assetCount
-                                        </FieldLabel>
-                                        <Input
-                                            id="assetCount"
-                                            name="assetCount"
-                                            type="number"
-                                            max={9999}
-                                            value={
-                                                updateAssetData.assetCount || 0
-                                            }
-                                            onChange={handleOnChange}
-                                        />
-                                    </Field>
-                                    <Field>
-                                        <FieldLabel htmlFor="assetCondition">
-                                            Asset Condition
-                                        </FieldLabel>
-                                        <Input
-                                            id="assetCondition"
-                                            name="assetCondition"
-                                            value={
-                                                updateAssetData.assetCondition ||
-                                                ""
-                                            }
-                                            onChange={handleOnChange}
-                                        />
-                                    </Field>
-                                    <Field>
-                                        <FieldLabel htmlFor="remarks">
-                                            Remarks
-                                        </FieldLabel>
-                                        <Input
-                                            id="remarks"
-                                            name="remarks"
-                                            value={
-                                                updateAssetData.remarks || ""
-                                            }
-                                            onChange={handleOnChange}
-                                        />
-                                    </Field>
-                                </FieldGroup>
-                            </FieldSet>
-                        </div>
-                        <DialogFooter>
-                            <DialogClose asChild>
-                                <Button>Cancel</Button>
-                            </DialogClose>
-                            <Button
-                                type="submit"
-                                disabled={updateAsset.isPending}
-                            >
-                                {" "}
-                                {updateAsset.isPending
-                                    ? "Updating..."
-                                    : "Update Asset"}
-                            </Button>
-                        </DialogFooter>
-                    </ScrollArea>
-                </form>
+                                </div>
+                                <Field>
+                                    <FieldLabel htmlFor="assetCondition">
+                                        Asset Condition
+                                    </FieldLabel>
+                                    <Input
+                                        id="assetCondition"
+                                        name="assetCondition"
+                                        value={
+                                            updateAssetData.assetCondition || ""
+                                        }
+                                        onChange={handleOnChange}
+                                    />
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor="remarks">
+                                        Remarks
+                                    </FieldLabel>
+                                    <Input
+                                        id="remarks"
+                                        name="remarks"
+                                        value={updateAssetData.remarks || ""}
+                                        onChange={handleOnChange}
+                                    />
+                                </Field>
+                            </FieldGroup>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button>Cancel</Button>
+                                </DialogClose>
+                                <Button
+                                    type="submit"
+                                    disabled={updateAsset.isPending}
+                                >
+                                    {updateAsset.isPending
+                                        ? "Updating..."
+                                        : "Update Asset"}
+                                </Button>
+                            </DialogFooter>
+                        </FieldSet>
+                    </form>
+                </div>
             </DialogContent>
         </Dialog>
     );

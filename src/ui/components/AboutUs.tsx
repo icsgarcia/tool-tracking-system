@@ -9,13 +9,15 @@ import { Separator } from "@/components/ui/separator";
 
 const AboutUs = () => {
     return (
-        <Card>
+        <Card className="max-w-2xl">
             <CardHeader>
-                <CardTitle>About</CardTitle>
-                <CardDescription>Asset Tracking System</CardDescription>
+                <CardTitle className="text-lg sm:text-xl">About</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">
+                    Asset Tracking System
+                </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                <p className="text-sm text-gray-600">
+                <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
                     The Asset Tracking System is a asset management platform
                     designed to track and manage assets, equipment, and other
                     assets within an organization. Users can borrow and return
@@ -23,8 +25,10 @@ const AboutUs = () => {
                 </p>
                 <Separator />
                 <div className="space-y-2">
-                    <h3 className="font-semibold">Features</h3>
-                    <ul className="list-inside list-disc space-y-1 text-sm text-gray-600">
+                    <h3 className="font-semibold text-sm sm:text-base">
+                        Features
+                    </h3>
+                    <ul className="list-inside list-disc space-y-1 text-xs sm:text-sm text-gray-600">
                         <li>
                             QR code-based user login and asset identification
                         </li>

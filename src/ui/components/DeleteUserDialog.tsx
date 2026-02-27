@@ -32,17 +32,19 @@ const DeleteUserDialog = ({
     };
     return (
         <Dialog open={openDeleteUser} onOpenChange={setOpenDeleteUser}>
-            <DialogContent>
-                <form onSubmit={handleDeleteUser}>
+            <DialogContent className="max-w-md w-[calc(100%-2rem)] max-h-[85svh] flex flex-col gap-0 p-0 overflow-hidden">
+                <form onSubmit={handleDeleteUser} className="flex flex-col gap-4 p-4 sm:p-6">
                     <DialogHeader>
-                        <DialogTitle>Confirm User Deletion</DialogTitle>
-                        <DialogDescription>
+                        <DialogTitle className="text-base sm:text-lg">
+                            Confirm User Deletion
+                        </DialogTitle>
+                        <DialogDescription className="text-xs sm:text-sm">
                             Are you sure you want to delete this user? This
                             action cannot be undone and will permanently remove
                             the user and all associated data.
                         </DialogDescription>
                     </DialogHeader>
-                    <div>
+                    <div className="space-y-1 rounded-md border p-3 text-sm">
                         <p>
                             <span className="font-bold">School Number:</span>{" "}
                             {user.schoolNumber}
@@ -59,7 +61,7 @@ const DeleteUserDialog = ({
                             {user.email}
                         </p>
                         <p>
-                            <span className="font-bold">Number:</span>{" "}
+                            <span className="font-bold">Phone Number:</span>{" "}
                             {user.number}
                         </p>
                     </div>

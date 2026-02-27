@@ -19,8 +19,13 @@ const PrintButton = ({ contentRef }: PrintButtonProps) => {
     });
 
     return (
-        <Button onClick={handlePrint}>
-            <Printer /> Print
+        <Button
+            onClick={handlePrint}
+            size="sm"
+            className="shrink-0 sm:size-default"
+        >
+            <Printer className="h-4 w-4" />
+            <span className="hidden sm:inline">Print</span>
         </Button>
     );
 };

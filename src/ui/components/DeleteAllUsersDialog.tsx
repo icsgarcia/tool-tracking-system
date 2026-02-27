@@ -37,29 +37,32 @@ const DeleteAllUsersDialog = ({
             open={openDeleteAllUsersDialog}
             onOpenChange={setOpenDeleteAllUsersDialog}
         >
-            <DialogContent>
-                <form onSubmit={handleDeleteAllUsers}>
+            <DialogContent className="max-w-md w-[calc(100%-2rem)] max-h-[85svh] flex flex-col gap-0 p-0 overflow-hidden">
+                <form onSubmit={handleDeleteAllUsers} className="flex flex-col gap-4 p-4 sm:p-6">
                     <DialogHeader>
-                        <DialogTitle>Confirm Delete All Users</DialogTitle>
-                        <DialogDescription>
-                            <p>
-                                Are you sure you want to delete all users? This
-                                action cannot be undone and will permanently
-                                remove all users and their associated data.
-                            </p>
-                            <br />
-                            <p>
-                                <strong>Note:</strong> The currently logged in
-                                user will not be deleted and will be the only
-                                remaining user in the system.
-                            </p>
+                        <DialogTitle className="text-base sm:text-lg">
+                            Confirm Delete All Users
+                        </DialogTitle>
+                        <DialogDescription className="text-xs sm:text-sm">
+                            Are you sure you want to delete all users? This
+                            action cannot be undone and will permanently
+                            remove all users and their associated data.
                         </DialogDescription>
                     </DialogHeader>
+                    <div className="rounded-md border p-3 text-xs sm:text-sm">
+                        <span className="font-bold">Note:</span> The currently
+                        logged in user will not be deleted and will be the only
+                        remaining user in the system.
+                    </div>
                     <DialogFooter>
                         <DialogClose asChild>
                             <Button>Close</Button>
                         </DialogClose>
-                        <Button type="submit">Delete all users</Button>
+                        <Button type="submit" disabled={deleteAllUsers.isPending}>
+                            {deleteAllUsers.isPending
+                                ? "Deleting..."
+                                : "Delete all users"}
+                        </Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

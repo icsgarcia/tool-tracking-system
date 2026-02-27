@@ -46,13 +46,25 @@ const Dashboard = () => {
         isProcessing.current = true;
         setError(null);
 
-        scanForTransaction.mutate({ userId: user.id, assetQrCode: code });
+        scanForTransaction.mutate(
+            { userId: user.id, assetQrCode: code },
+            {
+                onSuccess: () => {
+                    toast.success("Transaction recorded successfully.");
+                    isProcessing.current = false;
+                },
+                onError: () => {
+                    toast.error("Transaction failed. Please try again.");
+                    setError("Transaction failed. Please try again.");
+                    isProcessing.current = false;
+                },
+            },
+        );
     };
 
     const handleLogout = () => {
         if (admin) {
             toast.success("Logged out successfully.");
-
             navigate("/admin", { state: { user: admin } });
         } else {
             navigate("/");
@@ -61,16 +73,11 @@ const Dashboard = () => {
 
     if (!user) {
         return (
-            <div className="flex min-h-svh flex-col items-center justify-center gap-4">
-                <p className="text-gray-500">
+            <div className="flex min-h-svh flex-col items-center justify-center gap-4 p-4">
+                <p className="text-gray-500 text-sm sm:text-base text-center">
                     No user data. Please scan your QR code.
                 </p>
-                <button
-                    className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-                    onClick={() => navigate("/")}
-                >
-                    Go to Login
-                </button>
+                <Button onClick={() => navigate("/")}>Go to Login</Button>
             </div>
         );
     }
@@ -114,12 +121,12 @@ const Dashboard = () => {
                             column.toggleSorting(column.getIsSorted() === "asc")
                         }
                     >
-                        Borrowed Quantity
+                        Borrowed Qty
                         <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
             },
-            cell: ({ row }) => {
+            cell: () => {
                 return <span className="font-medium">1</span>;
             },
         },
@@ -171,7 +178,7 @@ const Dashboard = () => {
             },
             cell: ({ row }) => {
                 const userTransaction = row.original;
-                const returnedDate = userTransaction.borrowedAt;
+                const returnedDate = userTransaction.returnedAt;
                 return (
                     <span className="font-medium">
                         {new Date(returnedDate).toLocaleString("en-US", {
@@ -188,19 +195,19 @@ const Dashboard = () => {
     ];
 
     return (
-        <div className="container mx-auto">
+        <div className="mx-auto max-w-7xl min-h-svh">
             <Header user={user} handleLogout={handleLogout} />
 
-            <div className="flex flex-col gap-4 mt-4 mb-8">
+            <div className="flex flex-col gap-4 px-3 sm:px-4 py-4 sm:py-6 mb-8">
                 <ProfileCard user={user} />
 
                 <Card ref={contentRef}>
                     <CardHeader>
-                        <CardTitle className="print:font-bold print:text-3xl">
+                        <CardTitle className="text-lg sm:text-xl print:font-bold print:text-3xl">
                             Transactions
                         </CardTitle>
-                        <div className="flex items-center justify-between print:hidden">
-                            <InputGroup className="w-6/12 md:w-6/12 lg:w-4/12">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between print:hidden">
+                            <InputGroup className="w-full sm:w-7/12 lg:w-4/12">
                                 <InputGroupInput
                                     id="inline-start-input"
                                     placeholder="Search for a transaction..."
@@ -227,17 +234,15 @@ const Dashboard = () => {
                     </CardContent>
                 </Card>
 
-                <div>
-                    {error && (
-                        <div className="rounded-md bg-red-100 px-4 py-3 text-red-700">
-                            {error}
-                        </div>
-                    )}
-                    <QrScan
-                        handleScan={handleScan}
-                        className="opacity-0 pointer-events-none absolute"
-                    />
-                </div>
+                {error && (
+                    <div className="rounded-md bg-red-100 px-4 py-3 text-sm sm:text-base text-red-700">
+                        {error}
+                    </div>
+                )}
+                <QrScan
+                    handleScan={handleScan}
+                    className="opacity-0 pointer-events-none absolute"
+                />
             </div>
         </div>
     );

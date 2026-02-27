@@ -69,7 +69,7 @@ const TransactionsTable = ({
                             column.toggleSorting(column.getIsSorted() === "asc")
                         }
                     >
-                        Name
+                        Asset
                         <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
@@ -163,23 +163,22 @@ const TransactionsTable = ({
             },
         },
     ];
+
     return (
         <Card ref={contentRef}>
             <CardHeader>
-                <div className="flex justify-between items-center mb-4 print:mb-0">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <CardTitle className="print:font-bold print:text-3xl">
-                                Transactions
-                            </CardTitle>
-                            <CardDescription className="print:hidden">
-                                Asset borrowing and return history
-                            </CardDescription>
-                        </div>
+                <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4 print:mb-0">
+                    <div>
+                        <CardTitle className="text-lg sm:text-xl print:font-bold print:text-3xl">
+                            Transactions
+                        </CardTitle>
+                        <CardDescription className="print:hidden">
+                            Asset borrowing and return history
+                        </CardDescription>
                     </div>
                 </div>
-                <div className="flex items-center justify-between print:hidden">
-                    <InputGroup className="w-6/12 md:w-6/12 lg:w-4/12">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between print:hidden">
+                    <InputGroup className="w-full sm:w-7/12 lg:w-4/12">
                         <InputGroupInput
                             id="inline-start-input"
                             placeholder="Search by asset's name..."
