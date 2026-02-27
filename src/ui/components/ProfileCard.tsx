@@ -21,12 +21,12 @@ const ProfileCard = ({ user }: ProfileCardProps) => {
                 <div className="flex flex-col items-center gap-4 p-4 sm:gap-6 sm:p-6 md:flex-row md:items-start print:flex-row print:items-start">
                     <div className="flex flex-row items-center gap-4 md:flex-col print:flex-col">
                         <img
-                            src="#"
+                            src="/no_user_image.png"
                             alt="user-display-photo"
                             className="w-16 h-16 sm:w-24 sm:h-24 rounded-full border-2 border-border object-cover shadow-sm"
                         />
                         <img
-                            src="#"
+                            src={user.qrCodeImage}
                             alt="user-qr-code"
                             className="w-14 h-14 sm:w-20 sm:h-20 border-2 border-dashed border-muted-foreground/40 bg-muted rounded-lg object-contain"
                         />

@@ -151,7 +151,13 @@ export function UserHandlers() {
             throw new Error("User not found with this QR Code");
         }
 
-        return user;
+        const qrCodeBuffer = await QRCode.toBuffer(user.qrCode);
+        const qrCodeBase64 = `data:image/png;base64,${qrCodeBuffer.toString("base64")}`;
+
+        return {
+            ...user,
+            qrCodeImage: qrCodeBase64,
+        };
     });
 
     ipcMain.handle("user:updateUserById", async (_, userData: User) => {
