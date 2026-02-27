@@ -17,7 +17,7 @@ const AboutUs = () => {
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                     The Asset Tracking System is a asset management platform
                     designed to track and manage assets, equipment, and other
                     assets within an organization. Users can borrow and return
@@ -28,7 +28,7 @@ const AboutUs = () => {
                     <h3 className="font-semibold text-sm sm:text-base">
                         Features
                     </h3>
-                    <ul className="list-inside list-disc space-y-1 text-xs sm:text-sm text-gray-600">
+                    <ul className="list-inside list-disc space-y-1 text-xs sm:text-sm text-muted-foreground">
                         <li>
                             QR code-based user login and asset identification
                         </li>
@@ -39,7 +39,7 @@ const AboutUs = () => {
                     </ul>
                 </div>
                 <Separator />
-                <div className="text-xs text-gray-400">
+                <div className="text-xs text-muted-foreground/70">
                     Version 1.0.0 &middot; Built with React, Electron, and
                     NestJS
                 </div>

@@ -63,57 +63,57 @@ const AdminOverview = ({ admin, users, assets }: AdminOverviewType) => {
             <ProfileCard user={admin} />
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 sm:gap-4 mb-4">
-                <Card>
+                <Card className="border-l-4 border-l-primary">
                     <CardHeader className="p-4 sm:p-6">
                         <CardDescription className="text-xs sm:text-sm">
                             Total Users
                         </CardDescription>
-                        <CardTitle className="text-2xl sm:text-3xl">
+                        <CardTitle className="text-2xl sm:text-3xl text-primary">
                             {users.length}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 pt-0">
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-muted-foreground">
                             {users.filter((u) => u.status === "ACTIVE").length}{" "}
                             active
                         </p>
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="border-l-4 border-l-primary/70">
                     <CardHeader className="p-4 sm:p-6">
                         <CardDescription className="text-xs sm:text-sm">
                             Total Assets
                         </CardDescription>
-                        <CardTitle className="text-2xl sm:text-3xl">
+                        <CardTitle className="text-2xl sm:text-3xl text-primary">
                             {assets.length}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 pt-0">
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-muted-foreground">
                             {assets.reduce((sum, t) => sum + t.assetCount, 0)}{" "}
                             total quantity
                         </p>
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="border-l-4 border-l-primary/50">
                     <CardHeader className="p-4 sm:p-6">
                         <CardDescription className="text-xs sm:text-sm">
                             Transactions
                         </CardDescription>
-                        <CardTitle className="text-2xl sm:text-3xl">
+                        <CardTitle className="text-2xl sm:text-3xl text-primary">
                             0
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 pt-0">
-                        <p className="text-xs text-gray-500">0 pending</p>
+                        <p className="text-xs text-muted-foreground">0 pending</p>
                     </CardContent>
                 </Card>
             </div>
 
             {error && (
-                <div className="rounded-md bg-red-100 px-4 py-3 text-sm text-red-700">
+                <div className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive">
                     {error}
                 </div>
             )}

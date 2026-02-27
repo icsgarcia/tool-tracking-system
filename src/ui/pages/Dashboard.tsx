@@ -74,7 +74,7 @@ const Dashboard = () => {
     if (!user) {
         return (
             <div className="flex min-h-svh flex-col items-center justify-center gap-4 p-4">
-                <p className="text-gray-500 text-sm sm:text-base text-center">
+                <p className="text-muted-foreground text-sm sm:text-base text-center">
                     No user data. Please scan your QR code.
                 </p>
                 <Button onClick={() => navigate("/")}>Go to Login</Button>
@@ -235,7 +235,7 @@ const Dashboard = () => {
                 </Card>
 
                 {error && (
-                    <div className="rounded-md bg-red-100 px-4 py-3 text-sm sm:text-base text-red-700">
+                    <div className="rounded-md bg-destructive/10 px-4 py-3 text-sm sm:text-base text-destructive">
                         {error}
                     </div>
                 )}

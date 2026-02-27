@@ -55,7 +55,7 @@ const AdminDashboard = () => {
                             <TabsTrigger
                                 key={tab.id}
                                 value={tab.id}
-                                className="whitespace-nowrap text-sm sm:text-base"
+                                className="whitespace-nowrap text-sm sm:text-base after:bg-primary data-[state=active]:text-primary"
                             >
                                 {tab.label}
                             </TabsTrigger>

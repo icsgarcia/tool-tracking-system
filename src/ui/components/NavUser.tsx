@@ -22,15 +22,15 @@ const NavUser = ({ user, onLogout }: NavUserType) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 rounded-lg p-1 max-w-55 sm:max-w-70 hover:bg-gray-100 outline-none transition-colors">
+                <button className="flex items-center gap-2 rounded-lg p-1 max-w-55 sm:max-w-70 hover:bg-white/15 text-primary-foreground outline-none transition-colors">
                     <Avatar className="h-8 w-8 shrink-0 rounded-lg">
-                        <AvatarFallback className="rounded-lg">
+                        <AvatarFallback className="rounded-lg bg-white/20 text-primary-foreground">
                             {initials}
                         </AvatarFallback>
                     </Avatar>
                     <div className="hidden sm:grid flex-1 min-w-0 text-left text-sm leading-tight">
                         <span className="truncate font-medium">{fullName}</span>
-                        <span className="truncate text-xs text-muted-foreground">
+                        <span className="truncate text-xs text-white/70">
                             {user.email}
                         </span>
                     </div>

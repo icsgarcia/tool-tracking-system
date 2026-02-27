@@ -45,30 +45,31 @@ const Login = () => {
     };
 
     return (
-        <div className="flex min-h-svh flex-col items-center justify-center gap-4 sm:gap-6 p-4 sm:p-6">
-            <img
-                src="/logo3.png"
-                alt="tool-keeper-logo"
-                className="w-48 sm:w-64 lg:w-80 h-auto"
-            />
-            <div className="flex flex-col items-center justify-center max-w-md w-full text-center">
-                <p className="text-sm sm:text-base lg:text-xl text-gray-400 font-medium px-2">
+        <div className="flex min-h-svh flex-col items-center justify-center p-4 sm:p-6">
+            <div className="flex flex-col items-center gap-4 sm:gap-6 bg-card rounded-2xl shadow-lg p-6 sm:p-10 max-w-md w-full">
+                <div className="h-1.5 w-16 rounded-full bg-primary" />
+                <img
+                    src="/logo3.png"
+                    alt="tool-keeper-logo"
+                    className="w-48 sm:w-64 lg:w-72 h-auto"
+                />
+                <p className="text-sm sm:text-base lg:text-lg text-muted-foreground font-medium text-center px-2">
                     Scan your Admin QR code to login
                 </p>
 
                 {error && (
-                    <div className="w-full rounded-md bg-red-100 px-4 py-3 text-sm sm:text-base text-red-700 mt-3">
+                    <div className="w-full rounded-md bg-destructive/10 px-4 py-3 text-sm sm:text-base text-destructive text-center">
                         {error}
                     </div>
                 )}
-
-                {scanning && (
-                    <QrScan
-                        handleScan={handleScan}
-                        className="opacity-0 pointer-events-none absolute"
-                    />
-                )}
             </div>
+
+            {scanning && (
+                <QrScan
+                    handleScan={handleScan}
+                    className="opacity-0 pointer-events-none absolute"
+                />
+            )}
         </div>
     );
 };
