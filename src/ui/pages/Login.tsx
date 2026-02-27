@@ -49,7 +49,7 @@ const Login = () => {
             <div className="flex flex-col items-center gap-4 sm:gap-6 bg-card rounded-2xl shadow-lg p-6 sm:p-10 max-w-md w-full">
                 <div className="h-1.5 w-16 rounded-full bg-primary" />
                 <img
-                    src="/logo3.png"
+                    src="/toolkeeper-logos/logo3.png"
                     alt="tool-keeper-logo"
                     className="w-48 sm:w-64 lg:w-72 h-auto"
                 />
