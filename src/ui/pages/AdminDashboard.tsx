@@ -69,6 +69,7 @@ const AdminDashboard = () => {
                             admin={admin}
                             users={users}
                             assets={assets}
+                            transactions={transactions}
                         />
                     </TabsContent>
                     <TabsContent value="users">

@@ -1,5 +1,6 @@
 enum Status {
     BORROWED = "BORROWED",
+    UNRETURNED = "UNRETURNED",
     RETURNED = "RETURNED",
 }
 
