@@ -16,6 +16,50 @@ export const useGetUserTransactions = (userId: string) => {
     });
 };
 
+export const useBorrowAsset = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (variables: {
+            userId: string;
+            assetQrCode: string;
+            borrowCount: number;
+        }) => window.api.transaction.borrowAsset(variables),
+        onSuccess: (data, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: ["transactions"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["userTransactions", variables.userId],
+            });
+            toast.success(data.message);
+        },
+        onError: () => {},
+    });
+};
+
+export const useReturnAsset = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (variables: {
+            userId: string;
+            assetQrCode: string;
+            returnCount: number;
+        }) => window.api.transaction.returnAsset(variables),
+        onSuccess: (data, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: ["transactions"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["userTransactions", variables.userId],
+            });
+            toast.success(data.message);
+        },
+        onError: () => {},
+    });
+};
+
 export const useScanForTransaction = () => {
     const queryClient = useQueryClient();
 

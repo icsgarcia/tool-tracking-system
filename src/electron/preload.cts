@@ -49,6 +49,28 @@ electron.contextBridge.exposeInMainWorld("api", {
                 "transaction:getUserTransactions",
                 userId,
             ),
+        borrowAsset: (data: {
+            userId: string;
+            assetQrCode: string;
+            borrowCount: number;
+        }) =>
+            electron.ipcRenderer.invoke(
+                "transaction:borrowAsset",
+                data.userId,
+                data.assetQrCode,
+                data.borrowCount,
+            ),
+        returnAsset: (data: {
+            userId: string;
+            assetQrCode: string;
+            returnCount: number;
+        }) =>
+            electron.ipcRenderer.invoke(
+                "transaction:returnAsset",
+                data.userId,
+                data.assetQrCode,
+                data.returnCount,
+            ),
         scanAssetQrCode: (data: { userId: string; assetQrCode: string }) =>
             electron.ipcRenderer.invoke(
                 "transaction:scanAssetQrCode",

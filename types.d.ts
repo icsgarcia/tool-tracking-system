@@ -86,6 +86,8 @@ interface UserTransactions {
     id: string;
     userId: string;
     assetId: string;
+    borrowCount: number;
+    returnCount: number;
     status: Status;
     borrowedAt: string;
     returnedAt?: string;
@@ -140,6 +142,16 @@ interface Window {
         transaction: {
             getAllTransactions: () => Promise<any[]>;
             getUserTransactions: (userId: string) => Promise<any>;
+            borrowAsset: (data: {
+                userId: string;
+                assetQrCode: string;
+                borrowCount: number;
+            }) => Promise<any>;
+            returnAsset: (data: {
+                userId: string;
+                assetQrCode: string;
+                returnCount: number;
+            }) => Promise<any>;
             scanAssetQrCode: (data: {
                 userId: string;
                 assetQrCode: string;

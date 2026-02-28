@@ -2,8 +2,6 @@ import { useGetUserTransactions } from "@/hooks/useTransactions";
 import { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
-import { useScanForTransaction } from "@/hooks/useTransactions";
-import QrScan from "@/components/QrScan";
 import ProfileCard from "@/components/ProfileCard";
 import Header from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +15,9 @@ import {
     InputGroupInput,
 } from "@/components/ui/input-group";
 import PrintButton from "@/components/PrintButton";
+import BorrowAssetDialog from "@/components/BorrowAssetDialog";
+import ReturnAssetDialog from "@/components/ReturnAssetDialog";
+import { Badge } from "@/components/ui/badge";
 
 const globalFilterFn: FilterFn<UserTransactions> = (
     row,
@@ -34,33 +35,11 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const user = location.state?.user;
     const admin = location.state?.admin;
-    const isProcessing = useRef(false);
     const { data: userTransactions = [] } = useGetUserTransactions(user.id);
-    const scanForTransaction = useScanForTransaction();
-    const [error, setError] = useState<string | null>(null);
     const [globalFilter, setGlobalFilter] = useState("");
     const contentRef = useRef<HTMLDivElement>(null);
-
-    const handleScan = (code: string) => {
-        if (isProcessing.current) return;
-        isProcessing.current = true;
-        setError(null);
-
-        scanForTransaction.mutate(
-            { userId: user.id, assetQrCode: code },
-            {
-                onSuccess: () => {
-                    toast.success("Transaction recorded successfully.");
-                    isProcessing.current = false;
-                },
-                onError: () => {
-                    toast.error("Transaction failed. Please try again.");
-                    setError("Transaction failed. Please try again.");
-                    isProcessing.current = false;
-                },
-            },
-        );
-    };
+    const [openBorrowDialog, setOpenBorrowDialog] = useState(false);
+    const [openReturnDialog, setOpenReturnDialog] = useState(false);
 
     const handleLogout = () => {
         if (admin) {
@@ -126,8 +105,37 @@ const Dashboard = () => {
                     </Button>
                 );
             },
-            cell: () => {
-                return <span className="font-medium">1</span>;
+            cell: ({ row }) => {
+                const userTransaction = row.original;
+                return (
+                    <span className="font-medium">
+                        {userTransaction.borrowCount}
+                    </span>
+                );
+            },
+        },
+        {
+            id: "returnedQuantity",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                    >
+                        Returned Qty
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
+                    </Button>
+                );
+            },
+            cell: ({ row }) => {
+                const userTransaction = row.original;
+                return (
+                    <span className="font-medium">
+                        {userTransaction.returnCount}
+                    </span>
+                );
             },
         },
         {
@@ -181,15 +189,38 @@ const Dashboard = () => {
                 const returnedDate = userTransaction.returnedAt;
                 return (
                     <span className="font-medium">
-                        {new Date(returnedDate).toLocaleString("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                        })}
+                        {returnedDate
+                            ? new Date(returnedDate).toLocaleString("en-US", {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                              })
+                            : "-"}
                     </span>
                 );
+            },
+        },
+        {
+            id: "status",
+            accessorKey: "status",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                    >
+                        Status
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
+                    </Button>
+                );
+            },
+            cell: ({ row }) => {
+                const transaction = row.original;
+                return <Badge variant="outline">{transaction.status}</Badge>;
             },
         },
     ];
@@ -203,9 +234,26 @@ const Dashboard = () => {
 
                 <Card ref={contentRef}>
                     <CardHeader>
-                        <CardTitle className="text-lg sm:text-xl print:font-bold print:text-3xl">
-                            Transactions
-                        </CardTitle>
+                        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4 print:mb-0">
+                            <div>
+                                <CardTitle className="text-lg sm:text-xl print:font-bold print:text-3xl">
+                                    Transactions
+                                </CardTitle>
+                            </div>
+                            <div className="flex items-center gap-1 print:hidden">
+                                <Button
+                                    onClick={() => setOpenBorrowDialog(true)}
+                                >
+                                    Borrow
+                                </Button>
+                                <Button
+                                    onClick={() => setOpenReturnDialog(true)}
+                                    variant={"outline"}
+                                >
+                                    Return
+                                </Button>
+                            </div>
+                        </div>
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between print:hidden">
                             <InputGroup className="w-full sm:w-7/12 lg:w-4/12">
                                 <InputGroupInput
@@ -233,17 +281,21 @@ const Dashboard = () => {
                         />
                     </CardContent>
                 </Card>
-
-                {error && (
-                    <div className="rounded-md bg-destructive/10 px-4 py-3 text-sm sm:text-base text-destructive">
-                        {error}
-                    </div>
-                )}
-                <QrScan
-                    handleScan={handleScan}
-                    className="opacity-0 pointer-events-none absolute"
-                />
             </div>
+            {openBorrowDialog && (
+                <BorrowAssetDialog
+                    user={user}
+                    openBorrowDialog={openBorrowDialog}
+                    setOpenBorrowDialog={setOpenBorrowDialog}
+                />
+            )}
+            {openReturnDialog && (
+                <ReturnAssetDialog
+                    user={user}
+                    openReturnDialog={openReturnDialog}
+                    setOpenReturnDialog={setOpenReturnDialog}
+                />
+            )}
         </div>
     );
 };

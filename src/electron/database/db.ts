@@ -19,8 +19,8 @@ CREATE TABLE IF NOT EXISTS "User" (
     "lastName" TEXT NOT NULL,
     "role" TEXT NOT NULL DEFAULT 'STUDENT',
     "department" TEXT NOT NULL,
-    "yearLevel" INTEGER NOT NULL,
-    "email" TEXT NOT NULL,
+    "yearLevel" INTEGER,
+    "email" TEXT,
     "number" TEXT,
     "status" TEXT NOT NULL DEFAULT 'ACTIVE'
 );
@@ -49,6 +49,8 @@ CREATE TABLE IF NOT EXISTS "Transaction" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "userId" TEXT NOT NULL,
     "assetId" TEXT NOT NULL,
+    "borrowCount" INTEGER NOT NULL,
+    "returnCount" INTEGER,
     "status" TEXT NOT NULL DEFAULT 'BORROWED',
     "borrowedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "returnedAt" DATETIME,

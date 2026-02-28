@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, Menu } from "electron";
 import path from "path";
 import { isDev } from "./util.js";
 import { closeDatabase, initDatabase } from "./database/db.js";
@@ -11,6 +11,8 @@ import cron from "node-cron";
 import { printHandlers } from "./services/print.js";
 
 app.on("ready", async () => {
+    // Menu.setApplicationMenu(null);
+
     await initDatabase();
 
     UserHandlers();

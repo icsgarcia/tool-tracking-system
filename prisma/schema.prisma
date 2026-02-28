@@ -34,10 +34,10 @@ model User {
   firstName    String
   middleName   String?
   lastName     String
-  role         Role
+  role         Role          @default(STUDENT)
   department   String
-  yearLevel    Int
-  email        String        @unique
+  yearLevel    Int?
+  email        String?       @unique
   number       String?
   status       Status        @default(ACTIVE)
   transactions Transaction[]
@@ -60,12 +60,14 @@ model Asset {
 }
 
 model Transaction {
-  id         String            @id @default(uuid())
-  userId     String
-  assetId    String
-  status     TransactionStatus @default(BORROWED)
-  borrowedAt DateTime          @default(now())
-  returnedAt DateTime?
+  id          String            @id @default(uuid())
+  userId      String
+  assetId     String
+  borrowCount Int
+  returnCount Int?
+  status      TransactionStatus @default(BORROWED)
+  borrowedAt  DateTime          @default(now())
+  returnedAt  DateTime?
 
   user  User  @relation(fields: [userId], references: [id])
   asset Asset @relation(fields: [assetId], references: [id])
