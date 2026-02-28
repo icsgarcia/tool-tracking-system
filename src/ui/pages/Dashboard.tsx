@@ -2,7 +2,6 @@ import { useGetUserTransactions } from "@/hooks/useTransactions";
 import { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
-import ProfileCard from "@/components/ProfileCard";
 import Header from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import DataTable from "@/components/DataTable";
@@ -230,8 +229,6 @@ const Dashboard = () => {
             <Header user={user} handleLogout={handleLogout} />
 
             <div className="flex flex-col gap-4 px-3 sm:px-4 py-4 sm:py-6 mb-8">
-                <ProfileCard user={user} />
-
                 <Card ref={contentRef}>
                     <CardHeader>
                         <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4 print:mb-0">

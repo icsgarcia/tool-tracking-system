@@ -10,7 +10,6 @@ import { useScanUser } from "@/hooks/useUsers";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
 import QrScan from "./QrScan";
-import ProfileCard from "./ProfileCard";
 
 interface AdminOverviewType {
     admin: User;
@@ -60,8 +59,6 @@ const AdminOverview = ({ admin, users, assets }: AdminOverviewType) => {
 
     return (
         <div className="flex flex-col gap-4 mt-4 mb-8">
-            <ProfileCard user={admin} />
-
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 sm:gap-4 mb-4">
                 <Card className="border-l-4 border-l-primary">
                     <CardHeader className="p-4 sm:p-6">
@@ -107,7 +104,9 @@ const AdminOverview = ({ admin, users, assets }: AdminOverviewType) => {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 pt-0">
-                        <p className="text-xs text-muted-foreground">0 pending</p>
+                        <p className="text-xs text-muted-foreground">
+                            0 pending
+                        </p>
                     </CardContent>
                 </Card>
             </div>
