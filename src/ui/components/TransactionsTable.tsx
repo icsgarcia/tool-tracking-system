@@ -64,7 +64,15 @@ const TransactionsTable = ({
             },
             cell: ({ row }) => {
                 const transaction = row.original;
-                const userFullName = `${transaction.user.firstName} ${transaction.user.middleName} ${transaction.user.lastName}`;
+                const userFullName =
+                    `${transaction.user.firstName} ${transaction.user.middleName} ${transaction.user.lastName}`
+                        .toLowerCase()
+                        .split(" ")
+                        .map(
+                            (word) =>
+                                word.charAt(0).toUpperCase() + word.slice(1),
+                        )
+                        .join(" ");
                 return <span className="font-medium">{userFullName}</span>;
             },
         },
@@ -147,7 +155,7 @@ const TransactionsTable = ({
                           hour: "2-digit",
                           minute: "2-digit",
                       })
-                    : "—";
+                    : "-";
             },
         },
         {
