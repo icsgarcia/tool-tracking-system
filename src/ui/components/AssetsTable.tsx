@@ -33,8 +33,10 @@ import PrintButton from "./PrintButton";
 const globalFilterFn: FilterFn<Asset> = (row, _columnId, filterValue) => {
     const search = filterValue.toLowerCase();
     const asset = row.original;
+    const assetTagNumber = `${asset.temporaryTagNumber}`.toLowerCase();
+    const assetName = `${asset.assetName}`.toLowerCase();
 
-    return asset.assetName.toLowerCase().includes(search);
+    return assetName.includes(search) || assetTagNumber.includes(search);
 };
 
 const AssetsTable = ({ assets }: { assets: Asset[] }) => {

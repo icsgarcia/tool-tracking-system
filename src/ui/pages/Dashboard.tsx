@@ -25,8 +25,10 @@ const globalFilterFn: FilterFn<UserTransactions> = (
 ) => {
     const search = filterValue.toLowerCase();
     const transaction = row.original;
+    const transactionId = `${transaction.id}`.toLowerCase();
+    const assetName = `${transaction.asset.assetName}`.toLowerCase();
 
-    return transaction.userId.toLowerCase().includes(search);
+    return transactionId.includes(search) || assetName.includes(search);
 };
 
 const Dashboard = () => {
