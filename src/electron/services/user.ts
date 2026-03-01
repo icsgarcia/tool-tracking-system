@@ -4,6 +4,7 @@ import QRCode from "qrcode";
 import * as XLSX from "xlsx";
 import { Role } from "../../../generated/prisma/enums.js";
 import { User } from "../../../generated/prisma/client.js";
+import { randomUUID } from "node:crypto";
 
 export function UserHandlers() {
     const prisma = getPrisma();
@@ -12,38 +13,60 @@ export function UserHandlers() {
     ipcMain.handle(
         "user:createUserByFile",
         async (_, fileBuffer: ArrayBuffer) => {
-            const workbook = XLSX.read(fileBuffer, { type: "buffer" });
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-            const jsonData: CreateUserDto[] =
-                XLSX.utils.sheet_to_json(worksheet);
-
-            const createdUsers = [];
-
-            for (const row of jsonData) {
-                const qrCodeData = `USER-${row["schoolNumber"]}-${Date.now()}`;
-
-                const user = await prisma.user.create({
-                    data: {
-                        qrCode: qrCodeData,
-                        schoolNumber: String(row["schoolNumber"]),
-                        firstName: String(row["firstName"]),
-                        middleName: String(row["middleName"] || ""),
-                        lastName: String(row["lastName"]),
-                        role: row["role"] as Role,
-                        department: String(row["department"]),
-                        yearLevel: Number(row["yearLevel"]),
-                        email: String(row["email"]),
-                        number: row["number"] ? String(row["number"]) : null,
+            try {
+                const buffer = Buffer.from(fileBuffer);
+                const workbook = XLSX.read(buffer, { type: "buffer" });
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const jsonData: CreateUserDto[] = XLSX.utils.sheet_to_json(
+                    worksheet,
+                    {
+                        range: 1,
+                        header: [
+                            "schoolNumber",
+                            "lastName",
+                            "firstName",
+                            "middleName",
+                            "department",
+                            "yearLevel",
+                            "email",
+                            "number",
+                        ],
                     },
-                });
-                createdUsers.push(user);
-            }
+                );
 
-            return {
-                message: `Successfully created ${createdUsers.length} users`,
-                users: createdUsers,
-            };
+                const createdUsers = [];
+
+                for (const row of jsonData) {
+                    const qrCodeData = `USER-${row["schoolNumber"]}-${randomUUID()}`;
+
+                    const user = await prisma.user.create({
+                        data: {
+                            qrCode: qrCodeData,
+                            schoolNumber: String(row["schoolNumber"]),
+                            firstName: String(row["firstName"]),
+                            middleName: String(row["middleName"] || ""),
+                            lastName: String(row["lastName"]),
+                            role: row["role"] as Role,
+                            department: String(row["department"]),
+                            yearLevel: Number(row["yearLevel"]),
+                            email: row["email"] ? String(row["email"]) : null,
+                            number: row["number"]
+                                ? String(row["number"])
+                                : null,
+                        },
+                    });
+                    createdUsers.push(user);
+                }
+
+                return {
+                    message: `Successfully created ${createdUsers.length} users`,
+                    users: createdUsers,
+                };
+            } catch (error) {
+                console.error(error);
+                throw new Error("Failed to import Excel file");
+            }
         },
     );
 
@@ -79,7 +102,10 @@ export function UserHandlers() {
 
         const usersWithQrCode = await Promise.all(
             users.map(async (user) => {
-                const qrCodeBuffer = await QRCode.toBuffer(user.qrCode);
+                const qrCodeBuffer = await QRCode.toBuffer(user.qrCode, {
+                    width: 500,
+                    margin: 2,
+                });
                 const qrCodeBase64 = `data:image/png;base64,${qrCodeBuffer.toString("base64")}`;
                 return {
                     ...user,
@@ -137,7 +163,10 @@ export function UserHandlers() {
             throw new Error("User not found");
         }
 
-        const qrCodeBuffer = await QRCode.toBuffer(user.qrCode);
+        const qrCodeBuffer = await QRCode.toBuffer(user.qrCode, {
+            width: 500,
+            margin: 2,
+        });
         return `data:image/png;base64,${qrCodeBuffer.toString("base64")}`;
     });
 
@@ -151,7 +180,10 @@ export function UserHandlers() {
             throw new Error("User not found with this QR Code");
         }
 
-        const qrCodeBuffer = await QRCode.toBuffer(user.qrCode);
+        const qrCodeBuffer = await QRCode.toBuffer(user.qrCode, {
+            width: 500,
+            margin: 2,
+        });
         const qrCodeBase64 = `data:image/png;base64,${qrCodeBuffer.toString("base64")}`;
 
         return {

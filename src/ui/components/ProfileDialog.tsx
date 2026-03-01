@@ -21,7 +21,7 @@ const ProfileDialog = ({
             <DialogContent>
                 <Card
                     ref={contentRef}
-                    className="relative max-w-xl mx-auto bg-card rounded-xl shadow-sm overflow-hidden border-t-4 border-t-primary"
+                    className="relative max-w-xl mx-auto bg-transparent rounded-xl shadow-none border-none overflow-hidden"
                 >
                     <div className="absolute right-2 top-2 print:hidden">
                         <PrintButton contentRef={contentRef} />

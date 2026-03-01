@@ -223,8 +223,8 @@ const CreateUsersDialog = ({
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    <SelectItem value="AMT">
-                                                        AMT
+                                                    <SelectItem value="BS AMT">
+                                                        BS AMT
                                                     </SelectItem>
                                                 </SelectGroup>
                                             </SelectContent>

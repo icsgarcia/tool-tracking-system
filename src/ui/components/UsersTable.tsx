@@ -87,6 +87,22 @@ const UsersTable = ({ users }: { users: User[] }) => {
             },
         },
         {
+            accessorKey: "schoolNumber",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                    >
+                        School No.
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
+                    </Button>
+                );
+            },
+        },
+        {
             id: "name",
             accessorFn: (row) =>
                 `${row.firstName} ${row.middleName} ${row.lastName}`,
@@ -105,29 +121,19 @@ const UsersTable = ({ users }: { users: User[] }) => {
             },
             cell: ({ row }) => {
                 const user = row.original;
-                return (
-                    <span className="font-medium">
-                        {user.firstName} {user.middleName} {user.lastName}
-                    </span>
-                );
+                const fullName =
+                    `${user.firstName} ${user.middleName} ${user.lastName}`
+                        .toLowerCase()
+                        .split(" ")
+                        .map(
+                            (word) =>
+                                word.charAt(0).toUpperCase() + word.slice(1),
+                        )
+                        .join(" ");
+                return <span className="font-medium">{fullName}</span>;
             },
         },
-        {
-            accessorKey: "schoolNumber",
-            header: ({ column }) => {
-                return (
-                    <Button
-                        variant="ghost"
-                        onClick={() =>
-                            column.toggleSorting(column.getIsSorted() === "asc")
-                        }
-                    >
-                        School No.
-                        <ArrowUpDown className="h-4 w-4 print:hidden" />
-                    </Button>
-                );
-            },
-        },
+
         {
             accessorKey: "email",
             header: ({ column }) => {
@@ -142,6 +148,10 @@ const UsersTable = ({ users }: { users: User[] }) => {
                         <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
+            },
+            cell: ({ row }) => {
+                const email = row.original.email;
+                return email && email !== "undefined" ? email : "—";
             },
         },
         {

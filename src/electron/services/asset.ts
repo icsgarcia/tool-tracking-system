@@ -17,26 +17,29 @@ export function AssetHandlers() {
                 const workbook = XLSX.read(buffer, { type: "buffer" });
                 const sheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[sheetName];
-                const jsonData = XLSX.utils.sheet_to_json(worksheet, {
-                    range: 15,
-                    header: [
-                        "temporaryTagNumber",
-                        "assetName",
-                        "assetDescription",
-                        "serialNumber",
-                        "assetCategoryCode",
-                        "roomName",
-                        "locationCode",
-                        "assetCount",
-                        "assetCondition",
-                        "remarks",
-                    ],
-                });
+                const jsonData: CreateAssetDto[] = XLSX.utils.sheet_to_json(
+                    worksheet,
+                    {
+                        range: 15,
+                        header: [
+                            "temporaryTagNumber",
+                            "assetName",
+                            "assetDescription",
+                            "serialNumber",
+                            "assetCategoryCode",
+                            "roomName",
+                            "locationCode",
+                            "assetCount",
+                            "assetCondition",
+                            "remarks",
+                        ],
+                    },
+                );
 
                 const createdAssets = [];
 
-                for (const row of jsonData as CreateAssetDto[]) {
-                    const qrCodeData = `ASSET-${row["assetName"]}-${randomUUID()}`;
+                for (const row of jsonData) {
+                    const qrCodeData = `ASSET-${row["temporaryTagNumber"]}-${randomUUID()}`;
 
                     const asset = await prisma.asset.create({
                         data: {
@@ -115,7 +118,10 @@ export function AssetHandlers() {
                 });
 
                 const availableCount = asset.assetCount - borrowedCount;
-                const qrCodeBuffer = await QRCode.toBuffer(asset.qrCode);
+                const qrCodeBuffer = await QRCode.toBuffer(asset.qrCode, {
+                    width: 500,
+                    margin: 2,
+                });
                 const qrCodeBase64 = `data:image/png;base64,${qrCodeBuffer.toString("base64")}`;
                 return {
                     ...asset,

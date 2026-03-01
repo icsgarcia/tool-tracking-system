@@ -1,5 +1,7 @@
 {
     "name": "asset-tracking-system",
+    "description": "Tool Keeper",
+    "author": "Tool Keeper",
     "private": true,
     "version": "0.0.0",
     "type": "module",
