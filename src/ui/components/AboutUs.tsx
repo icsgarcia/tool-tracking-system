@@ -9,23 +9,23 @@ import { Separator } from "@/components/ui/separator";
 import MemberCard from "./MemberCard";
 
 const members = [
-    { image: "/group-members/Franze_Nua.jpg", name: "Franze Nua" },
-    { image: "/group-members/Nicos_Carpio.jpg", name: "Nicos Carpio" },
-    { image: "/group-members/Melvin_Diaz.jpg", name: "Melvin Diaz" },
+    { image: "./group-members/Franze_Nua.jpg", name: "Franze Nua" },
+    { image: "./group-members/Nicos_Carpio.jpg", name: "Nicos Carpio" },
+    { image: "./group-members/Melvin_Diaz.jpg", name: "Melvin Diaz" },
     {
-        image: "/group-members/Kimberly_Dioquino.jpg",
+        image: "./group-members/Kimberly_Dioquino.jpg",
         name: "Kimberly Dioquino",
     },
     {
-        image: "/group-members/Napoleon_Francisco.jpg",
+        image: "./group-members/Napoleon_Francisco.jpg",
         name: "Napoleon Francisco",
     },
     {
-        image: "/group-members/Benedict_Mangornong.jpg",
+        image: "./group-members/Benedict_Mangornong.jpg",
         name: "Benedict Mangornong",
     },
 
-    { image: "/group-members/Leigh_Torio.jpg", name: "Leigh Torio" },
+    { image: "./group-members/Leigh_Torio.jpg", name: "Leigh Torio" },
 ];
 
 const AboutUs = () => {

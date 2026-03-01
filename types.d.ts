@@ -6,7 +6,6 @@ enum Status {
 
 enum Role {
     STUDENT = "STUDENT",
-    TEACHER = "TEACHER",
     STAFF = "STAFF",
     ADMIN = "ADMIN",
 }
