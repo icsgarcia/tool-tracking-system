@@ -1,4 +1,10 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { useRef, useState, type Dispatch, type SetStateAction } from "react";
 import QrScan from "./QrScan";
 import { useBorrowAsset } from "@/hooks/useTransactions";
@@ -59,6 +65,12 @@ const BorrowAssetDialog = ({
     return (
         <Dialog open={openBorrowDialog} onOpenChange={setOpenBorrowDialog}>
             <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Borrow Asset</DialogTitle>
+                    <DialogDescription>
+                        Scan Asset's QR Code to borrow
+                    </DialogDescription>
+                </DialogHeader>
                 {code ? (
                     <div>
                         <form onSubmit={handleSubmit}>
@@ -83,10 +95,21 @@ const BorrowAssetDialog = ({
                         </form>
                     </div>
                 ) : (
-                    <div>
-                        <div>Scan Asset's QR Code to borrow</div>
-                        <QrScan handleScan={handleScan} />
-                    </div>
+                    <>
+                        <div className="flex flex-col items-center gap-3 py-4">
+                            <div className="relative flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
+                                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                                Waiting for QR code scan...
+                            </p>
+                        </div>
+
+                        <QrScan
+                            handleScan={handleScan}
+                            className="opacity-0 pointer-events-none absolute"
+                        />
+                    </>
                 )}
             </DialogContent>
         </Dialog>
