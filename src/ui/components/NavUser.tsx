@@ -1,9 +1,10 @@
-import { ChevronsUpDown, LogOut } from "lucide-react";
+import { ChevronsUpDown, LogOut, UserCircle } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
     DropdownMenu,
     DropdownMenuContent,
+    DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
@@ -50,10 +51,7 @@ const NavUser = ({ user, onLogout }: NavUserType) => {
                     sideOffset={4}
                 >
                     <DropdownMenuLabel className="p-0 font-normal">
-                        <div
-                            onClick={() => setOpenProfileDialog(true)}
-                            className="flex items-center gap-2 px-1 py-1.5 text-left text-sm cursor-pointer"
-                        >
+                        <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                             <Avatar className="h-8 w-8 shrink-0 rounded-lg">
                                 <AvatarFallback className="rounded-lg">
                                     {initials}
@@ -70,11 +68,21 @@ const NavUser = ({ user, onLogout }: NavUserType) => {
                         </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                        <DropdownMenuItem
+                            onClick={() => setOpenProfileDialog(true)}
+                            className="cursor-pointer"
+                        >
+                            <UserCircle className="w-4 h-4" />
+                            Profile
+                        </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem
                         onClick={onLogout}
-                        className="cursor-pointer"
+                        className="cursor-pointer text-destructive focus:text-destructive"
                     >
-                        <LogOut />
+                        <LogOut className="w-4 h-4" />
                         Log out
                     </DropdownMenuItem>
                 </DropdownMenuContent>

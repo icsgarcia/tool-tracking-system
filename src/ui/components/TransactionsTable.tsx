@@ -9,10 +9,11 @@ import { Badge } from "./ui/badge";
 import type { ColumnDef, FilterFn } from "@tanstack/react-table";
 import { useRef, useState } from "react";
 import DataTable from "./DataTable";
-import { ArrowUpDown, SearchIcon } from "lucide-react";
+import { ArrowUpDown, ArrowLeftRight, SearchIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 import PrintButton from "./PrintButton";
+import { Separator } from "./ui/separator";
 
 const globalFilterFn: FilterFn<Transactions> = (
     row,
@@ -56,7 +57,7 @@ const TransactionsTable = ({
                             column.toggleSorting(column.getIsSorted() === "asc")
                         }
                     >
-                        Name
+                        User Name
                         <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
@@ -77,7 +78,7 @@ const TransactionsTable = ({
                             column.toggleSorting(column.getIsSorted() === "asc")
                         }
                     >
-                        Asset
+                        Borrowed Asset
                         <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
@@ -167,7 +168,19 @@ const TransactionsTable = ({
             },
             cell: ({ row }) => {
                 const transaction = row.original;
-                return <Badge variant="outline">{transaction.status}</Badge>;
+                const isBorrowed = transaction.status === "BORROWED";
+                return (
+                    <Badge
+                        variant="outline"
+                        className={
+                            isBorrowed
+                                ? "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800"
+                                : "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
+                        }
+                    >
+                        {transaction.status}
+                    </Badge>
+                );
             },
         },
     ];
@@ -176,16 +189,22 @@ const TransactionsTable = ({
         <Card ref={contentRef}>
             <CardHeader>
                 <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4 print:mb-0">
-                    <div>
-                        <CardTitle className="text-lg sm:text-xl print:font-bold print:text-3xl">
-                            Transactions
-                        </CardTitle>
-                        <CardDescription className="print:hidden">
-                            Asset borrowing and return history
-                        </CardDescription>
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 print:hidden">
+                            <ArrowLeftRight className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                            <CardTitle className="text-lg sm:text-xl print:font-bold print:text-3xl">
+                                Transactions
+                            </CardTitle>
+                            <CardDescription className="print:hidden">
+                                Asset borrowing and return history
+                            </CardDescription>
+                        </div>
                     </div>
                 </div>
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between print:hidden">
+                <Separator className="print:hidden" />
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between print:hidden pt-2">
                     <InputGroup className="w-full sm:w-7/12 lg:w-4/12">
                         <InputGroupInput
                             id="inline-start-input"

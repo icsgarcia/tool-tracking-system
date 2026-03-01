@@ -7,6 +7,7 @@ import {
 } from "./ui/card";
 import { Separator } from "@/components/ui/separator";
 import MemberCard from "./MemberCard";
+import { UsersRound } from "lucide-react";
 
 const members = [
     { image: "./group-members/Franze_Nua.jpg", name: "Franze Nua" },
@@ -32,12 +33,21 @@ const AboutUs = () => {
     return (
         <Card>
             <CardHeader>
-                <CardTitle className="text-lg sm:text-xl">About Us</CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
-                    Meet the team behind the Asset Tracking System
-                </CardDescription>
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
+                        <UsersRound className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                        <CardTitle className="text-lg sm:text-xl">
+                            About Us
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm">
+                            Meet the team behind the Asset Tracking System
+                        </CardDescription>
+                    </div>
+                </div>
             </CardHeader>
-            <Separator />
+            <Separator className="mx-4 sm:mx-6 w-auto" />
             <CardContent className="pt-4 sm:pt-6">
                 <div className="flex flex-col items-center gap-5 sm:gap-6 w-full">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 w-full">

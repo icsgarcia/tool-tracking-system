@@ -15,8 +15,12 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 import {
     SearchIcon,
     ArrowUpDown,
-    Ellipsis,
     EllipsisVertical,
+    Users,
+    UserPlus,
+    Pencil,
+    Trash2,
+    MoreHorizontal,
 } from "lucide-react";
 import { type ColumnDef, type FilterFn } from "@tanstack/react-table";
 import DataTable from "./DataTable";
@@ -32,6 +36,7 @@ import UpdateUserDialog from "./UpdateUserDialog";
 import DeleteAllUsersDialog from "./DeleteAllUsersDialog";
 import { useLocation } from "react-router";
 import PrintButton from "./PrintButton";
+import { Separator } from "./ui/separator";
 
 const globalFilterFn: FilterFn<User> = (row, _columnId, filterValue) => {
     const search = filterValue.toLowerCase();
@@ -74,7 +79,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
                         src={user.qrCodeImage}
                         alt={`${user.lastName} ${user.firstName} ${user.middleName}`}
                         width={50}
-                        className="cursor-pointer"
+                        className="cursor-pointer rounded-md border hover:opacity-80 transition-opacity"
                         onClick={() => {
                             setSelectedQrCode({
                                 name: `${user.lastName} ${user.firstName} ${user.middleName}`,
@@ -228,6 +233,11 @@ const UsersTable = ({ users }: { users: User[] }) => {
                             ? "default"
                             : "secondary"
                     }
+                    className={
+                        row.original.status === "ACTIVE"
+                            ? "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
+                            : ""
+                    }
                 >
                     {row.original.status}
                 </Badge>
@@ -240,9 +250,11 @@ const UsersTable = ({ users }: { users: User[] }) => {
                 <div className="print:hidden">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Ellipsis />
+                            <Button variant="ghost" size="icon-xs">
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent>
+                        <DropdownMenuContent align="end">
                             <DropdownMenuGroup>
                                 <DropdownMenuItem
                                     onClick={() => {
@@ -250,6 +262,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
                                         setOpenUpdateUser(true);
                                     }}
                                 >
+                                    <Pencil className="h-4 w-4" />
                                     Edit User
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
@@ -257,7 +270,9 @@ const UsersTable = ({ users }: { users: User[] }) => {
                                         setSelectedUser(row.original);
                                         setOpenDeleteUser(true);
                                     }}
+                                    className="text-destructive focus:text-destructive"
                                 >
+                                    <Trash2 className="h-4 w-4" />
                                     Delete User
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
@@ -273,13 +288,18 @@ const UsersTable = ({ users }: { users: User[] }) => {
             <Card ref={contentRef}>
                 <CardHeader>
                     <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4 print:mb-0">
-                        <div>
-                            <CardTitle className="text-lg sm:text-xl print:font-bold print:text-3xl">
-                                Users
-                            </CardTitle>
-                            <CardDescription className="print:hidden">
-                                Manage all registered users
-                            </CardDescription>
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 print:hidden">
+                                <Users className="w-5 h-5 text-primary" />
+                            </div>
+                            <div>
+                                <CardTitle className="text-lg sm:text-xl print:font-bold print:text-3xl">
+                                    Users
+                                </CardTitle>
+                                <CardDescription className="print:hidden">
+                                    Manage all registered users
+                                </CardDescription>
+                            </div>
                         </div>
                         <div className="flex items-center gap-1 print:hidden">
                             <Button
@@ -289,6 +309,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
                                     setOpenCreateUsersDialog(true);
                                 }}
                             >
+                                <UserPlus className="w-4 h-4" />
                                 Add Users
                             </Button>
                             <DropdownMenu>
@@ -301,7 +322,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
                                         <EllipsisVertical />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent>
+                                <DropdownMenuContent align="end">
                                     <DropdownMenuGroup>
                                         <DropdownMenuItem
                                             onClick={() =>
@@ -310,7 +331,9 @@ const UsersTable = ({ users }: { users: User[] }) => {
                                                 )
                                             }
                                             disabled={users.length <= 1}
+                                            className="text-destructive focus:text-destructive"
                                         >
+                                            <Trash2 className="w-4 h-4" />
                                             Delete all users
                                         </DropdownMenuItem>
                                     </DropdownMenuGroup>
@@ -318,7 +341,8 @@ const UsersTable = ({ users }: { users: User[] }) => {
                             </DropdownMenu>
                         </div>
                     </div>
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between print:hidden">
+                    <Separator className="print:hidden" />
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between print:hidden pt-2">
                         <InputGroup className="w-full sm:w-7/12 lg:w-4/12">
                             <InputGroupInput
                                 id="inline-start-input"

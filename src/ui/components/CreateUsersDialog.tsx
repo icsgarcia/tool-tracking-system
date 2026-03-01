@@ -22,6 +22,7 @@ import {
 } from "./ui/field";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
 import { useCreateUser, useCreateUserByFile } from "@/hooks/useUsers";
 import {
     Select,
@@ -31,6 +32,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "./ui/select";
+import { UserPlus, Upload } from "lucide-react";
 
 interface CreateUsersDialogType {
     openCreateUsersDialog: boolean;
@@ -115,15 +117,23 @@ const CreateUsersDialog = ({
         <Dialog open={openCreateUsersDialog} onOpenChange={handleOpenChange}>
             <DialogContent className="max-w-lg w-[calc(100%-2rem)] max-h-[85svh] flex flex-col gap-0 p-0 overflow-hidden">
                 <DialogHeader className="shrink-0 px-4 pt-4 pb-2 sm:px-6 sm:pt-6">
-                    <DialogTitle className="text-base sm:text-lg">
-                        Create User
-                    </DialogTitle>
-                    <DialogDescription className="text-xs sm:text-sm">
-                        Fill out the form below or upload an Excel file to
-                        create a user.
-                    </DialogDescription>
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
+                            <UserPlus className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-base sm:text-lg">
+                                Create User
+                            </DialogTitle>
+                            <DialogDescription className="text-xs sm:text-sm">
+                                Fill out the form below or upload an Excel file
+                                to create a user.
+                            </DialogDescription>
+                        </div>
+                    </div>
                 </DialogHeader>
-                <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4 sm:px-6 sm:pb-6">
+                <Separator className="mx-4 sm:mx-6 w-auto" />
+                <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4 sm:px-6 sm:pb-6 pt-2">
                     <form onSubmit={handleSubmit}>
                         <FieldSet>
                             <FieldGroup>
@@ -301,6 +311,11 @@ const CreateUsersDialog = ({
                                             ))
                                     }
                                 >
+                                    {file ? (
+                                        <Upload className="w-4 h-4" />
+                                    ) : (
+                                        <UserPlus className="w-4 h-4" />
+                                    )}
                                     {createUser.isPending ||
                                     createUserByFile.isPending
                                         ? "Creating..."

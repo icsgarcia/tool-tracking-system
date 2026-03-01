@@ -13,9 +13,13 @@ import DataTable from "./DataTable";
 import type { ColumnDef, FilterFn } from "@tanstack/react-table";
 import {
     ArrowUpDown,
-    Ellipsis,
     EllipsisVertical,
     SearchIcon,
+    Package,
+    PackagePlus,
+    Pencil,
+    Trash2,
+    MoreHorizontal,
 } from "lucide-react";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 import {
@@ -29,6 +33,7 @@ import DeleteAssetDialog from "./DeleteAssetDialog";
 import UpdateAssetDialog from "./UpdateAssetDialog";
 import DeleteAllAssetsDialog from "./DeleteAllAssetsDialog";
 import PrintButton from "./PrintButton";
+import { Separator } from "./ui/separator";
 
 const globalFilterFn: FilterFn<Asset> = (row, _columnId, filterValue) => {
     const search = filterValue.toLowerCase();
@@ -65,7 +70,7 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                         src={asset.qrCodeImage}
                         alt={asset.assetName}
                         width={50}
-                        className="cursor-pointer"
+                        className="cursor-pointer rounded-md border hover:opacity-80 transition-opacity"
                         onClick={() => {
                             setSelectedQrCode({
                                 name: asset.assetName,
@@ -181,9 +186,11 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                 <div className="print:hidden">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Ellipsis />
+                            <Button variant="ghost" size="icon-xs">
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent>
+                        <DropdownMenuContent align="end">
                             <DropdownMenuGroup>
                                 <DropdownMenuItem
                                     onClick={() => {
@@ -191,6 +198,7 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                                         setOpenUpdateAsset(true);
                                     }}
                                 >
+                                    <Pencil className="h-4 w-4" />
                                     Edit Asset
                                 </DropdownMenuItem>
 
@@ -199,7 +207,9 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                                         setSelectedAsset(row.original);
                                         setOpenDeleteAsset(true);
                                     }}
+                                    className="text-destructive focus:text-destructive"
                                 >
+                                    <Trash2 className="h-4 w-4" />
                                     Delete Asset
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
@@ -215,13 +225,18 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
             <Card ref={contentRef}>
                 <CardHeader>
                     <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4 print:mb-0">
-                        <div>
-                            <CardTitle className="text-lg sm:text-xl print:font-bold print:text-3xl">
-                                Assets
-                            </CardTitle>
-                            <CardDescription className="print:hidden">
-                                Manage all tracked assets
-                            </CardDescription>
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 print:hidden">
+                                <Package className="w-5 h-5 text-primary" />
+                            </div>
+                            <div>
+                                <CardTitle className="text-lg sm:text-xl print:font-bold print:text-3xl">
+                                    Assets
+                                </CardTitle>
+                                <CardDescription className="print:hidden">
+                                    Manage all tracked assets
+                                </CardDescription>
+                            </div>
                         </div>
                         <div className="flex items-center gap-1 print:hidden">
                             <Button
@@ -231,6 +246,7 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                                     setOpenCreateAssetsDialog(true);
                                 }}
                             >
+                                <PackagePlus className="w-4 h-4" />
                                 Add Assets
                             </Button>
                             <DropdownMenu>
@@ -243,7 +259,7 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                                         <EllipsisVertical />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent>
+                                <DropdownMenuContent align="end">
                                     <DropdownMenuGroup>
                                         <DropdownMenuItem
                                             onClick={() =>
@@ -252,7 +268,9 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                                                 )
                                             }
                                             disabled={assets.length <= 0}
+                                            className="text-destructive focus:text-destructive"
                                         >
+                                            <Trash2 className="w-4 h-4" />
                                             Delete all assets
                                         </DropdownMenuItem>
                                     </DropdownMenuGroup>
@@ -260,7 +278,8 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                             </DropdownMenu>
                         </div>
                     </div>
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between print:hidden">
+                    <Separator className="print:hidden" />
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between print:hidden pt-2">
                         <InputGroup className="w-full sm:w-7/12 lg:w-4/12">
                             <InputGroupInput
                                 id="inline-start-input"

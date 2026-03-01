@@ -16,6 +16,8 @@ import QrScan from "./QrScan";
 import { useNavigate } from "react-router";
 import { useScanUser } from "@/hooks/useUsers";
 import { toast } from "sonner";
+import { Separator } from "./ui/separator";
+import { LogIn, ScanLine } from "lucide-react";
 
 interface LoginDialogProps {
     admin: User;
@@ -75,18 +77,34 @@ const LoginDialog = ({
         <Dialog open={openLoginDialog} onOpenChange={setOpenLoginDialog}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Student/Staff Login</DialogTitle>
-                    <DialogDescription>
-                        Scan Student's or Staff's QR Code to login
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="flex flex-col items-center gap-3 py-4">
-                    <div className="relative flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
-                        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
+                            <LogIn className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                            <DialogTitle>Student/Staff Login</DialogTitle>
+                            <DialogDescription>
+                                Scan Student's or Staff's QR Code to login
+                            </DialogDescription>
+                        </div>
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                        Waiting for QR code scan...
-                    </p>
+                </DialogHeader>
+
+                <Separator />
+
+                <div className="flex flex-col items-center gap-4 py-6">
+                    <div className="relative flex items-center justify-center w-20 h-20 rounded-full bg-primary/10">
+                        <ScanLine className="w-9 h-9 text-primary animate-pulse" />
+                    </div>
+                    <div className="text-center space-y-1">
+                        <p className="text-sm font-medium">
+                            Waiting for QR code scan...
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                            Place the student's or staff's QR code in front of
+                            the scanner
+                        </p>
+                    </div>
                 </div>
                 {scanningUser && (
                     <QrScan

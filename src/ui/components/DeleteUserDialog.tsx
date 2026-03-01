@@ -9,7 +9,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from "./ui/dialog";
+import { Separator } from "./ui/separator";
 import { useDeleteUser } from "@/hooks/useUsers";
+import { UserX, Trash2, X } from "lucide-react";
 
 interface DeleteUserDialogProps {
     openDeleteUser: boolean;
@@ -33,18 +35,31 @@ const DeleteUserDialog = ({
     return (
         <Dialog open={openDeleteUser} onOpenChange={setOpenDeleteUser}>
             <DialogContent className="max-w-md w-[calc(100%-2rem)] max-h-[85svh] flex flex-col gap-0 p-0 overflow-hidden">
-                <form onSubmit={handleDeleteUser} className="flex flex-col gap-4 p-4 sm:p-6">
+                <form
+                    onSubmit={handleDeleteUser}
+                    className="flex flex-col gap-4 p-4 sm:p-6"
+                >
                     <DialogHeader>
-                        <DialogTitle className="text-base sm:text-lg">
-                            Confirm User Deletion
-                        </DialogTitle>
-                        <DialogDescription className="text-xs sm:text-sm">
-                            Are you sure you want to delete this user? This
-                            action cannot be undone and will permanently remove
-                            the user and all associated data.
-                        </DialogDescription>
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-destructive/10">
+                                <UserX className="w-5 h-5 text-destructive" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-base sm:text-lg">
+                                    Confirm User Deletion
+                                </DialogTitle>
+                                <DialogDescription className="text-xs sm:text-sm">
+                                    This action cannot be undone and will
+                                    permanently remove the user and all
+                                    associated data.
+                                </DialogDescription>
+                            </div>
+                        </div>
                     </DialogHeader>
-                    <div className="space-y-1 rounded-md border p-3 text-sm">
+
+                    <Separator />
+
+                    <div className="space-y-1 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-sm">
                         <p>
                             <span className="font-bold">School Number:</span>{" "}
                             {user.schoolNumber}
@@ -67,9 +82,17 @@ const DeleteUserDialog = ({
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button>Cancel</Button>
+                            <Button variant="outline">
+                                <X className="w-4 h-4" />
+                                Cancel
+                            </Button>
                         </DialogClose>
-                        <Button type="submit" disabled={deleteUser.isPending}>
+                        <Button
+                            type="submit"
+                            variant="destructive"
+                            disabled={deleteUser.isPending}
+                        >
+                            <Trash2 className="w-4 h-4" />
                             {deleteUser.isPending
                                 ? "Deleting..."
                                 : "Delete User"}

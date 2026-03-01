@@ -19,6 +19,8 @@ import {
 import { useUpdateAsset } from "@/hooks/useAssets";
 import { Field, FieldGroup, FieldLabel, FieldSet } from "./ui/field";
 import { Input } from "./ui/input";
+import { Separator } from "./ui/separator";
+import { PackageOpen, Save, X } from "lucide-react";
 
 interface UpdateAssetDialogProps {
     openUpdateAsset: boolean;
@@ -62,15 +64,23 @@ const UpdateAssetDialog = ({
         <Dialog open={openUpdateAsset} onOpenChange={setOpenUpdateAsset}>
             <DialogContent className="max-w-lg w-[calc(100%-2rem)] max-h-[85svh] flex flex-col gap-0 p-0 overflow-hidden">
                 <DialogHeader className="shrink-0 px-4 pt-4 pb-2 sm:px-6 sm:pt-6">
-                    <DialogTitle className="text-base sm:text-lg">
-                        Update Asset
-                    </DialogTitle>
-                    <DialogDescription className="text-xs sm:text-sm">
-                        Update the asset details below and click "Update Asset"
-                        to save changes.
-                    </DialogDescription>
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
+                            <PackageOpen className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-base sm:text-lg">
+                                Update Asset
+                            </DialogTitle>
+                            <DialogDescription className="text-xs sm:text-sm">
+                                Update the asset details below and click "Update
+                                Asset" to save changes.
+                            </DialogDescription>
+                        </div>
+                    </div>
                 </DialogHeader>
-                <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4 sm:px-6 sm:pb-6">
+                <Separator className="mx-4 sm:mx-6 w-auto" />
+                <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4 sm:px-6 sm:pb-6 pt-2">
                     <form onSubmit={handleUpdateAsset}>
                         <FieldSet>
                             <FieldGroup>
@@ -202,12 +212,16 @@ const UpdateAssetDialog = ({
                             </FieldGroup>
                             <DialogFooter>
                                 <DialogClose asChild>
-                                    <Button>Cancel</Button>
+                                    <Button variant="outline">
+                                        <X className="w-4 h-4" />
+                                        Cancel
+                                    </Button>
                                 </DialogClose>
                                 <Button
                                     type="submit"
                                     disabled={updateAsset.isPending}
                                 >
+                                    <Save className="w-4 h-4" />
                                     {updateAsset.isPending
                                         ? "Updating..."
                                         : "Update Asset"}
