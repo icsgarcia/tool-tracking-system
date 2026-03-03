@@ -9,7 +9,6 @@ import { randomUUID } from "node:crypto";
 export function UserHandlers() {
     const prisma = getPrisma();
 
-    // Create users from Excel file (receives file buffer from renderer)
     ipcMain.handle(
         "user:createUserByFile",
         async (_, fileBuffer: ArrayBuffer) => {
@@ -70,7 +69,6 @@ export function UserHandlers() {
         },
     );
 
-    // Create a single user
     ipcMain.handle("user:createUser", async (_, userData: CreateUserDto) => {
         const qrCodeData = `USER-${userData.schoolNumber}-${Date.now()}`;
 
@@ -92,7 +90,6 @@ export function UserHandlers() {
         return user;
     });
 
-    // Get all users with QR code images
     ipcMain.handle("user:getAllUsers", async () => {
         const users = await prisma.user.findMany();
 
@@ -117,7 +114,6 @@ export function UserHandlers() {
         return usersWithQrCode;
     });
 
-    // Get user by ID
     ipcMain.handle("user:getUserById", async (_, userId: string) => {
         const user = await prisma.user.findUnique({
             where: { id: userId },
@@ -130,7 +126,6 @@ export function UserHandlers() {
         return user;
     });
 
-    // Get user QR code data URL
     ipcMain.handle("user:getUserQRCode", async (_, userId: string) => {
         const user = await prisma.user.findUnique({
             where: { id: userId },
@@ -153,7 +148,6 @@ export function UserHandlers() {
         };
     });
 
-    // Get user QR code as base64 buffer (for download/print)
     ipcMain.handle("user:getUserQRCodeBuffer", async (_, userId: string) => {
         const user = await prisma.user.findUnique({
             where: { id: userId },
@@ -170,7 +164,6 @@ export function UserHandlers() {
         return `data:image/png;base64,${qrCodeBuffer.toString("base64")}`;
     });
 
-    // Find user by QR code (for scanning/login)
     ipcMain.handle("user:getUserByQRCode", async (_, qrCode: string) => {
         const user = await prisma.user.findFirst({
             where: { qrCode },

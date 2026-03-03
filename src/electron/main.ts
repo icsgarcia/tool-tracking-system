@@ -11,7 +11,7 @@ import cron from "node-cron";
 import { printHandlers } from "./services/print.js";
 
 app.on("ready", async () => {
-    // Menu.setApplicationMenu(null);
+    Menu.setApplicationMenu(null);
 
     await initDatabase();
 

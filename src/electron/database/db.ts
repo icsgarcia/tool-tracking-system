@@ -68,7 +68,6 @@ export async function initDatabase() {
         dbPath = path.join(app.getPath("userData"), "database.db");
     }
 
-    // Ensure directory exists
     const dbDir = path.dirname(dbPath);
     if (!fs.existsSync(dbDir)) {
         fs.mkdirSync(dbDir, { recursive: true });
@@ -76,7 +75,6 @@ export async function initDatabase() {
 
     console.log("[database] Using database at:", dbPath);
 
-    // Create tables if they don't exist
     const db = new Database(dbPath);
     db.exec(CREATE_TABLES_SQL);
     db.close();
@@ -102,7 +100,7 @@ async function seedDefaultAdmin() {
 
     const qrCode = `USER-ADMIN-0001-${Date.now()}`;
 
-    const admin = await prisma.user.create({
+    await prisma.user.create({
         data: {
             qrCode,
             schoolNumber: "ADMIN-0001",
@@ -118,7 +116,6 @@ async function seedDefaultAdmin() {
         },
     });
 
-    // Save QR code image to Desktop
     const desktopPath = app.getPath("desktop");
     const qrImagePath = path.join(desktopPath, "ADMIN-QR-CODE.png");
 

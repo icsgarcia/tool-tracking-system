@@ -12,8 +12,6 @@ const QrScan = ({ handleScan, className }: QrScanProps) => {
     const [inputValue, setInputValue] = useState("");
 
     useEffect(() => {
-        // Defer focus so it runs after any parent event (e.g. tab click)
-        // finishes processing — otherwise the tab trigger steals focus back.
         const timer = setTimeout(() => {
             inputRef.current?.focus();
         }, 0);

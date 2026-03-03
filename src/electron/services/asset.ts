@@ -8,7 +8,6 @@ import { randomUUID } from "crypto";
 export function AssetHandlers() {
     const prisma = getPrisma();
 
-    // Create assets from Excel file (receives file buffer from renderer)
     ipcMain.handle(
         "asset:createAssetByFile",
         async (_, fileBuffer: ArrayBuffer) => {
@@ -72,7 +71,6 @@ export function AssetHandlers() {
         },
     );
 
-    // Create a single asset
     ipcMain.handle(
         "asset:createAsset",
         async (_, assetData: CreateAssetDto) => {
@@ -98,7 +96,6 @@ export function AssetHandlers() {
         },
     );
 
-    // Get all assets with QR code images
     ipcMain.handle("asset:getAllAssets", async () => {
         const assets = await prisma.asset.findMany();
 
@@ -135,7 +132,6 @@ export function AssetHandlers() {
         return updatedAssets;
     });
 
-    // Get asset by ID
     ipcMain.handle("asset:getAssetById", async (_, assetId: string) => {
         const asset = await prisma.asset.findUnique({
             where: { id: assetId },
