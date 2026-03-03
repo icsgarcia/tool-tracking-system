@@ -37,6 +37,7 @@ import DeleteAllUsersDialog from "./DeleteAllUsersDialog";
 import { useLocation } from "react-router";
 import PrintButton from "./PrintButton";
 import { Separator } from "./ui/separator";
+import UserDetailDialog from "./UserDetailDialog";
 
 const globalFilterFn: FilterFn<User> = (row, _columnId, filterValue) => {
     const search = filterValue.toLowerCase();
@@ -65,6 +66,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
     const [selectedUser, setSelectedUser] = useState<User>();
     const [openDeleteUser, setOpenDeleteUser] = useState(false);
     const [openUpdateUser, setOpenUpdateUser] = useState(false);
+    const [openUserDetailDialog, setOpenUserDetailDialog] = useState(false);
     const [openDeleteAllUsersDialog, setOpenDeleteAllUsersDialog] =
         useState(false);
 
@@ -106,6 +108,20 @@ const UsersTable = ({ users }: { users: User[] }) => {
                     </Button>
                 );
             },
+            cell: ({ row }) => {
+                const user = row.original;
+                return (
+                    <span
+                        onClick={() => {
+                            setSelectedUser(user);
+                            setOpenUserDetailDialog(true);
+                        }}
+                        className="font-medium hover:underline cursor-pointer"
+                    >
+                        {user.schoolNumber}
+                    </span>
+                );
+            },
         },
         {
             id: "name",
@@ -135,7 +151,17 @@ const UsersTable = ({ users }: { users: User[] }) => {
                                 word.charAt(0).toUpperCase() + word.slice(1),
                         )
                         .join(" ");
-                return <span className="font-medium">{fullName}</span>;
+                return (
+                    <span
+                        onClick={() => {
+                            setSelectedUser(user);
+                            setOpenUserDetailDialog(true);
+                        }}
+                        className="font-medium hover:underline cursor-pointer"
+                    >
+                        {fullName}
+                    </span>
+                );
             },
         },
 
@@ -397,6 +423,13 @@ const UsersTable = ({ users }: { users: User[] }) => {
                     openDeleteAllUsersDialog={openDeleteAllUsersDialog}
                     setOpenDeleteAllUsersDialog={setOpenDeleteAllUsersDialog}
                     userId={user.id}
+                />
+            )}
+            {openUserDetailDialog && selectedUser && (
+                <UserDetailDialog
+                    openUserDetailDialog={openUserDetailDialog}
+                    setOpenUserDetailDialog={setOpenUserDetailDialog}
+                    user={selectedUser}
                 />
             )}
         </>

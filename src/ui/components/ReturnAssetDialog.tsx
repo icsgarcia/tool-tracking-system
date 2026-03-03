@@ -66,90 +66,94 @@ const ReturnAssetDialog = ({
     };
     return (
         <Dialog open={openReturnDialog} onOpenChange={setOpenReturnDialog}>
-            <DialogContent className="sm:max-w-md">
-                <DialogHeader>
+            <DialogContent className="max-w-md w-[calc(100%-2rem)] max-h-[85svh] flex flex-col gap-0 p-0 overflow-hidden">
+                <DialogHeader className="shrink-0 px-4 pt-4 pb-2 sm:px-6 sm:pt-6">
                     <div className="flex items-center gap-3">
                         <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
                             <Undo2 className="w-5 h-5 text-primary" />
                         </div>
                         <div>
-                            <DialogTitle>Return Asset</DialogTitle>
-                            <DialogDescription>
+                            <DialogTitle className="text-base sm:text-lg">
+                                Return Asset
+                            </DialogTitle>
+                            <DialogDescription className="text-xs sm:text-sm">
                                 Scan Asset's QR Code to return
                             </DialogDescription>
                         </div>
                     </div>
                 </DialogHeader>
 
-                <Separator />
+                <Separator className="mx-4 sm:mx-6 w-auto" />
 
-                {code ? (
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <div className="flex items-center gap-3 rounded-lg border p-3 bg-muted/50">
-                            <QrCode className="w-5 h-5 text-muted-foreground shrink-0" />
-                            <div className="min-w-0">
-                                <p className="text-xs text-muted-foreground">
-                                    Scanned QR Code
-                                </p>
-                                <p className="text-sm font-medium truncate">
-                                    {code}
-                                </p>
+                <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4 sm:px-6 sm:pb-6 pt-2">
+                    {code ? (
+                        <form onSubmit={handleSubmit} className="space-y-5">
+                            <div className="flex items-center gap-3 rounded-lg border p-3 bg-muted/50">
+                                <QrCode className="w-5 h-5 text-muted-foreground shrink-0" />
+                                <div className="min-w-0">
+                                    <p className="text-xs text-muted-foreground">
+                                        Scanned QR Code
+                                    </p>
+                                    <p className="text-sm font-medium truncate">
+                                        {code}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="return-count">
-                                Quantity to Return
-                            </Label>
-                            <Input
-                                id="return-count"
-                                type="number"
-                                min={1}
-                                value={returnCount}
-                                onChange={(e) =>
-                                    setReturnCount(Number(e.target.value))
-                                }
+                            <div className="space-y-2">
+                                <Label htmlFor="return-count">
+                                    Quantity to Return
+                                </Label>
+                                <Input
+                                    id="return-count"
+                                    type="number"
+                                    min={1}
+                                    value={returnCount}
+                                    onChange={(e) =>
+                                        setReturnCount(Number(e.target.value))
+                                    }
+                                />
+                            </div>
+
+                            <div className="flex justify-end gap-2 pt-2">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={handleCancel}
+                                >
+                                    <X className="w-4 h-4 mr-1" />
+                                    Cancel
+                                </Button>
+                                <Button type="submit">
+                                    <Undo2 className="w-4 h-4 mr-1" />
+                                    Return Asset
+                                </Button>
+                            </div>
+                        </form>
+                    ) : (
+                        <>
+                            <div className="flex flex-col items-center gap-4 py-8">
+                                <div className="relative flex items-center justify-center w-20 h-20 rounded-full bg-primary/10">
+                                    <ScanLine className="w-9 h-9 text-primary animate-pulse" />
+                                </div>
+                                <div className="text-center space-y-1">
+                                    <p className="text-sm font-medium">
+                                        Waiting for QR code scan...
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">
+                                        Place the asset's QR code in front of
+                                        the scanner
+                                    </p>
+                                </div>
+                            </div>
+
+                            <QrScan
+                                handleScan={handleScan}
+                                className="opacity-0 pointer-events-none absolute"
                             />
-                        </div>
-
-                        <div className="flex justify-end gap-2 pt-2">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={handleCancel}
-                            >
-                                <X className="w-4 h-4 mr-1" />
-                                Cancel
-                            </Button>
-                            <Button type="submit">
-                                <Undo2 className="w-4 h-4 mr-1" />
-                                Return Asset
-                            </Button>
-                        </div>
-                    </form>
-                ) : (
-                    <>
-                        <div className="flex flex-col items-center gap-4 py-8">
-                            <div className="relative flex items-center justify-center w-20 h-20 rounded-full bg-primary/10">
-                                <ScanLine className="w-9 h-9 text-primary animate-pulse" />
-                            </div>
-                            <div className="text-center space-y-1">
-                                <p className="text-sm font-medium">
-                                    Waiting for QR code scan...
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                    Place the asset's QR code in front of the
-                                    scanner
-                                </p>
-                            </div>
-                        </div>
-
-                        <QrScan
-                            handleScan={handleScan}
-                            className="opacity-0 pointer-events-none absolute"
-                        />
-                    </>
-                )}
+                        </>
+                    )}
+                </div>
             </DialogContent>
         </Dialog>
     );

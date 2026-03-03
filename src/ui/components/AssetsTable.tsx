@@ -34,6 +34,7 @@ import UpdateAssetDialog from "./UpdateAssetDialog";
 import DeleteAllAssetsDialog from "./DeleteAllAssetsDialog";
 import PrintButton from "./PrintButton";
 import { Separator } from "./ui/separator";
+import AssetDetailDialog from "./AssetDetailDialog";
 
 const globalFilterFn: FilterFn<Asset> = (row, _columnId, filterValue) => {
     const search = filterValue.toLowerCase();
@@ -57,6 +58,7 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
     const [openDeleteAsset, setOpenDeleteAsset] = useState(false);
     const [openDeleteAllAssetsDialog, setOpenDeleteAllAssetsDialog] =
         useState(false);
+    const [openAssetDetailDialog, setOpenAssetDetailDialog] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
 
     const assetColumns: ColumnDef<Asset>[] = [
@@ -101,7 +103,13 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
             cell: ({ row }) => {
                 const asset = row.original;
                 return (
-                    <span className="font-medium">
+                    <span
+                        onClick={() => {
+                            setSelectedAsset(asset);
+                            setOpenAssetDetailDialog(true);
+                        }}
+                        className="font-medium cursor-pointer hover:underline"
+                    >
                         {asset.temporaryTagNumber}
                     </span>
                 );
@@ -125,7 +133,17 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
             },
             cell: ({ row }) => {
                 const asset = row.original;
-                return <span className="font-medium">{asset.assetName}</span>;
+                return (
+                    <span
+                        onClick={() => {
+                            setSelectedAsset(asset);
+                            setOpenAssetDetailDialog(true);
+                        }}
+                        className="font-medium cursor-pointer hover:underline"
+                    >
+                        {asset.assetName}
+                    </span>
+                );
             },
         },
         {
@@ -333,6 +351,13 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                 <DeleteAllAssetsDialog
                     openDeleteAllAssetsDialog={openDeleteAllAssetsDialog}
                     setOpenDeleteAllAssetsDialog={setOpenDeleteAllAssetsDialog}
+                />
+            )}
+            {openAssetDetailDialog && selectedAsset && (
+                <AssetDetailDialog
+                    openAssetDetailDialog={openAssetDetailDialog}
+                    setOpenAssetDetailDialog={setOpenAssetDetailDialog}
+                    asset={selectedAsset}
                 />
             )}
         </>
