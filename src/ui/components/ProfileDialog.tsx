@@ -1,6 +1,6 @@
-import { useRef, type Dispatch, type SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import { Card, CardContent } from "./ui/card";
-import PrintButton from "./PrintButton";
+import { Button } from "./ui/button";
 import {
     Dialog,
     DialogContent,
@@ -10,7 +10,8 @@ import {
 } from "./ui/dialog";
 import { Separator } from "./ui/separator";
 import { Badge } from "./ui/badge";
-import { UserCircle, Mail, Phone, QrCode } from "lucide-react";
+import { UserCircle, Mail, Phone, QrCode, FileDown, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface ProfileDialogProps {
     user: User;
@@ -23,7 +24,47 @@ const ProfileDialog = ({
     openProfileDialog,
     setOpenProfileDialog,
 }: ProfileDialogProps) => {
-    const contentRef = useRef<HTMLDivElement>(null);
+    const [exporting, setExporting] = useState(false);
+
+    const handleExportProfile = async () => {
+        setExporting(true);
+        try {
+            const html = `<!DOCTYPE html>
+<html><head><style>
+    body { font-family: Arial, sans-serif; padding: 40px; max-width: 500px; margin: 0 auto; }
+    h1 { font-size: 22px; margin-bottom: 4px; }
+    .subtitle { color: #666; font-size: 13px; margin-bottom: 20px; }
+    .field { padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 8px; }
+    .label { font-size: 11px; color: #888; }
+    .value { font-size: 14px; font-weight: 500; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; border: 1px solid #ddd; margin-right: 6px; }
+    .badges { margin-bottom: 16px; }
+    .qr { text-align: center; margin-top: 16px; }
+    .qr img { width: 120px; height: 120px; border: 1px solid #ddd; border-radius: 8px; }
+</style></head><body>
+    <h1>${user.firstName} ${user.middleName ? `${user.middleName.charAt(0)}.` : ""} ${user.lastName}</h1>
+    <p class="subtitle">${user.schoolNumber}</p>
+    <div class="badges">
+        <span class="badge">${user.role}</span>
+        <span class="badge">${user.department} - ${user.yearLevel}</span>
+    </div>
+    <div class="field"><p class="label">Email</p><p class="value">${user.email ?? "N/A"}</p></div>
+    <div class="field"><p class="label">Phone</p><p class="value">${user.number ?? "N/A"}</p></div>
+    <div class="qr"><p class="label">QR Code</p><img src="${user.qrCodeImage}" alt="QR Code" /></div>
+</body></html>`;
+            const result = await window.api.print.exportPdf(
+                html,
+                `${user.lastName}-${user.firstName}-profile.pdf`,
+            );
+            if (result.success) {
+                toast.success("Profile exported successfully.");
+            }
+        } catch {
+            toast.error("Failed to export profile.");
+        } finally {
+            setExporting(false);
+        }
+    };
 
     return (
         <Dialog open={openProfileDialog} onOpenChange={setOpenProfileDialog}>
@@ -48,7 +89,6 @@ const ProfileDialog = ({
 
                 <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4 sm:px-6 sm:pb-6 pt-2">
                     <Card
-                        ref={contentRef}
                         className="bg-transparent rounded-xl shadow-none border-none overflow-hidden"
                     >
                         <CardContent className="p-0">
@@ -122,8 +162,21 @@ const ProfileDialog = ({
                                     />
                                 </div>
 
-                                <div className="print:hidden">
-                                    <PrintButton contentRef={contentRef} />
+                                <div>
+                                    <Button
+                                        onClick={handleExportProfile}
+                                        disabled={exporting}
+                                        size="sm"
+                                    >
+                                        {exporting ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <FileDown className="h-4 w-4" />
+                                        )}
+                                        {exporting
+                                            ? "Exporting..."
+                                            : "Export PDF"}
+                                    </Button>
                                 </div>
                             </div>
                         </CardContent>

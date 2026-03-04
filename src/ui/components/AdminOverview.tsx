@@ -62,7 +62,7 @@ const AdminOverview = ({ admin }: AdminOverviewProps) => {
                         <CardHeader className="p-4 sm:p-6">
                             <div className="flex items-center justify-between">
                                 <CardDescription className="text-xs sm:text-sm">
-                                    Total Assets
+                                    Total Tools
                                 </CardDescription>
                                 <div className="flex items-center justify-center w-9 h-9 rounded-full bg-primary/10">
                                     <Package className="w-4 h-4 text-primary" />

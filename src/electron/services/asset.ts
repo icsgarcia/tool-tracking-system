@@ -172,6 +172,28 @@ export function AssetHandlers() {
         },
     );
 
+    ipcMain.handle("asset:exportAllAssets", async () => {
+        const assets = await prisma.asset.findMany({
+            orderBy: { assetName: "asc" },
+        });
+
+        const borrowedCounts = await prisma.transaction.groupBy({
+            by: ["assetId"],
+            where: { status: { in: ["BORROWED", "UNRETURNED"] } },
+            _count: true,
+        });
+
+        const countMap = new Map(
+            borrowedCounts.map((b) => [b.assetId, b._count]),
+        );
+
+        return assets.map((asset) => ({
+            ...asset,
+            borrowedCount: countMap.get(asset.id) ?? 0,
+            availableCount: asset.assetCount - (countMap.get(asset.id) ?? 0),
+        }));
+    });
+
     ipcMain.handle("asset:getAssetById", async (_, assetId: string) => {
         const asset = await prisma.asset.findUnique({
             where: { id: assetId },

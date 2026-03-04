@@ -119,6 +119,13 @@ export function TransactionHandlers() {
         },
     );
 
+    ipcMain.handle("transaction:exportAllTransactions", async () => {
+        return prisma.transaction.findMany({
+            include: { user: true, asset: true },
+            orderBy: { borrowedAt: "desc" },
+        });
+    });
+
     ipcMain.handle(
         "transaction:borrowAsset",
         async (_, userId: string, assetQrCode: string, borrowCount: number) => {

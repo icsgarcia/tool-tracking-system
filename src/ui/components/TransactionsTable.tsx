@@ -7,12 +7,12 @@ import {
 } from "./ui/card";
 import { Badge } from "./ui/badge";
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import DataTable from "./DataTable";
 import { ArrowUpDown, ArrowLeftRight, SearchIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
-import PrintButton from "./PrintButton";
+import ExportPdfButton from "./ExportPdfButton";
 import { Separator } from "./ui/separator";
 import { useGetAllTransactions } from "@/hooks/useTransactions";
 
@@ -24,7 +24,6 @@ const TransactionsTable = () => {
         pageSize: 10,
     });
     const [sorting, setSorting] = useState<SortingState>([]);
-    const contentRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -92,7 +91,7 @@ const TransactionsTable = () => {
                             column.toggleSorting(column.getIsSorted() === "asc")
                         }
                     >
-                        Borrowed Asset
+                        Borrowed Tool
                         <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
@@ -200,7 +199,7 @@ const TransactionsTable = () => {
     ];
 
     return (
-        <Card ref={contentRef}>
+        <Card>
             <CardHeader>
                 <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4 print:mb-0">
                     <div className="flex items-center gap-3">
@@ -212,7 +211,7 @@ const TransactionsTable = () => {
                                 Transactions
                             </CardTitle>
                             <CardDescription className="print:hidden">
-                                Asset borrowing and return history
+                                Tool borrowing and return history
                             </CardDescription>
                         </div>
                     </div>
@@ -222,7 +221,7 @@ const TransactionsTable = () => {
                     <InputGroup className="w-full sm:w-7/12 lg:w-4/12">
                         <InputGroupInput
                             id="inline-start-input"
-                            placeholder="Search by asset's name..."
+                            placeholder="Search by tool's name..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -230,7 +229,7 @@ const TransactionsTable = () => {
                             <SearchIcon className="text-muted-foreground" />
                         </InputGroupAddon>
                     </InputGroup>
-                    <PrintButton contentRef={contentRef} />
+                    <ExportPdfButton type="transactions" />
                 </div>
             </CardHeader>
             <CardContent>

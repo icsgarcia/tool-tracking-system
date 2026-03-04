@@ -6,7 +6,7 @@ import {
     CardTitle,
 } from "./ui/card";
 import { Button } from "./ui/button";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import CreateAssetsDialog from "./CreateAssetsDialog";
 import QrImageDialog from "./QrImageDialog";
 import DataTable from "./DataTable";
@@ -32,7 +32,7 @@ import {
 import DeleteAssetDialog from "./DeleteAssetDialog";
 import UpdateAssetDialog from "./UpdateAssetDialog";
 import DeleteAllAssetsDialog from "./DeleteAllAssetsDialog";
-import PrintButton from "./PrintButton";
+import ExportPdfButton from "./ExportPdfButton";
 import { Separator } from "./ui/separator";
 import AssetDetailDialog from "./AssetDetailDialog";
 import { useGetAllAssets } from "@/hooks/useAssets";
@@ -57,7 +57,6 @@ const AssetsTable = () => {
     const [openDeleteAllAssetsDialog, setOpenDeleteAllAssetsDialog] =
         useState(false);
     const [openAssetDetailDialog, setOpenAssetDetailDialog] = useState(false);
-    const contentRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -237,7 +236,7 @@ const AssetsTable = () => {
                                     }}
                                 >
                                     <Pencil className="h-4 w-4" />
-                                    Edit Asset
+                                    Edit Tool
                                 </DropdownMenuItem>
 
                                 <DropdownMenuItem
@@ -248,7 +247,7 @@ const AssetsTable = () => {
                                     className="text-destructive focus:text-destructive"
                                 >
                                     <Trash2 className="h-4 w-4" />
-                                    Delete Asset
+                                    Delete Tool
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
                         </DropdownMenuContent>
@@ -260,7 +259,7 @@ const AssetsTable = () => {
 
     return (
         <>
-            <Card ref={contentRef}>
+            <Card>
                 <CardHeader>
                     <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4 print:mb-0">
                         <div className="flex items-center gap-3">
@@ -269,10 +268,10 @@ const AssetsTable = () => {
                             </div>
                             <div>
                                 <CardTitle className="text-lg sm:text-xl print:font-bold print:text-3xl">
-                                    Assets
+                                    Tools
                                 </CardTitle>
                                 <CardDescription className="print:hidden">
-                                    Manage all tracked assets
+                                    Manage all tracked tools
                                 </CardDescription>
                             </div>
                         </div>
@@ -285,7 +284,7 @@ const AssetsTable = () => {
                                 }}
                             >
                                 <PackagePlus className="w-4 h-4" />
-                                Add Assets
+                                Add Tools
                             </Button>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -309,7 +308,7 @@ const AssetsTable = () => {
                                             className="text-destructive focus:text-destructive"
                                         >
                                             <Trash2 className="w-4 h-4" />
-                                            Delete all assets
+                                            Delete all tools
                                         </DropdownMenuItem>
                                     </DropdownMenuGroup>
                                 </DropdownMenuContent>
@@ -321,7 +320,7 @@ const AssetsTable = () => {
                         <InputGroup className="w-full sm:w-7/12 lg:w-4/12">
                             <InputGroupInput
                                 id="inline-start-input"
-                                placeholder="Search by asset's name..."
+                                placeholder="Search by tool's name..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                             />
@@ -329,7 +328,7 @@ const AssetsTable = () => {
                                 <SearchIcon className="text-muted-foreground" />
                             </InputGroupAddon>
                         </InputGroup>
-                        <PrintButton contentRef={contentRef} />
+                        <ExportPdfButton type="assets" />
                     </div>
                 </CardHeader>
                 <CardContent>

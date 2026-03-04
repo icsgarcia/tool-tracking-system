@@ -8,7 +8,7 @@ import {
 } from "./ui/card";
 
 import CreateUsersDialog from "./CreateUsersDialog";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import QrImageDialog from "./QrImageDialog";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
@@ -35,7 +35,7 @@ import DeleteUserDialog from "./DeleteUserDialog";
 import UpdateUserDialog from "./UpdateUserDialog";
 import DeleteAllUsersDialog from "./DeleteAllUsersDialog";
 import { useLocation } from "react-router";
-import PrintButton from "./PrintButton";
+import ExportPdfButton from "./ExportPdfButton";
 import { Separator } from "./ui/separator";
 import UserDetailDialog from "./UserDetailDialog";
 import { useGetAllUsers } from "@/hooks/useUsers";
@@ -43,7 +43,6 @@ import { useGetAllUsers } from "@/hooks/useUsers";
 const UsersTable = () => {
     const location = useLocation();
     const user = location?.state?.user;
-    const contentRef = useRef<HTMLDivElement>(null);
     const [openCreateUsersDialog, setOpenCreateUsersDialog] =
         useState<boolean>(false);
     const [openQrImageDialog, setOpenQrImageDialog] = useState(false);
@@ -199,7 +198,7 @@ const UsersTable = () => {
             },
             cell: ({ row }) => {
                 const email = row.original.email;
-                return email && email !== "undefined" ? email : "—";
+                return email && email !== "undefined" ? email : "-";
             },
         },
         {
@@ -328,7 +327,7 @@ const UsersTable = () => {
 
     return (
         <>
-            <Card ref={contentRef}>
+            <Card>
                 <CardHeader>
                     <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4 print:mb-0">
                         <div className="flex items-center gap-3">
@@ -397,7 +396,7 @@ const UsersTable = () => {
                                 <SearchIcon className="text-muted-foreground" />
                             </InputGroupAddon>
                         </InputGroup>
-                        <PrintButton contentRef={contentRef} />
+                        <ExportPdfButton type="users" />
                     </div>
                 </CardHeader>
                 <CardContent>

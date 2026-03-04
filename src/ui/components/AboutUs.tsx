@@ -42,7 +42,7 @@ const AboutUs = () => {
                             About Us
                         </CardTitle>
                         <CardDescription className="text-xs sm:text-sm">
-                            Meet the team behind the Asset Tracking System
+                            Meet the team behind the Tool Keeper
                         </CardDescription>
                     </div>
                 </div>

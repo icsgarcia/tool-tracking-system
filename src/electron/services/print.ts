@@ -1,44 +1,39 @@
-import { BrowserWindow, ipcMain } from "electron";
+import { BrowserWindow, dialog, ipcMain } from "electron";
+import fs from "node:fs";
 
 export function printHandlers() {
-    const printOptions: Electron.WebContentsPrintOptions = {
-        silent: false,
-        printBackground: true,
-        color: true,
-        margins: {
-            marginType: "printableArea",
-        },
-        landscape: true,
-        pagesPerSheet: 1,
-        collate: false,
-        copies: 1,
-        header: "Page header",
-        footer: "Page footer",
-    };
-
-    ipcMain.handle("print", async (_, html) => {
-        const base64Html = Buffer.from(html, "utf8").toString("base64");
-        const url = `data:text/html;base64,${base64Html}`;
-
-        let win = new BrowserWindow({ show: false });
-
-        return new Promise((resolve, reject) => {
-            win.webContents.once("did-finish-load", () => {
-                win.webContents.print(
-                    printOptions,
-                    (success, failureReason) => {
-                        if (!success) {
-                            console.log(failureReason);
-                            reject(failureReason);
-                        } else {
-                            resolve("shown print dialog");
-                        }
-                        win.close();
-                    },
-                );
+    ipcMain.handle(
+        "exportPdf",
+        async (_, html: string, defaultFilename: string) => {
+            const { filePath, canceled } = await dialog.showSaveDialog({
+                defaultPath: defaultFilename,
+                filters: [{ name: "PDF", extensions: ["pdf"] }],
             });
 
-            win.loadURL(url);
-        });
-    });
+            if (canceled || !filePath) {
+                return { success: false };
+            }
+
+            const base64Html = Buffer.from(html, "utf8").toString("base64");
+            const win = new BrowserWindow({ show: false });
+
+            await win.loadURL(`data:text/html;base64,${base64Html}`);
+
+            const pdfBuffer = await win.webContents.printToPDF({
+                landscape: true,
+                printBackground: true,
+                margins: {
+                    top: 0.4,
+                    bottom: 0.4,
+                    left: 0.4,
+                    right: 0.4,
+                },
+            });
+
+            win.close();
+
+            fs.writeFileSync(filePath, pdfBuffer);
+            return { success: true, filePath };
+        },
+    );
 }

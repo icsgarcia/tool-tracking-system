@@ -25,6 +25,8 @@ electron.contextBridge.exposeInMainWorld("api", {
             electron.ipcRenderer.invoke("user:deleteUserById", userId),
         deleteAllUsers: (userId: string) =>
             electron.ipcRenderer.invoke("user:deleteAllUsers", userId),
+        exportAllUsers: () =>
+            electron.ipcRenderer.invoke("user:exportAllUsers"),
     },
 
     asset: {
@@ -44,6 +46,8 @@ electron.contextBridge.exposeInMainWorld("api", {
             electron.ipcRenderer.invoke("asset:deleteAssetById", assetId),
         deleteAllAssets: () =>
             electron.ipcRenderer.invoke("asset:deleteAllAssets"),
+        exportAllAssets: () =>
+            electron.ipcRenderer.invoke("asset:exportAllAssets"),
     },
 
     transaction: {
@@ -88,10 +92,12 @@ electron.contextBridge.exposeInMainWorld("api", {
                 data.userId,
                 data.assetQrCode,
             ),
+        exportAllTransactions: () =>
+            electron.ipcRenderer.invoke("transaction:exportAllTransactions"),
     },
 
     print: {
-        printComponent: (html: string) =>
-            electron.ipcRenderer.invoke("print", html),
+        exportPdf: (html: string, defaultFilename: string) =>
+            electron.ipcRenderer.invoke("exportPdf", html, defaultFilename),
     },
 });

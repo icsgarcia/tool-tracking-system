@@ -138,6 +138,7 @@ interface Window {
             updateUserById: (userData: UpdateUserDto) => Promise<any>;
             deleteUserById: (userId: string) => Promise<any>;
             deleteAllUsers: (userId: string) => Promise<any>;
+            exportAllUsers: () => Promise<any>;
         };
         asset: {
             createAssetByFile: (fileBuffer: ArrayBuffer) => Promise<any>;
@@ -148,6 +149,7 @@ interface Window {
             updateAssetById: (assetData: UpdateAssetDto) => Promise<any>;
             deleteAssetById: (assetId: string) => Promise<any>;
             deleteAllAssets: () => Promise<any>;
+            exportAllAssets: () => Promise<any>;
         };
         transaction: {
             getTotalTransactions: () => Promise<any>;
@@ -170,9 +172,13 @@ interface Window {
                 userId: string;
                 assetQrCode: string;
             }) => Promise<any>;
+            exportAllTransactions: () => Promise<any>;
         };
         print: {
-            printComponent: (html: string) => Promise<void>;
+            exportPdf: (
+                html: string,
+                defaultFilename: string,
+            ) => Promise<{ success: boolean; filePath?: string }>;
         };
     };
 }

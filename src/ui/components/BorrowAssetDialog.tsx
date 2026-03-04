@@ -57,7 +57,7 @@ const BorrowAssetDialog = ({
                 onError: (error) => {
                     toast.error(
                         error.message ||
-                            "Borrowing Asset failed. Please try again.",
+                            "Borrowing Tool failed. Please try again.",
                     );
                     isProcessing.current = false;
                 },
@@ -75,10 +75,10 @@ const BorrowAssetDialog = ({
                         </div>
                         <div>
                             <DialogTitle className="text-base sm:text-lg">
-                                Borrow Asset
+                                Borrow Tool
                             </DialogTitle>
                             <DialogDescription className="text-xs sm:text-sm">
-                                Scan Asset's QR Code to borrow
+                                Scan Tool's QR Code to borrow
                             </DialogDescription>
                         </div>
                     </div>
@@ -127,7 +127,7 @@ const BorrowAssetDialog = ({
                                 </Button>
                                 <Button type="submit">
                                     <Package className="w-4 h-4 mr-1" />
-                                    Borrow Asset
+                                    Borrow Tool
                                 </Button>
                             </div>
                         </form>
@@ -142,8 +142,8 @@ const BorrowAssetDialog = ({
                                         Waiting for QR code scan...
                                     </p>
                                     <p className="text-xs text-muted-foreground">
-                                        Place the asset's QR code in front of
-                                        the scanner
+                                        Place the tool's QR code in front of the
+                                        scanner
                                     </p>
                                 </div>
                             </div>

@@ -282,6 +282,12 @@ export function UserHandlers() {
         };
     });
 
+    ipcMain.handle("user:exportAllUsers", async () => {
+        return prisma.user.findMany({
+            orderBy: { lastName: "asc" },
+        });
+    });
+
     ipcMain.handle("user:deleteAllUsers", async (_, userId: string) => {
         await prisma.user.deleteMany({
             where: {

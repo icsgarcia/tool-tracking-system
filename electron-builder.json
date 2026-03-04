@@ -1,5 +1,5 @@
 {
-    "appId": "com.icsgarcia.tool-tracking-system",
+    "appId": "com.icsgarcia.tool-keeper",
     "files": ["dist-electron", "dist-react"],
     "extraResources": [
         "dist-electron/src/electron/preload.cjs",

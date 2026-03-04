@@ -1,5 +1,5 @@
 import { useGetUserTransactions } from "@/hooks/useTransactions";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
 import Header from "@/components/Header";
@@ -25,7 +25,7 @@ import {
     InputGroupAddon,
     InputGroupInput,
 } from "@/components/ui/input-group";
-import PrintButton from "@/components/PrintButton";
+import ExportPdfButton from "@/components/ExportPdfButton";
 import BorrowAssetDialog from "@/components/BorrowAssetDialog";
 import ReturnAssetDialog from "@/components/ReturnAssetDialog";
 import { Badge } from "@/components/ui/badge";
@@ -43,7 +43,6 @@ const Dashboard = () => {
         pageSize: 10,
     });
     const [sorting, setSorting] = useState<SortingState>([]);
-    const contentRef = useRef<HTMLDivElement>(null);
     const [openBorrowDialog, setOpenBorrowDialog] = useState(false);
     const [openReturnDialog, setOpenReturnDialog] = useState(false);
 
@@ -104,7 +103,7 @@ const Dashboard = () => {
                             column.toggleSorting(column.getIsSorted() === "asc")
                         }
                     >
-                        Asset Name
+                        Tool Name
                         <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );
@@ -270,7 +269,7 @@ const Dashboard = () => {
             <Header user={user} handleLogout={handleLogout} />
 
             <div className="flex flex-col gap-4 px-3 sm:px-4 py-4 sm:py-6 mb-8">
-                <Card ref={contentRef}>
+                <Card>
                     <CardHeader>
                         <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4 print:mb-0">
                             <div className="flex items-center gap-3">
@@ -315,7 +314,11 @@ const Dashboard = () => {
                                     <SearchIcon className="text-muted-foreground" />
                                 </InputGroupAddon>
                             </InputGroup>
-                            <PrintButton contentRef={contentRef} />
+                            <ExportPdfButton
+                                type="userTransactions"
+                                userId={user.id}
+                                userName={`${user.firstName} ${user.lastName}`}
+                            />
                         </div>
                     </CardHeader>
                     <CardContent>
