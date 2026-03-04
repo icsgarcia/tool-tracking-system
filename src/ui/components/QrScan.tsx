@@ -36,6 +36,7 @@ const QrScan = ({ handleScan, className }: QrScanProps) => {
             value={inputValue}
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
+            onBlur={() => setTimeout(() => inputRef.current?.focus(), 100)}
             className={cn("w-full max-w-md text-lg", className)}
             placeholder="Scan your QR code here"
         />

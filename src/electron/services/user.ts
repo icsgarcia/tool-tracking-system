@@ -90,11 +90,49 @@ export function UserHandlers() {
         return user;
     });
 
-    ipcMain.handle("user:getAllUsers", async () => {
-        const users = await prisma.user.findMany();
+    ipcMain.handle("user:getTotalUsers", async () => {
+        const [totalUsers, totalActiveUsers] = await Promise.all([
+            prisma.user.count(),
+            prisma.user.count({ where: { status: "ACTIVE" } }),
+        ]);
+
+        return { totalUsers, totalActiveUsers };
+    });
+
+    ipcMain.handle("user:getAllUsers", async (_, params: PaginationParams) => {
+        const { page, pageSize, search, sortBy, sortOrder } = params;
+        const sortField = sortBy === "name" ? "lastName" : sortBy;
+
+        const where = search
+            ? {
+                  OR: [
+                      { firstName: { contains: search } },
+                      { middleName: { contains: search } },
+                      { lastName: { contains: search } },
+                      {
+                          schoolNumber: {
+                              contains: search,
+                          },
+                      },
+                      { email: { contains: search } },
+                  ],
+              }
+            : undefined;
+
+        const [users, totalCount] = await Promise.all([
+            prisma.user.findMany({
+                where,
+                orderBy: sortField
+                    ? { [sortField]: sortOrder || "asc" }
+                    : undefined,
+                skip: page * pageSize,
+                take: pageSize,
+            }),
+            prisma.user.count({ where }),
+        ]);
 
         if (users.length === 0) {
-            return [];
+            return { data: [], totalCount: 0 };
         }
 
         const usersWithQrCode = await Promise.all(
@@ -111,7 +149,7 @@ export function UserHandlers() {
             }),
         );
 
-        return usersWithQrCode;
+        return { data: usersWithQrCode, totalCount };
     });
 
     ipcMain.handle("user:getUserById", async (_, userId: string) => {

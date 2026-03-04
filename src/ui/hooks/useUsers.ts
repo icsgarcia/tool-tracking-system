@@ -1,10 +1,23 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+    keepPreviousData,
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export const useGetAllUsers = () => {
+export const useGetTotalUsers = () => {
     return useQuery({
-        queryKey: ["users"],
-        queryFn: () => window.api.user.getAllUsers(),
+        queryKey: ["totalUsers"],
+        queryFn: () => window.api.user.getTotalUsers(),
+    });
+};
+
+export const useGetAllUsers = (params: PaginationParams) => {
+    return useQuery({
+        queryKey: ["users", params],
+        queryFn: () => window.api.user.getAllUsers(params),
+        placeholderData: keepPreviousData,
     });
 };
 

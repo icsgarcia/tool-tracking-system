@@ -6,41 +6,47 @@ import {
     CardTitle,
 } from "./ui/card";
 import { Badge } from "./ui/badge";
-import type { ColumnDef, FilterFn } from "@tanstack/react-table";
-import { useRef, useState } from "react";
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
+import { useEffect, useRef, useState } from "react";
 import DataTable from "./DataTable";
 import { ArrowUpDown, ArrowLeftRight, SearchIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 import PrintButton from "./PrintButton";
 import { Separator } from "./ui/separator";
+import { useGetAllTransactions } from "@/hooks/useTransactions";
 
-const globalFilterFn: FilterFn<Transactions> = (
-    row,
-    _columnId,
-    filterValue,
-) => {
-    const search = filterValue.toLowerCase();
-    const transaction = row.original;
-    const transactionId = `${transaction.id}`.toLowerCase();
-    const fullName =
-        `${transaction.user.firstName} ${transaction.user.middleName} ${transaction.user.lastName}`.toLowerCase();
-    const assetName = `${transaction.asset.assetName}`.toLowerCase();
-
-    return (
-        transactionId.includes(search) ||
-        fullName.includes(search) ||
-        assetName.includes(search)
-    );
-};
-
-const TransactionsTable = ({
-    transactions,
-}: {
-    transactions: Transactions[];
-}) => {
-    const [globalFilter, setGlobalFilter] = useState("");
+const TransactionsTable = () => {
+    const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const [pagination, setPagination] = useState({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+    const [sorting, setSorting] = useState<SortingState>([]);
     const contentRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+            setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    const sortBy = sorting[0]?.id;
+    const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+
+    const { data } = useGetAllTransactions({
+        page: pagination.pageIndex,
+        pageSize: pagination.pageSize,
+        search: debouncedSearch || undefined,
+        sortBy,
+        sortOrder,
+    });
+
+    const transactions = data?.data ?? [];
+    const pageCount = Math.ceil((data?.totalCount ?? 0) / pagination.pageSize);
 
     const transactionColumns: ColumnDef<Transactions>[] = [
         {
@@ -217,8 +223,8 @@ const TransactionsTable = ({
                         <InputGroupInput
                             id="inline-start-input"
                             placeholder="Search by asset's name..."
-                            value={globalFilter}
-                            onChange={(e) => setGlobalFilter(e.target.value)}
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
                         />
                         <InputGroupAddon align="inline-start">
                             <SearchIcon className="text-muted-foreground" />
@@ -231,9 +237,11 @@ const TransactionsTable = ({
                 <DataTable
                     data={transactions}
                     columns={transactionColumns}
-                    globalFilter={globalFilter}
-                    setGlobalFilter={setGlobalFilter}
-                    globalFilterFn={globalFilterFn}
+                    pageCount={pageCount}
+                    pagination={pagination}
+                    onPaginationChange={setPagination}
+                    sorting={sorting}
+                    onSortingChange={setSorting}
                 />
             </CardContent>
         </Card>

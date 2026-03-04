@@ -12,7 +12,9 @@ electron.contextBridge.exposeInMainWorld("api", {
             electron.ipcRenderer.invoke("user:getUserQRCode", userId),
         getUserQRCodeBuffer: (userId: string) =>
             electron.ipcRenderer.invoke("user:getUserQRCodeBuffer", userId),
-        getAllUsers: () => electron.ipcRenderer.invoke("user:getAllUsers"),
+        getTotalUsers: () => electron.ipcRenderer.invoke("user:getTotalUsers"),
+        getAllUsers: (params: PaginationParams) =>
+            electron.ipcRenderer.invoke("user:getAllUsers", params),
         getUserById: (userId: string) =>
             electron.ipcRenderer.invoke("user:getUserById", userId),
         getUserByQRCode: (qrCode: string) =>
@@ -30,7 +32,10 @@ electron.contextBridge.exposeInMainWorld("api", {
             electron.ipcRenderer.invoke("asset:createAssetByFile", fileBuffer),
         createAsset: (assetData: CreateAssetDto) =>
             electron.ipcRenderer.invoke("asset:createAsset", assetData),
-        getAllAssets: () => electron.ipcRenderer.invoke("asset:getAllAssets"),
+        getTotalAssets: () =>
+            electron.ipcRenderer.invoke("asset:getTotalAssets"),
+        getAllAssets: (params: PaginationParams) =>
+            electron.ipcRenderer.invoke("asset:getAllAssets", params),
         getAssetById: (assetId: string) =>
             electron.ipcRenderer.invoke("asset:getAssetById", assetId),
         updateAssetById: (assetData: Asset) =>
@@ -42,12 +47,18 @@ electron.contextBridge.exposeInMainWorld("api", {
     },
 
     transaction: {
-        getAllTransactions: () =>
-            electron.ipcRenderer.invoke("transaction:getAllTransactions"),
-        getUserTransactions: (userId: string) =>
+        getTotalTransactions: () =>
+            electron.ipcRenderer.invoke("transaction:getTotalTransactions"),
+        getAllTransactions: (params: PaginationParams) =>
+            electron.ipcRenderer.invoke(
+                "transaction:getAllTransactions",
+                params,
+            ),
+        getUserTransactions: (userId: string, params: PaginationParams) =>
             electron.ipcRenderer.invoke(
                 "transaction:getUserTransactions",
                 userId,
+                params,
             ),
         borrowAsset: (data: {
             userId: string;

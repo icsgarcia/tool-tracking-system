@@ -4,35 +4,118 @@ import { getPrisma } from "../database/db.js";
 export function TransactionHandlers() {
     const prisma = getPrisma();
 
-    ipcMain.handle("transaction:getAllTransactions", async () => {
-        const transactions = await prisma.transaction.findMany({
-            include: {
-                asset: true,
-                user: true,
-            },
-            orderBy: {
-                borrowedAt: "desc",
-            },
-        });
-        return transactions;
+    ipcMain.handle("transaction:getTotalTransactions", async () => {
+        const [totalTransactions, totalPendingTransactions] = await Promise.all(
+            [
+                prisma.transaction.count(),
+                prisma.transaction.count({
+                    where: {
+                        status: {
+                            in: ["BORROWED", "UNRETURNED"],
+                        },
+                    },
+                }),
+            ],
+        );
+
+        return { totalTransactions, totalPendingTransactions };
     });
 
     ipcMain.handle(
-        "transaction:getUserTransactions",
-        async (_, userId: string) => {
-            const userTransactions = await prisma.transaction.findMany({
-                where: {
-                    userId,
-                },
-                include: {
-                    asset: true,
-                },
-                orderBy: {
-                    borrowedAt: "desc",
-                },
-            });
+        "transaction:getAllTransactions",
+        async (_, params: PaginationParams) => {
+            const { page, pageSize, search, sortBy, sortOrder } = params;
+            let orderBy;
+            if (sortBy === "userName") {
+                orderBy = { user: { lastName: sortOrder || "asc" } };
+            } else if (sortBy === "assetName") {
+                orderBy = { asset: { assetName: sortOrder || "asc" } };
+            } else if (sortBy === "borrowedAt") {
+                orderBy = { borrowedAt: sortOrder || "asc" };
+            } else if (sortBy) {
+                orderBy = { [sortBy]: sortOrder || "asc" };
+            }
 
-            return userTransactions;
+            const where = search
+                ? {
+                      OR: [
+                          { id: { contains: search } },
+                          { user: { firstName: { contains: search } } },
+                          { user: { middleName: { contains: search } } },
+                          { user: { lastName: { contains: search } } },
+                          { asset: { assetName: { contains: search } } },
+                      ],
+                  }
+                : undefined;
+
+            const [transactions, totalCount] = await Promise.all([
+                prisma.transaction.findMany({
+                    where,
+                    include: {
+                        asset: true,
+                        user: true,
+                    },
+                    orderBy,
+                    skip: page * pageSize,
+                    take: pageSize,
+                }),
+                prisma.transaction.count({ where }),
+            ]);
+            return { data: transactions, totalCount };
+        },
+    );
+
+    ipcMain.handle(
+        "transaction:getUserTransactions",
+        async (_, userId: string, params: PaginationParams) => {
+            const { page, pageSize, search, sortBy, sortOrder } = params;
+
+            let orderBy;
+            if (sortBy === "assetName") {
+                orderBy = { asset: { assetName: sortOrder || "asc" } };
+            } else if (sortBy === "borrowedQuantity") {
+                orderBy = { borrowCount: sortOrder || "asc" };
+            } else if (sortBy === "returnedQuantity") {
+                orderBy = { returnCount: sortOrder || "asc" };
+            } else if (sortBy === "borrowedDate") {
+                orderBy = { borrowedAt: sortOrder || "asc" };
+            } else if (sortBy === "returnedDate") {
+                orderBy = { returnedAt: sortOrder || "asc" };
+            } else if (sortBy) {
+                orderBy = { [sortBy]: sortOrder || "asc" };
+            }
+
+            const where = search
+                ? {
+                      OR: [
+                          { id: { contains: search } },
+                          { asset: { assetName: { contains: search } } },
+                      ],
+                  }
+                : undefined;
+
+            const [userTransactions, totalCount] = await Promise.all([
+                prisma.transaction.findMany({
+                    where: {
+                        userId,
+                        ...where,
+                    },
+                    include: {
+                        asset: true,
+                    },
+                    orderBy,
+                    skip: page * pageSize,
+                    take: pageSize,
+                }),
+                prisma.transaction.count({
+                    where: {
+                        userId,
+                        ...where,
+                    },
+                }),
+            ]);
+
+            return { data: userTransactions, totalCount };
         },
     );
 

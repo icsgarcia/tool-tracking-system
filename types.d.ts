@@ -15,6 +15,14 @@ enum UserStatus {
     INACTIVE = "INACTIVE",
 }
 
+interface PaginationParams {
+    page: number;
+    pageSize: number;
+    search?: string;
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+}
+
 interface User {
     id: string;
     qrCode: string;
@@ -123,7 +131,8 @@ interface Window {
             createUser: (userData: CreateUserDto) => Promise<any>;
             getUserQRCode: (userId: string) => Promise<any>;
             getUserQRCodeBuffer: (userId: string) => Promise<any>;
-            getAllUsers: () => Promise<any[]>;
+            getTotalUsers: () => Promise<any>;
+            getAllUsers: (params: PaginationParams) => Promise<any>;
             getUserById: (userId: string) => Promise<any>;
             getUserByQRCode: (qrCode: string) => Promise<any>;
             updateUserById: (userData: UpdateUserDto) => Promise<any>;
@@ -133,15 +142,20 @@ interface Window {
         asset: {
             createAssetByFile: (fileBuffer: ArrayBuffer) => Promise<any>;
             createAsset: (assetData: CreateAssetDto) => Promise<any>;
-            getAllAssets: () => Promise<any[]>;
+            getTotalAssets: () => Promise<any>;
+            getAllAssets: (params: PaginationParams) => Promise<any>;
             getAssetById: (assetId: string) => Promise<any>;
             updateAssetById: (assetData: UpdateAssetDto) => Promise<any>;
             deleteAssetById: (assetId: string) => Promise<any>;
             deleteAllAssets: () => Promise<any>;
         };
         transaction: {
-            getAllTransactions: () => Promise<any[]>;
-            getUserTransactions: (userId: string) => Promise<any>;
+            getTotalTransactions: () => Promise<any>;
+            getAllTransactions: (params: PaginationParams) => Promise<any>;
+            getUserTransactions: (
+                userId: string,
+                params: PaginationParams,
+            ) => Promise<any>;
             borrowAsset: (data: {
                 userId: string;
                 assetQrCode: string;

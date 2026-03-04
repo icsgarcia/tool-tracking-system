@@ -96,41 +96,81 @@ export function AssetHandlers() {
         },
     );
 
-    ipcMain.handle("asset:getAllAssets", async () => {
-        const assets = await prisma.asset.findMany();
-
-        if (assets.length === 0) {
-            return [];
-        }
-
-        const updatedAssets = await Promise.all(
-            assets.map(async (asset) => {
-                const borrowedCount = await prisma.transaction.count({
-                    where: {
-                        assetId: asset.id,
-                        status: {
-                            in: ["BORROWED", "UNRETURNED"],
-                        },
-                    },
-                });
-
-                const availableCount = asset.assetCount - borrowedCount;
-                const qrCodeBuffer = await QRCode.toBuffer(asset.qrCode, {
-                    width: 500,
-                    margin: 2,
-                });
-                const qrCodeBase64 = `data:image/png;base64,${qrCodeBuffer.toString("base64")}`;
-                return {
-                    ...asset,
-                    qrCodeImage: qrCodeBase64,
-                    borrowedCount,
-                    availableCount,
-                };
+    ipcMain.handle("asset:getTotalAssets", async () => {
+        const [totalAssets, totalQuantity] = await Promise.all([
+            prisma.asset.count(),
+            prisma.asset.aggregate({
+                _sum: {
+                    assetCount: true,
+                },
             }),
-        );
+        ]);
 
-        return updatedAssets;
+        return {
+            totalAssets,
+            totalQuantity: totalQuantity._sum.assetCount ?? 0,
+        };
     });
+
+    ipcMain.handle(
+        "asset:getAllAssets",
+        async (_, params: PaginationParams) => {
+            const { page, pageSize, search, sortBy, sortOrder } = params;
+
+            const where = search
+                ? {
+                      OR: [
+                          { temporaryTagNumber: { contains: search } },
+                          { assetName: { contains: search } },
+                      ],
+                  }
+                : undefined;
+
+            const [assets, totalCount] = await Promise.all([
+                prisma.asset.findMany({
+                    where,
+                    orderBy: sortBy
+                        ? { [sortBy]: sortOrder || "asc" }
+                        : undefined,
+                    skip: page * pageSize,
+                    take: pageSize,
+                }),
+                prisma.asset.count({ where }),
+            ]);
+
+            if (assets.length === 0) {
+                return { data: [], totalCount: 0 };
+            }
+
+            const updatedAssets = await Promise.all(
+                assets.map(async (asset) => {
+                    const borrowedCount = await prisma.transaction.count({
+                        where: {
+                            assetId: asset.id,
+                            status: {
+                                in: ["BORROWED", "UNRETURNED"],
+                            },
+                        },
+                    });
+
+                    const availableCount = asset.assetCount - borrowedCount;
+                    const qrCodeBuffer = await QRCode.toBuffer(asset.qrCode, {
+                        width: 500,
+                        margin: 2,
+                    });
+                    const qrCodeBase64 = `data:image/png;base64,${qrCodeBuffer.toString("base64")}`;
+                    return {
+                        ...asset,
+                        qrCodeImage: qrCodeBase64,
+                        borrowedCount,
+                        availableCount,
+                    };
+                }),
+            );
+
+            return { data: updatedAssets, totalCount };
+        },
+    );
 
     ipcMain.handle("asset:getAssetById", async (_, assetId: string) => {
         const asset = await prisma.asset.findUnique({

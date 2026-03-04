@@ -1,5 +1,5 @@
 import { useGetUserTransactions } from "@/hooks/useTransactions";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
 import Header from "@/components/Header";
@@ -11,7 +11,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import DataTable from "@/components/DataTable";
-import type { ColumnDef, FilterFn } from "@tanstack/react-table";
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import {
     ArrowUpDown,
@@ -31,29 +31,43 @@ import ReturnAssetDialog from "@/components/ReturnAssetDialog";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
-const globalFilterFn: FilterFn<UserTransactions> = (
-    row,
-    _columnId,
-    filterValue,
-) => {
-    const search = filterValue.toLowerCase();
-    const transaction = row.original;
-    const transactionId = `${transaction.id}`.toLowerCase();
-    const assetName = `${transaction.asset.assetName}`.toLowerCase();
-
-    return transactionId.includes(search) || assetName.includes(search);
-};
-
 const Dashboard = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const user = location.state?.user;
     const admin = location.state?.admin;
-    const { data: userTransactions = [] } = useGetUserTransactions(user.id);
-    const [globalFilter, setGlobalFilter] = useState("");
+    const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const [pagination, setPagination] = useState({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+    const [sorting, setSorting] = useState<SortingState>([]);
     const contentRef = useRef<HTMLDivElement>(null);
     const [openBorrowDialog, setOpenBorrowDialog] = useState(false);
     const [openReturnDialog, setOpenReturnDialog] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+            setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    const sortBy = sorting[0]?.id;
+    const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+
+    const { data } = useGetUserTransactions(user.id, {
+        page: pagination.pageIndex,
+        pageSize: pagination.pageSize,
+        search: debouncedSearch || undefined,
+        sortBy,
+        sortOrder,
+    });
+
+    const transactions = data?.data ?? [];
+    const pageCount = Math.ceil((data?.totalCount ?? 0) / pagination.pageSize);
 
     const handleLogout = () => {
         if (admin) {
@@ -294,10 +308,8 @@ const Dashboard = () => {
                                 <InputGroupInput
                                     id="inline-start-input"
                                     placeholder="Search for a transaction..."
-                                    value={globalFilter}
-                                    onChange={(e) =>
-                                        setGlobalFilter(e.target.value)
-                                    }
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
                                 />
                                 <InputGroupAddon align="inline-start">
                                     <SearchIcon className="text-muted-foreground" />
@@ -308,11 +320,13 @@ const Dashboard = () => {
                     </CardHeader>
                     <CardContent>
                         <DataTable
-                            data={userTransactions}
+                            data={transactions}
                             columns={userTransactionColumns}
-                            globalFilter={globalFilter}
-                            setGlobalFilter={setGlobalFilter}
-                            globalFilterFn={globalFilterFn}
+                            pageCount={pageCount}
+                            pagination={pagination}
+                            onPaginationChange={setPagination}
+                            sorting={sorting}
+                            onSortingChange={setSorting}
                         />
                     </CardContent>
                 </Card>

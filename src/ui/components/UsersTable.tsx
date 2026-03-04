@@ -8,7 +8,7 @@ import {
 } from "./ui/card";
 
 import CreateUsersDialog from "./CreateUsersDialog";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import QrImageDialog from "./QrImageDialog";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
@@ -22,7 +22,7 @@ import {
     Trash2,
     MoreHorizontal,
 } from "lucide-react";
-import { type ColumnDef, type FilterFn } from "@tanstack/react-table";
+import { type ColumnDef, type SortingState } from "@tanstack/react-table";
 import DataTable from "./DataTable";
 import {
     DropdownMenu,
@@ -38,20 +38,9 @@ import { useLocation } from "react-router";
 import PrintButton from "./PrintButton";
 import { Separator } from "./ui/separator";
 import UserDetailDialog from "./UserDetailDialog";
+import { useGetAllUsers } from "@/hooks/useUsers";
 
-const globalFilterFn: FilterFn<User> = (row, _columnId, filterValue) => {
-    const search = filterValue.toLowerCase();
-    const user = row.original;
-    const fullName =
-        `${user.firstName} ${user.middleName} ${user.lastName}`.toLowerCase();
-    return (
-        fullName.includes(search) ||
-        user.schoolNumber.toLowerCase().includes(search) ||
-        user.email.toLowerCase().includes(search)
-    );
-};
-
-const UsersTable = ({ users }: { users: User[] }) => {
+const UsersTable = () => {
     const location = useLocation();
     const user = location?.state?.user;
     const contentRef = useRef<HTMLDivElement>(null);
@@ -62,13 +51,41 @@ const UsersTable = ({ users }: { users: User[] }) => {
         name: "",
         image: "",
     });
-    const [globalFilter, setGlobalFilter] = useState("");
+    const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const [pagination, setPagination] = useState({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+    const [sorting, setSorting] = useState<SortingState>([]);
     const [selectedUser, setSelectedUser] = useState<User>();
     const [openDeleteUser, setOpenDeleteUser] = useState(false);
     const [openUpdateUser, setOpenUpdateUser] = useState(false);
     const [openUserDetailDialog, setOpenUserDetailDialog] = useState(false);
     const [openDeleteAllUsersDialog, setOpenDeleteAllUsersDialog] =
         useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+            setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    const sortBy = sorting[0]?.id;
+    const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+
+    const { data } = useGetAllUsers({
+        page: pagination.pageIndex,
+        pageSize: pagination.pageSize,
+        search: debouncedSearch || undefined,
+        sortBy,
+        sortOrder,
+    });
+
+    const users = data?.data ?? [];
+    const pageCount = Math.ceil((data?.totalCount ?? 0) / pagination.pageSize);
 
     const userColumns: ColumnDef<User>[] = [
         {
@@ -373,10 +390,8 @@ const UsersTable = ({ users }: { users: User[] }) => {
                             <InputGroupInput
                                 id="inline-start-input"
                                 placeholder="Search by name, school no., or email..."
-                                value={globalFilter}
-                                onChange={(e) =>
-                                    setGlobalFilter(e.target.value)
-                                }
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
                             />
                             <InputGroupAddon align="inline-start">
                                 <SearchIcon className="text-muted-foreground" />
@@ -389,9 +404,11 @@ const UsersTable = ({ users }: { users: User[] }) => {
                     <DataTable
                         data={users}
                         columns={userColumns}
-                        globalFilter={globalFilter}
-                        setGlobalFilter={setGlobalFilter}
-                        globalFilterFn={globalFilterFn}
+                        pageCount={pageCount}
+                        pagination={pagination}
+                        onPaginationChange={setPagination}
+                        sorting={sorting}
+                        onSortingChange={setSorting}
                     />
                 </CardContent>
             </Card>

@@ -1,13 +1,10 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { useGetAllUsers } from "@/hooks/useUsers";
-import { useGetAllAssets } from "@/hooks/useAssets";
 import AboutUs from "@/components/AboutUs";
 import TransactionsTable from "@/components/TransactionsTable";
 import UsersTable from "@/components/UsersTable";
 import AdminOverview from "@/components/AdminOverview";
 import { toast } from "sonner";
-import { useGetAllTransactions } from "@/hooks/useTransactions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AssetsTable from "@/components/AssetsTable";
 import Header from "@/components/Header";
@@ -16,9 +13,6 @@ const AdminDashboard = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const admin = location.state?.user;
-    const { data: users = [] } = useGetAllUsers();
-    const { data: assets = [] } = useGetAllAssets();
-    const { data: transactions = [] } = useGetAllTransactions();
 
     useEffect(() => {
         if (!admin || admin.role !== "ADMIN") {
@@ -48,7 +42,6 @@ const AdminDashboard = () => {
             <Header user={admin} handleLogout={handleLogout} />
 
             <Tabs defaultValue="overview" className="px-3 sm:px-4">
-                {/* Scrollable tabs wrapper for small screens */}
                 <div className="overflow-x-auto overflow-y-hidden -mx-3 px-3 sm:-mx-4 sm:px-4">
                     <TabsList variant="line" className="w-max min-w-full">
                         {tabs.map((tab) => (
@@ -65,21 +58,16 @@ const AdminDashboard = () => {
 
                 <main className="py-4 sm:py-6">
                     <TabsContent value="overview">
-                        <AdminOverview
-                            admin={admin}
-                            users={users}
-                            assets={assets}
-                            transactions={transactions}
-                        />
+                        <AdminOverview admin={admin} />
                     </TabsContent>
                     <TabsContent value="users">
-                        <UsersTable users={users} />
+                        <UsersTable />
                     </TabsContent>
                     <TabsContent value="assets">
-                        <AssetsTable assets={assets} />
+                        <AssetsTable />
                     </TabsContent>
                     <TabsContent value="transactions">
-                        <TransactionsTable transactions={transactions} />
+                        <TransactionsTable />
                     </TabsContent>
                     <TabsContent value="about">
                         <AboutUs />

@@ -8,27 +8,27 @@ import {
 import { useState } from "react";
 import LoginDialog from "./LoginDialog";
 import { Users, Package, ArrowLeftRight, LogIn } from "lucide-react";
+import { useGetTotalUsers } from "@/hooks/useUsers";
+import { useGetTotalAssets } from "@/hooks/useAssets";
+import { useGetTotalTransactions } from "@/hooks/useTransactions";
 
-interface AdminOverviewType {
+interface AdminOverviewProps {
     admin: User;
-    users: User[];
-    assets: Asset[];
-    transactions: Transactions[];
 }
 
-const AdminOverview = ({
-    admin,
-    users,
-    assets,
-    transactions,
-}: AdminOverviewType) => {
+const AdminOverview = ({ admin }: AdminOverviewProps) => {
+    const { data: totalUsersData } = useGetTotalUsers();
+    const { data: totalAssetsData } = useGetTotalAssets();
+    const { data: totalTransactionsData } = useGetTotalTransactions();
     const [openLoginDialog, setOpenLoginDialog] = useState(false);
 
-    const activeUsers = users.filter((u) => u.status === "ACTIVE").length;
-    const totalQuantity = assets.reduce((sum, t) => sum + t.assetCount, 0);
-    const pendingTransactions = transactions.filter(
-        (t) => t.status === "BORROWED" || t.status === "UNRETURNED",
-    ).length;
+    const totalUsers = totalUsersData?.totalUsers ?? 0;
+    const totalActiveUsers = totalUsersData?.totalActiveUsers ?? 0;
+    const totalAssets = totalAssetsData?.totalAssets ?? 0;
+    const totalQuantity = totalAssetsData?.totalQuantity ?? 0;
+    const totalTransactions = totalTransactionsData?.totalTransactions ?? 0;
+    const totalPendingTransactions =
+        totalTransactionsData?.totalPendingTransactions ?? 0;
 
     return (
         <>
@@ -45,15 +45,15 @@ const AdminOverview = ({
                                 </div>
                             </div>
                             <CardTitle className="text-2xl sm:text-3xl text-primary">
-                                {users.length}
+                                {totalUsers}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 pt-0">
                             <p className="text-xs text-muted-foreground">
                                 <span className="font-medium text-green-600 dark:text-green-400">
-                                    {activeUsers} active
+                                    {totalActiveUsers} active
                                 </span>{" "}
-                                / {users.length - activeUsers} inactive
+                                / {totalUsers} total
                             </p>
                         </CardContent>
                     </Card>
@@ -69,7 +69,7 @@ const AdminOverview = ({
                                 </div>
                             </div>
                             <CardTitle className="text-2xl sm:text-3xl text-primary">
-                                {assets.length}
+                                {totalAssets}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 pt-0">
@@ -93,15 +93,15 @@ const AdminOverview = ({
                                 </div>
                             </div>
                             <CardTitle className="text-2xl sm:text-3xl text-primary">
-                                {transactions.length}
+                                {totalTransactions}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 pt-0">
                             <p className="text-xs text-muted-foreground">
                                 <span className="font-medium text-amber-600 dark:text-amber-400">
-                                    {pendingTransactions} pending
+                                    {totalPendingTransactions} pending
                                 </span>{" "}
-                                / {transactions.length - pendingTransactions}{" "}
+                                / {totalTransactions - totalPendingTransactions}{" "}
                                 completed
                             </p>
                         </CardContent>

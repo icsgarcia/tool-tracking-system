@@ -6,11 +6,11 @@ import {
     CardTitle,
 } from "./ui/card";
 import { Button } from "./ui/button";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CreateAssetsDialog from "./CreateAssetsDialog";
 import QrImageDialog from "./QrImageDialog";
 import DataTable from "./DataTable";
-import type { ColumnDef, FilterFn } from "@tanstack/react-table";
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import {
     ArrowUpDown,
     EllipsisVertical,
@@ -35,24 +35,22 @@ import DeleteAllAssetsDialog from "./DeleteAllAssetsDialog";
 import PrintButton from "./PrintButton";
 import { Separator } from "./ui/separator";
 import AssetDetailDialog from "./AssetDetailDialog";
+import { useGetAllAssets } from "@/hooks/useAssets";
 
-const globalFilterFn: FilterFn<Asset> = (row, _columnId, filterValue) => {
-    const search = filterValue.toLowerCase();
-    const asset = row.original;
-    const assetTagNumber = `${asset.temporaryTagNumber}`.toLowerCase();
-    const assetName = `${asset.assetName}`.toLowerCase();
-
-    return assetName.includes(search) || assetTagNumber.includes(search);
-};
-
-const AssetsTable = ({ assets }: { assets: Asset[] }) => {
+const AssetsTable = () => {
     const [openCreateAssetsDialog, setOpenCreateAssetsDialog] = useState(false);
     const [openQrImageDialog, setOpenQrImageDialog] = useState(false);
     const [selectedQrCode, setSelectedQrCode] = useState({
         name: "",
         image: "",
     });
-    const [globalFilter, setGlobalFilter] = useState("");
+    const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const [pagination, setPagination] = useState({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+    const [sorting, setSorting] = useState<SortingState>([]);
     const [selectedAsset, setSelectedAsset] = useState<Asset>();
     const [openUpdateAsset, setOpenUpdateAsset] = useState(false);
     const [openDeleteAsset, setOpenDeleteAsset] = useState(false);
@@ -60,6 +58,28 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
         useState(false);
     const [openAssetDetailDialog, setOpenAssetDetailDialog] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+            setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    const sortBy = sorting[0]?.id;
+    const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+
+    const { data } = useGetAllAssets({
+        page: pagination.pageIndex,
+        pageSize: pagination.pageSize,
+        search: debouncedSearch || undefined,
+        sortBy,
+        sortOrder,
+    });
+
+    const assets = data?.data ?? [];
+    const pageCount = Math.ceil((data?.totalCount ?? 0) / pagination.pageSize);
 
     const assetColumns: ColumnDef<Asset>[] = [
         {
@@ -302,10 +322,8 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                             <InputGroupInput
                                 id="inline-start-input"
                                 placeholder="Search by asset's name..."
-                                value={globalFilter}
-                                onChange={(e) =>
-                                    setGlobalFilter(e.target.value)
-                                }
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
                             />
                             <InputGroupAddon align="inline-start">
                                 <SearchIcon className="text-muted-foreground" />
@@ -318,9 +336,11 @@ const AssetsTable = ({ assets }: { assets: Asset[] }) => {
                     <DataTable
                         data={assets}
                         columns={assetColumns}
-                        globalFilter={globalFilter}
-                        setGlobalFilter={setGlobalFilter}
-                        globalFilterFn={globalFilterFn}
+                        pageCount={pageCount}
+                        pagination={pagination}
+                        onPaginationChange={setPagination}
+                        sorting={sorting}
+                        onSortingChange={setSorting}
                     />
                 </CardContent>
             </Card>

@@ -1,15 +1,13 @@
 import {
     flexRender,
     getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
     useReactTable,
     type ColumnDef,
-    type FilterFn,
+    type OnChangeFn,
+    type PaginationState,
     type SortingState,
 } from "@tanstack/react-table";
-import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
+import { useMemo, type Dispatch, type SetStateAction } from "react";
 import {
     Table,
     TableBody,
@@ -24,38 +22,38 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 interface DataTableType<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
-    globalFilter: string;
-    setGlobalFilter: Dispatch<SetStateAction<string>>;
-    globalFilterFn: FilterFn<TData>;
+    pageCount: number;
+    pagination: PaginationState;
+    onPaginationChange: OnChangeFn<PaginationState>;
+    sorting: SortingState;
+    onSortingChange: Dispatch<SetStateAction<SortingState>>;
 }
 
 const DataTable = <TData, TValue>({
-    columns,
     data,
-    globalFilter,
-    setGlobalFilter,
-    globalFilterFn,
+    columns,
+    pageCount,
+    pagination,
+    onPaginationChange,
+    sorting,
+    onSortingChange,
 }: DataTableType<TData, TValue>) => {
-    const [sorting, setSorting] = useState<SortingState>([]);
-
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        onSortingChange: setSorting,
-        getSortedRowModel: getSortedRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        globalFilterFn,
+        manualPagination: true,
+        manualSorting: true,
+        pageCount,
         state: {
+            pagination,
             sorting,
-            globalFilter,
         },
-        onGlobalFilterChange: setGlobalFilter,
+        onPaginationChange,
+        onSortingChange,
     });
 
     const currentPage = table.getState().pagination.pageIndex;
-    const pageCount = table.getPageCount();
 
     const pageButtons = useMemo(() => {
         const maxVisible = 5;

@@ -1,10 +1,23 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+    keepPreviousData,
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export const useGetAllAssets = () => {
+export const useGetTotalAssets = () => {
     return useQuery({
-        queryKey: ["assets"],
-        queryFn: () => window.api.asset.getAllAssets(),
+        queryKey: ["totalAssets"],
+        queryFn: () => window.api.asset.getTotalAssets(),
+    });
+};
+
+export const useGetAllAssets = (params: PaginationParams) => {
+    return useQuery({
+        queryKey: ["assets", params],
+        queryFn: () => window.api.asset.getAllAssets(params),
+        placeholderData: keepPreviousData,
     });
 };
 
@@ -98,7 +111,7 @@ export const useDeleteAllAssets = () => {
             );
             queryClient.invalidateQueries({ queryKey: ["assets"] });
         },
-        onError: (error: any) => {
+        onError: (error) => {
             toast.error(error?.message || "Failed to delete all assets");
         },
     });
