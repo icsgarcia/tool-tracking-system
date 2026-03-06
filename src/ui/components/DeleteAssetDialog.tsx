@@ -47,11 +47,11 @@ const DeleteAssetDialog = ({
                             </div>
                             <div>
                                 <DialogTitle className="text-base sm:text-lg">
-                                    Confirm Asset Deletion
+                                    Confirm Tool Deletion
                                 </DialogTitle>
                                 <DialogDescription className="text-xs sm:text-sm">
                                     This action cannot be undone and will
-                                    permanently remove the asset and all
+                                    permanently remove the tool and all
                                     associated data.
                                 </DialogDescription>
                             </div>
@@ -68,13 +68,11 @@ const DeleteAssetDialog = ({
                             {asset.temporaryTagNumber}
                         </p>
                         <p>
-                            <span className="font-bold">Asset Name:</span>{" "}
+                            <span className="font-bold">Tool Name:</span>{" "}
                             {asset.assetName}
                         </p>
                         <p>
-                            <span className="font-bold">
-                                Asset Description:
-                            </span>{" "}
+                            <span className="font-bold">Tool Description:</span>{" "}
                             {asset.assetDescription}
                         </p>
                         <p>
@@ -97,7 +95,7 @@ const DeleteAssetDialog = ({
                             <Trash2 className="w-4 h-4" />
                             {deleteAsset.isPending
                                 ? "Deleting..."
-                                : "Delete Asset"}
+                                : "Delete Tool"}
                         </Button>
                     </DialogFooter>
                 </form>

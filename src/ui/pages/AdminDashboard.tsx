@@ -32,7 +32,7 @@ const AdminDashboard = () => {
     const tabs = [
         { id: "overview", label: "Overview" },
         { id: "users", label: "Users" },
-        { id: "assets", label: "Assets" },
+        { id: "tools", label: "Tools" },
         { id: "transactions", label: "Transactions" },
         { id: "about", label: "About" },
     ];
@@ -63,7 +63,7 @@ const AdminDashboard = () => {
                     <TabsContent value="users">
                         <UsersTable />
                     </TabsContent>
-                    <TabsContent value="assets">
+                    <TabsContent value="tools">
                         <AssetsTable />
                     </TabsContent>
                     <TabsContent value="transactions">

@@ -135,7 +135,7 @@ export function TransactionHandlers() {
                 });
 
                 if (!asset) {
-                    throw new Error("Asset Not Found");
+                    throw new Error("Tool Not Found");
                 }
 
                 if (borrowCount <= 0) {
@@ -179,7 +179,7 @@ export function TransactionHandlers() {
                 if (borrowCount > available) {
                     throw new Error(
                         available <= 0
-                            ? "No Available Assets To Borrow"
+                            ? "No Available tools To Borrow"
                             : `Only ${available} available, cannot borrow ${borrowCount}`,
                     );
                 }
@@ -213,7 +213,7 @@ export function TransactionHandlers() {
                 });
 
                 if (!asset) {
-                    throw new Error("Asset Not Found");
+                    throw new Error("Tool Not Found");
                 }
 
                 if (returnCount <= 0) {

@@ -145,7 +145,7 @@ const AssetsTable = () => {
                             column.toggleSorting(column.getIsSorted() === "asc")
                         }
                     >
-                        Asset Name
+                        Tool Name
                         <ArrowUpDown className="h-4 w-4 print:hidden" />
                     </Button>
                 );

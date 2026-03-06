@@ -38,7 +38,7 @@ export function AssetHandlers() {
                 const createdAssets = [];
 
                 for (const row of jsonData) {
-                    const qrCodeData = `ASSET-${row["temporaryTagNumber"]}-${randomUUID()}`;
+                    const qrCodeData = `TOOL-${row["temporaryTagNumber"]}-${randomUUID()}`;
 
                     const asset = await prisma.asset.create({
                         data: {
@@ -61,7 +61,7 @@ export function AssetHandlers() {
                 }
 
                 return {
-                    message: `Successfully created ${createdAssets.length} assets`,
+                    message: `Successfully created ${createdAssets.length} tools`,
                     assets: createdAssets,
                 };
             } catch (error) {
@@ -74,7 +74,7 @@ export function AssetHandlers() {
     ipcMain.handle(
         "asset:createAsset",
         async (_, assetData: CreateAssetDto) => {
-            const qrCodeData = `ASSET-${assetData.assetName}-${Date.now()}`;
+            const qrCodeData = `TOOL-${assetData.assetName}-${Date.now()}`;
 
             const asset = await prisma.asset.create({
                 data: {
@@ -200,7 +200,7 @@ export function AssetHandlers() {
         });
 
         if (!asset) {
-            throw new Error("Asset not found");
+            throw new Error("Tool not found");
         }
 
         return asset;
@@ -214,10 +214,10 @@ export function AssetHandlers() {
         });
 
         if (!asset) {
-            throw new Error("Asset not found");
+            throw new Error("Tool not found");
         }
 
-        const qrCodeData = `ASSET-${assetData.assetName}-${Date.now()}`;
+        const qrCodeData = `TOOL-${assetData.assetName}-${Date.now()}`;
 
         const updatedAsset = await prisma.asset.update({
             where: {
@@ -239,7 +239,7 @@ export function AssetHandlers() {
         });
 
         return {
-            message: `Asset "${updatedAsset.assetName}" updated successfully.`,
+            message: `Tool "${updatedAsset.assetName}" updated successfully.`,
             asset: updatedAsset,
         };
     });
@@ -252,7 +252,7 @@ export function AssetHandlers() {
         });
 
         if (!asset) {
-            throw new Error("Asset not found");
+            throw new Error("Tool not found");
         }
 
         await prisma.asset.delete({
@@ -262,7 +262,7 @@ export function AssetHandlers() {
         });
 
         return {
-            message: `Asset "${asset.assetName}" deleted successfully.`,
+            message: `Tool "${asset.assetName}" deleted successfully.`,
         };
     });
 
@@ -270,7 +270,7 @@ export function AssetHandlers() {
         await prisma.asset.deleteMany();
 
         return {
-            message: "All assets have been deleted.",
+            message: "All tools have been deleted.",
         };
     });
 }

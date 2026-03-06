@@ -105,7 +105,7 @@ function buildAssetsTable(assets: Asset[]) {
 
     return `<table>
         <thead><tr>
-            <th>Tag No.</th><th>Asset Name</th><th>Total Qty</th><th>Checked Out</th><th>Available</th>
+            <th>Tag No.</th><th>Tool Name</th><th>Total Qty</th><th>Checked Out</th><th>Available</th>
         </tr></thead>
         <tbody>${rows}</tbody>
     </table>`;
@@ -128,7 +128,7 @@ function buildTransactionsTable(transactions: Transactions[]) {
 
     return `<table>
         <thead><tr>
-            <th>User Name</th><th>Asset</th><th>Borrowed Qty</th><th>Returned Qty</th><th>Borrowed At</th><th>Returned At</th><th>Status</th>
+            <th>User Name</th><th>Tool</th><th>Borrowed Qty</th><th>Returned Qty</th><th>Borrowed At</th><th>Returned At</th><th>Status</th>
         </tr></thead>
         <tbody>${rows}</tbody>
     </table>`;
@@ -150,7 +150,7 @@ function buildUserTransactionsTable(transactions: UserTransactions[]) {
 
     return `<table>
         <thead><tr>
-            <th>Asset Name</th><th>Borrowed Qty</th><th>Returned Qty</th><th>Borrowed Date</th><th>Returned Date</th><th>Status</th>
+            <th>Tool Name</th><th>Borrowed Qty</th><th>Returned Qty</th><th>Borrowed Date</th><th>Returned Date</th><th>Status</th>
         </tr></thead>
         <tbody>${rows}</tbody>
     </table>`;
@@ -171,8 +171,8 @@ const ExportPdfButton = ({ type, userId, userName }: ExportPdfButtonProps) => {
                 filename = "users-report.pdf";
             } else if (type === "assets") {
                 const assets = await window.api.asset.exportAllAssets();
-                html = wrapHtml("Assets Report", buildAssetsTable(assets));
-                filename = "assets-report.pdf";
+                html = wrapHtml("Tools Report", buildAssetsTable(assets));
+                filename = "tools-report.pdf";
             } else if (type === "transactions") {
                 const transactions =
                     await window.api.transaction.exportAllTransactions();

@@ -49,11 +49,11 @@ const DeleteAllAssetsDialog = ({
                             </div>
                             <div>
                                 <DialogTitle className="text-base sm:text-lg">
-                                    Confirm Delete All Assets
+                                    Confirm Delete All Tools
                                 </DialogTitle>
                                 <DialogDescription className="text-xs sm:text-sm">
                                     This action cannot be undone and will
-                                    permanently remove all assets and their
+                                    permanently remove all tools and their
                                     associated data.
                                 </DialogDescription>
                             </div>
@@ -77,7 +77,7 @@ const DeleteAllAssetsDialog = ({
                             <Trash2 className="w-4 h-4" />
                             {deleteAllAssets.isPending
                                 ? "Deleting..."
-                                : "Delete all assets"}
+                                : "Delete all tools"}
                         </Button>
                     </DialogFooter>
                 </form>

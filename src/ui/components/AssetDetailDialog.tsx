@@ -45,7 +45,7 @@ const AssetDetailDialog = ({
                         </div>
                         <div>
                             <DialogTitle className="text-base sm:text-lg">
-                                Asset Details
+                                Tool Details
                             </DialogTitle>
                             <DialogDescription className="text-xs sm:text-sm">
                                 {asset.assetName}
@@ -84,7 +84,7 @@ const AssetDetailDialog = ({
                             <Package className="w-5 h-5 text-muted-foreground shrink-0" />
                             <div className="min-w-0">
                                 <p className="text-xs text-muted-foreground">
-                                    Asset Name
+                                    Tool Name
                                 </p>
                                 <p className="text-sm font-medium truncate">
                                     {asset.assetName}

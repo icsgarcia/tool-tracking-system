@@ -40,7 +40,7 @@ export const useCreateAsset = () => {
             queryClient.invalidateQueries({ queryKey: ["assets"] });
         },
         onError: (error) => {
-            toast.error(error.message || "Failed to create asset");
+            toast.error(error.message || "Failed to create tool");
         },
     });
 };
@@ -55,12 +55,12 @@ export const useCreateAssetByFile = () => {
         },
         onSuccess: (data) => {
             toast.success(
-                `Successfully created ${data?.assets?.length ?? ""} assets from file!`,
+                `Successfully created ${data?.assets?.length ?? ""} tools from file!`,
             );
             queryClient.invalidateQueries({ queryKey: ["assets"] });
         },
         onError: (error) => {
-            toast.error(error.message || "Failed to create assets from file");
+            toast.error(error.message || "Failed to create tools from file");
         },
     });
 };
@@ -74,12 +74,12 @@ export const useUpdateAsset = () => {
         onSuccess: (data, assetData) => {
             toast.success(
                 data?.message ||
-                    `Asset "${assetData.assetName}" updated successfully!`,
+                    `Tool "${assetData.assetName}" updated successfully!`,
             );
             queryClient.invalidateQueries({ queryKey: ["assets"] });
         },
         onError: (error) => {
-            toast.error(error?.message || "Failed to update asset");
+            toast.error(error?.message || "Failed to update tool");
         },
     });
 };
@@ -91,11 +91,11 @@ export const useDeleteAsset = () => {
         mutationFn: (assetId: string) =>
             window.api.asset.deleteAssetById(assetId),
         onSuccess: (data) => {
-            toast.success(data?.message || "Asset deleted successfully!");
+            toast.success(data?.message || "Tool deleted successfully!");
             queryClient.invalidateQueries({ queryKey: ["assets"] });
         },
         onError: (error) => {
-            toast.error(error?.message || "Failed to delete asset");
+            toast.error(error?.message || "Failed to delete tool");
         },
     });
 };
@@ -107,12 +107,12 @@ export const useDeleteAllAssets = () => {
         mutationFn: () => window.api.asset.deleteAllAssets(),
         onSuccess: (data) => {
             toast.success(
-                data?.message || "All assets have been deleted successfully!",
+                data?.message || "All tools have been deleted successfully!",
             );
             queryClient.invalidateQueries({ queryKey: ["assets"] });
         },
         onError: (error) => {
-            toast.error(error?.message || "Failed to delete all assets");
+            toast.error(error?.message || "Failed to delete all tools");
         },
     });
 };

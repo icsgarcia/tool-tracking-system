@@ -128,11 +128,11 @@ const CreateAssetsDialog = ({
                         </div>
                         <div>
                             <DialogTitle className="text-base sm:text-lg">
-                                Create Asset
+                                Create Tool
                             </DialogTitle>
                             <DialogDescription className="text-xs sm:text-sm">
                                 Fill out the form below or upload an Excel file
-                                to create assets.
+                                to create tools.
                             </DialogDescription>
                         </div>
                     </div>
@@ -155,7 +155,7 @@ const CreateAssetsDialog = ({
                                 </Field>
                                 <Field>
                                     <FieldLabel htmlFor="assetName">
-                                        Asset Name
+                                        Tool Name
                                     </FieldLabel>
                                     <Input
                                         id="assetName"
@@ -177,7 +177,7 @@ const CreateAssetsDialog = ({
                                 </Field>
                                 <Field>
                                     <FieldLabel htmlFor="assetCategoryCode">
-                                        Asset Category Code
+                                        Tool Category Code
                                     </FieldLabel>
                                     <Input
                                         id="assetCategoryCode"
@@ -210,7 +210,7 @@ const CreateAssetsDialog = ({
                                 </Field>
                                 <Field>
                                     <FieldLabel htmlFor="assetCount">
-                                        Asset Count
+                                        Tool Count
                                     </FieldLabel>
                                     <Input
                                         id="assetCount"
@@ -223,7 +223,7 @@ const CreateAssetsDialog = ({
                                 </Field>
                                 <Field>
                                     <FieldLabel htmlFor="assetCondition">
-                                        Asset Condition
+                                        Tool Condition
                                     </FieldLabel>
                                     <Input
                                         id="assetCondition"
@@ -245,7 +245,7 @@ const CreateAssetsDialog = ({
                                 </Field>
                             </FieldGroup>
                             <FieldSeparator>
-                                Or create assets with
+                                Or create tools with
                             </FieldSeparator>
                             <Field>
                                 <FieldLabel htmlFor="file">
@@ -280,7 +280,7 @@ const CreateAssetsDialog = ({
                                     {createAsset.isPending ||
                                     createAssetByFile.isPending
                                         ? "Creating..."
-                                        : "Create Asset"}
+                                        : "Create Tool"}
                                 </Button>
                             </Field>
                         </FieldSet>

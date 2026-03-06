@@ -70,11 +70,11 @@ const UpdateAssetDialog = ({
                         </div>
                         <div>
                             <DialogTitle className="text-base sm:text-lg">
-                                Update Asset
+                                Update Tool
                             </DialogTitle>
                             <DialogDescription className="text-xs sm:text-sm">
-                                Update the asset details below and click "Update
-                                Asset" to save changes.
+                                Update the tool details below and click "Update
+                                Tool" to save changes.
                             </DialogDescription>
                         </div>
                     </div>
@@ -116,7 +116,7 @@ const UpdateAssetDialog = ({
                                 </div>
                                 <Field>
                                     <FieldLabel htmlFor="assetName">
-                                        Asset Name
+                                        Tool Name
                                     </FieldLabel>
                                     <Input
                                         id="assetName"
@@ -128,7 +128,7 @@ const UpdateAssetDialog = ({
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <Field>
                                         <FieldLabel htmlFor="assetCategoryCode">
-                                            Asset Category Code
+                                            Tool Category Code
                                         </FieldLabel>
                                         <Input
                                             id="assetCategoryCode"
@@ -142,7 +142,7 @@ const UpdateAssetDialog = ({
                                     </Field>
                                     <Field>
                                         <FieldLabel htmlFor="assetCount">
-                                            Asset Count
+                                            Tool Count
                                         </FieldLabel>
                                         <Input
                                             id="assetCount"
@@ -187,7 +187,7 @@ const UpdateAssetDialog = ({
                                 </div>
                                 <Field>
                                     <FieldLabel htmlFor="assetCondition">
-                                        Asset Condition
+                                        Tool Condition
                                     </FieldLabel>
                                     <Input
                                         id="assetCondition"
@@ -224,7 +224,7 @@ const UpdateAssetDialog = ({
                                     <Save className="w-4 h-4" />
                                     {updateAsset.isPending
                                         ? "Updating..."
-                                        : "Update Asset"}
+                                        : "Update Tool"}
                                 </Button>
                             </DialogFooter>
                         </FieldSet>
