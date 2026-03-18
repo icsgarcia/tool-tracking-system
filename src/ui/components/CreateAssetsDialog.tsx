@@ -269,7 +269,9 @@ const CreateAssetsDialog = ({
                                     disabled={
                                         createAsset.isPending ||
                                         createAssetByFile.isPending ||
-                                        (!assetData.assetName && !file)
+                                        ((assetData.assetName === "" ||
+                                            assetData.assetCount <= 0) &&
+                                            !file)
                                     }
                                 >
                                     {file ? (

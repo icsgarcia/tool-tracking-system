@@ -110,6 +110,9 @@ export const useDeleteAllAssets = () => {
                 data?.message || "All tools have been deleted successfully!",
             );
             queryClient.invalidateQueries({ queryKey: ["assets"] });
+            queryClient.invalidateQueries({ queryKey: ["totalAssets"] });
+            queryClient.invalidateQueries({ queryKey: ["transactions"] });
+            queryClient.invalidateQueries({ queryKey: ["totalTransactions"] });
         },
         onError: (error) => {
             toast.error(error?.message || "Failed to delete all tools");

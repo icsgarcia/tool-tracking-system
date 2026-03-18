@@ -66,7 +66,11 @@ export function AssetHandlers() {
                 };
             } catch (error) {
                 console.error(error);
-                throw new Error("Failed to import Excel file");
+                throw new Error(
+                    error instanceof Error
+                        ? error.message
+                        : "Failed to import Excel file",
+                );
             }
         },
     );
@@ -177,21 +181,47 @@ export function AssetHandlers() {
             orderBy: { assetName: "asc" },
         });
 
-        const borrowedCounts = await prisma.transaction.groupBy({
-            by: ["assetId"],
-            where: { status: { in: ["BORROWED", "UNRETURNED"] } },
-            _count: true,
-        });
+        // const borrowedCounts = await prisma.transaction.groupBy({
+        //     by: ["assetId"],
+        //     where: { status: { in: ["BORROWED", "UNRETURNED"] } },
+        //     _count: true,
+        // });
 
-        const countMap = new Map(
-            borrowedCounts.map((b) => [b.assetId, b._count]),
+        // const countMap = new Map(
+        //     borrowedCounts.map((b) => [b.assetId, b._count]),
+        // );
+
+        // return assets.map((asset) => ({
+        //     ...asset,
+        //     borrowedCount: countMap.get(asset.id) ?? 0,
+        //     availableCount: asset.assetCount - (countMap.get(asset.id) ?? 0),
+        // }));
+
+        return Promise.all(
+            assets.map(async (asset) => {
+                const borrowedCount = await prisma.transaction.count({
+                    where: {
+                        assetId: asset.id,
+                        status: {
+                            in: ["BORROWED", "UNRETURNED"],
+                        },
+                    },
+                });
+
+                const availableCount = asset.assetCount - borrowedCount;
+                const qrCodeBuffer = await QRCode.toBuffer(asset.qrCode, {
+                    width: 500,
+                    margin: 2,
+                });
+                const qrCodeBase64 = `data:image/png;base64,${qrCodeBuffer.toString("base64")}`;
+                return {
+                    ...asset,
+                    qrCodeImage: qrCodeBase64,
+                    borrowedCount,
+                    availableCount,
+                };
+            }),
         );
-
-        return assets.map((asset) => ({
-            ...asset,
-            borrowedCount: countMap.get(asset.id) ?? 0,
-            availableCount: asset.assetCount - (countMap.get(asset.id) ?? 0),
-        }));
     });
 
     ipcMain.handle("asset:getAssetById", async (_, assetId: string) => {
@@ -267,6 +297,7 @@ export function AssetHandlers() {
     });
 
     ipcMain.handle("asset:deleteAllAssets", async () => {
+        await prisma.transaction.deleteMany();
         await prisma.asset.deleteMany();
 
         return {

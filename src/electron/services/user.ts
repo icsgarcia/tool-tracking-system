@@ -64,7 +64,11 @@ export function UserHandlers() {
                 };
             } catch (error) {
                 console.error(error);
-                throw new Error("Failed to import Excel file");
+                throw new Error(
+                    error instanceof Error
+                        ? error.message
+                        : "Failed to import Excel file",
+                );
             }
         },
     );
@@ -283,12 +287,34 @@ export function UserHandlers() {
     });
 
     ipcMain.handle("user:exportAllUsers", async () => {
-        return prisma.user.findMany({
+        const users = await prisma.user.findMany({
             orderBy: { lastName: "asc" },
         });
+
+        return await Promise.all(
+            users.map(async (user) => {
+                const qrCodeBuffer = await QRCode.toBuffer(user.qrCode, {
+                    width: 500,
+                    margin: 2,
+                });
+                const qrCodeBase64 = `data:image/png;base64,${qrCodeBuffer.toString("base64")}`;
+                return {
+                    ...user,
+                    qrCodeImage: qrCodeBase64,
+                };
+            }),
+        );
     });
 
     ipcMain.handle("user:deleteAllUsers", async (_, userId: string) => {
+        await prisma.transaction.deleteMany({
+            where: {
+                userId: {
+                    not: userId,
+                },
+            },
+        });
+
         await prisma.user.deleteMany({
             where: {
                 NOT: {

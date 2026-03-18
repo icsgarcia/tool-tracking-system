@@ -71,6 +71,9 @@ const CreateUsersDialog = ({
             email: "",
             number: "",
         });
+    };
+
+    const resetFile = () => {
         setFile(null);
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
@@ -99,15 +102,24 @@ const CreateUsersDialog = ({
             createUserByFile.mutate(file, {
                 onSuccess: () => {
                     resetForm();
+                    resetFile();
                     setOpenCreateUsersDialog(false);
                 },
-                onError: () => resetForm(),
+                onError: () => {
+                    resetForm();
+                    resetFile();
+                },
             });
         } else if (userData) {
             createUser.mutate(userData, {
                 onSuccess: () => {
                     resetForm();
+                    resetFile();
                     setOpenCreateUsersDialog(false);
+                },
+                onError: () => {
+                    resetForm();
+                    resetFile();
                 },
             });
         }
@@ -295,6 +307,7 @@ const CreateUsersDialog = ({
                                         const file =
                                             e.target.files?.[0] ?? null;
                                         setFile(file);
+                                        resetForm();
                                     }}
                                 />
                             </Field>
@@ -306,9 +319,12 @@ const CreateUsersDialog = ({
                                         createUser.isPending ||
                                         createUserByFile.isPending ||
                                         (!file &&
-                                            Object.values(userData).some(
-                                                (val) => val === undefined,
-                                            ))
+                                            (userData.schoolNumber === "" ||
+                                                userData.firstName === "" ||
+                                                userData.lastName === "" ||
+                                                userData.role === "" ||
+                                                userData.department === "" ||
+                                                userData.email === ""))
                                     }
                                 >
                                     {file ? (

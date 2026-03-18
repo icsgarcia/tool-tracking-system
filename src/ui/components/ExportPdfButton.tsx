@@ -70,21 +70,24 @@ function wrapHtml(title: string, tableHtml: string) {
 function buildUsersTable(users: User[]) {
     const rows = users
         .map(
-            (u) => `<tr>
-        <td>${u.schoolNumber}</td>
-        <td>${capitalize(`${u.firstName} ${u.middleName} ${u.lastName}`)}</td>
-        <td>${u.email || "-"}</td>
-        <td>${u.role}</td>
-        <td>${u.department || "-"}</td>
-        <td>${u.yearLevel}</td>
-        <td><span class="badge ${u.status === "ACTIVE" ? "badge-active" : "badge-inactive"}">${u.status}</span></td>
+            (user) => `<tr>
+        <td>
+            <img src="${user.qrCodeImage}" alt="QR Code" style="width: 80px; height: 80px;" />
+        </td>
+        <td>${user.schoolNumber}</td>
+        <td>${capitalize(`${user.firstName} ${user.middleName} ${user.lastName}`)}</td>
+        <td>${user.email || "-"}</td>
+        <td>${user.role}</td>
+        <td>${user.department || "-"}</td>
+        <td>${user.yearLevel}</td>
+        <td><span class="badge ${user.status === "ACTIVE" ? "badge-active" : "badge-inactive"}">${user.status}</span></td>
     </tr>`,
         )
         .join("");
 
     return `<table>
         <thead><tr>
-            <th>School No.</th><th>Name</th><th>Email</th><th>Role</th><th>Department</th><th>Year</th><th>Status</th>
+            <th>QR Code</th><th>School No.</th><th>Name</th><th>Email</th><th>Role</th><th>Department</th><th>Year</th><th>Status</th>
         </tr></thead>
         <tbody>${rows}</tbody>
     </table>`;
@@ -93,19 +96,23 @@ function buildUsersTable(users: User[]) {
 function buildAssetsTable(assets: Asset[]) {
     const rows = assets
         .map(
-            (a) => `<tr>
-        <td>${a.temporaryTagNumber || "-"}</td>
-        <td>${a.assetName}</td>
-        <td>${a.assetCount}</td>
-        <td>${a.borrowedCount}</td>
-        <td>${a.availableCount}</td>
+            (asset) => `<tr>
+        <td style="text-align: center;">
+            <img src="${asset.qrCodeImage}" alt="QR Code" style="width: 80px; height: 80px;" />
+        
+        </td>
+        <td>${asset.temporaryTagNumber || "-"}</td>
+        <td>${asset.assetName}</td>
+        <td>${asset.assetCount}</td>
+        <td>${asset.borrowedCount}</td>
+        <td>${asset.availableCount}</td>
     </tr>`,
         )
         .join("");
 
     return `<table>
         <thead><tr>
-            <th>Tag No.</th><th>Tool Name</th><th>Total Qty</th><th>Checked Out</th><th>Available</th>
+            <th>QR Code</th><th>Tag No.</th><th>Tool Name</th><th>Total Qty</th><th>Checked Out</th><th>Available</th>
         </tr></thead>
         <tbody>${rows}</tbody>
     </table>`;

@@ -121,6 +121,9 @@ export const useDeleteAllUsers = () => {
                     "All users except the logged in user have been deleted successfully!",
             );
             queryClient.invalidateQueries({ queryKey: ["users"] });
+            queryClient.invalidateQueries({ queryKey: ["totalUsers"] });
+            queryClient.invalidateQueries({ queryKey: ["transactions"] });
+            queryClient.invalidateQueries({ queryKey: ["totalTransactions"] });
         },
         onError: (error) => {
             toast.error(error?.message || "Failed to delete all users");
