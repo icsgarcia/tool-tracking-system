@@ -9,6 +9,7 @@ import { getPreloadPath } from "./pathResolver.js";
 import { checkOverdueTransactions } from "./jobs/transactionStatusJob.js";
 import cron from "node-cron";
 import { printHandlers } from "./services/print.js";
+import { DatabaseHandlers } from "./services/database.js";
 
 app.on("ready", async () => {
     Menu.setApplicationMenu(null);
@@ -19,6 +20,7 @@ app.on("ready", async () => {
     AssetHandlers();
     TransactionHandlers();
     printHandlers();
+    DatabaseHandlers();
 
     cron.schedule("0 * * * *", () => {
         checkOverdueTransactions();

@@ -22,7 +22,12 @@ const NavUser = ({ user, onLogout }: NavUserType) => {
     const [openProfileDialog, setOpenProfileDialog] = useState(false);
 
     const initials = `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`;
-    const fullName = `${user.firstName} ${user.middleName} ${user.lastName}`;
+    const fullName =
+        `${user.firstName}${user.middleName ? ` ${user.middleName.charAt(0)}.` : ""} ${user.lastName}`
+            .toLowerCase()
+            .split(" ")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
 
     return (
         <>

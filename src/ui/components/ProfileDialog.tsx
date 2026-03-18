@@ -10,7 +10,14 @@ import {
 } from "./ui/dialog";
 import { Separator } from "./ui/separator";
 import { Badge } from "./ui/badge";
-import { UserCircle, Mail, Phone, QrCode, FileDown, Loader2 } from "lucide-react";
+import {
+    UserCircle,
+    Mail,
+    Phone,
+    QrCode,
+    FileDown,
+    Loader2,
+} from "lucide-react";
 import { toast } from "sonner";
 
 interface ProfileDialogProps {
@@ -25,6 +32,12 @@ const ProfileDialog = ({
     setOpenProfileDialog,
 }: ProfileDialogProps) => {
     const [exporting, setExporting] = useState(false);
+
+    const fullName = `${user.firstName} ${user.middleName} ${user.lastName}`
+        .toLowerCase()
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
 
     const handleExportProfile = async () => {
         setExporting(true);
@@ -88,9 +101,7 @@ const ProfileDialog = ({
                 <Separator className="mx-4 sm:mx-6 w-auto" />
 
                 <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4 sm:px-6 sm:pb-6 pt-2">
-                    <Card
-                        className="bg-transparent rounded-xl shadow-none border-none overflow-hidden"
-                    >
+                    <Card className="bg-transparent rounded-xl shadow-none border-none overflow-hidden">
                         <CardContent className="p-0">
                             <div className="flex flex-col items-center gap-4 sm:gap-5">
                                 <div className="flex flex-col items-center gap-3">
@@ -101,11 +112,7 @@ const ProfileDialog = ({
                                     />
                                     <div className="text-center">
                                         <p className="font-bold text-xl sm:text-2xl text-foreground truncate">
-                                            {user.firstName}{" "}
-                                            {user.middleName
-                                                ? `${user.middleName.charAt(0)}.`
-                                                : ""}{" "}
-                                            {user.lastName}
+                                            {fullName}
                                         </p>
                                         <p className="text-sm text-muted-foreground">
                                             {user.schoolNumber}

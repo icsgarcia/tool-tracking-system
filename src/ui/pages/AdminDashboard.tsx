@@ -7,6 +7,7 @@ import AdminOverview from "@/components/AdminOverview";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AssetsTable from "@/components/AssetsTable";
+import BackupRestore from "@/components/BackupRestore";
 import Header from "@/components/Header";
 
 const AdminDashboard = () => {
@@ -34,6 +35,7 @@ const AdminDashboard = () => {
         { id: "users", label: "Users" },
         { id: "tools", label: "Tools" },
         { id: "transactions", label: "Transactions" },
+        { id: "backup", label: "Backup & Restore" },
         { id: "about", label: "About" },
     ];
 
@@ -68,6 +70,9 @@ const AdminDashboard = () => {
                     </TabsContent>
                     <TabsContent value="transactions">
                         <TransactionsTable />
+                    </TabsContent>
+                    <TabsContent value="backup">
+                        <BackupRestore />
                     </TabsContent>
                     <TabsContent value="about">
                         <AboutUs />

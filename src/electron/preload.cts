@@ -100,4 +100,9 @@ electron.contextBridge.exposeInMainWorld("api", {
         exportPdf: (html: string, defaultFilename: string) =>
             electron.ipcRenderer.invoke("exportPdf", html, defaultFilename),
     },
+
+    database: {
+        backup: () => electron.ipcRenderer.invoke("database:backup"),
+        restore: () => electron.ipcRenderer.invoke("database:restore"),
+    },
 });

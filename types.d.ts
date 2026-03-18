@@ -180,5 +180,16 @@ interface Window {
                 defaultFilename: string,
             ) => Promise<{ success: boolean; filePath?: string }>;
         };
+        database: {
+            backup: () => Promise<{
+                success: boolean;
+                filePath?: string;
+                error?: string;
+            }>;
+            restore: () => Promise<{
+                success: boolean;
+                error?: string;
+            }>;
+        };
     };
 }
