@@ -306,6 +306,36 @@ export function UserHandlers() {
         );
     });
 
+    ipcMain.handle(
+        "user:deleteSelectedUsers",
+        async (_, userIds: string[], currentUserId: string) => {
+            if (!userIds || userIds.length === 0) {
+                throw new Error("No users selected for deletion.");
+            }
+
+            // Filter out the currently logged-in admin
+            const safeIds = userIds.filter((id) => id !== currentUserId);
+
+            if (safeIds.length === 0) {
+                throw new Error(
+                    "Cannot delete the currently logged-in admin account.",
+                );
+            }
+
+            await prisma.transaction.deleteMany({
+                where: { userId: { in: safeIds } },
+            });
+
+            const result = await prisma.user.deleteMany({
+                where: { id: { in: safeIds } },
+            });
+
+            return {
+                message: `${result.count} user(s) deleted successfully.`,
+            };
+        },
+    );
+
     ipcMain.handle("user:deleteAllUsers", async (_, userId: string) => {
         await prisma.transaction.deleteMany({
             where: {

@@ -100,6 +100,27 @@ export const useDeleteAsset = () => {
     });
 };
 
+export const useDeleteSelectedAssets = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (assetIds: string[]) =>
+            window.api.asset.deleteSelectedAssets(assetIds),
+        onSuccess: (data) => {
+            toast.success(
+                data?.message || "Selected tools deleted successfully!",
+            );
+            queryClient.invalidateQueries({ queryKey: ["assets"] });
+            queryClient.invalidateQueries({ queryKey: ["totalAssets"] });
+            queryClient.invalidateQueries({ queryKey: ["transactions"] });
+            queryClient.invalidateQueries({ queryKey: ["totalTransactions"] });
+        },
+        onError: (error) => {
+            toast.error(error?.message || "Failed to delete selected tools");
+        },
+    });
+};
+
 export const useDeleteAllAssets = () => {
     const queryClient = useQueryClient();
 

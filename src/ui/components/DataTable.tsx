@@ -5,6 +5,7 @@ import {
     type ColumnDef,
     type OnChangeFn,
     type PaginationState,
+    type RowSelectionState,
     type SortingState,
 } from "@tanstack/react-table";
 import { useMemo, type Dispatch, type SetStateAction } from "react";
@@ -27,6 +28,9 @@ interface DataTableType<TData, TValue> {
     onPaginationChange: OnChangeFn<PaginationState>;
     sorting: SortingState;
     onSortingChange: Dispatch<SetStateAction<SortingState>>;
+    rowSelection?: RowSelectionState;
+    onRowSelectionChange?: OnChangeFn<RowSelectionState>;
+    getRowId?: (row: TData) => string;
 }
 
 const DataTable = <TData, TValue>({
@@ -37,6 +41,9 @@ const DataTable = <TData, TValue>({
     onPaginationChange,
     sorting,
     onSortingChange,
+    rowSelection,
+    onRowSelectionChange,
+    getRowId,
 }: DataTableType<TData, TValue>) => {
     const table = useReactTable({
         data,
@@ -48,9 +55,12 @@ const DataTable = <TData, TValue>({
         state: {
             pagination,
             sorting,
+            ...(rowSelection !== undefined && { rowSelection }),
         },
         onPaginationChange,
         onSortingChange,
+        ...(onRowSelectionChange && { onRowSelectionChange }),
+        ...(getRowId && { getRowId }),
     });
 
     const currentPage = table.getState().pagination.pageIndex;

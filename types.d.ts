@@ -137,6 +137,7 @@ interface Window {
             getUserByQRCode: (qrCode: string) => Promise<any>;
             updateUserById: (userData: UpdateUserDto) => Promise<any>;
             deleteUserById: (userId: string) => Promise<any>;
+            deleteSelectedUsers: (userIds: string[], currentUserId: string) => Promise<any>;
             deleteAllUsers: (userId: string) => Promise<any>;
             exportAllUsers: () => Promise<any>;
         };
@@ -148,6 +149,7 @@ interface Window {
             getAssetById: (assetId: string) => Promise<any>;
             updateAssetById: (assetData: UpdateAssetDto) => Promise<any>;
             deleteAssetById: (assetId: string) => Promise<any>;
+            deleteSelectedAssets: (assetIds: string[]) => Promise<any>;
             deleteAllAssets: () => Promise<any>;
             exportAllAssets: () => Promise<any>;
         };

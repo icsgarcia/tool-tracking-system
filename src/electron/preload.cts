@@ -23,6 +23,8 @@ electron.contextBridge.exposeInMainWorld("api", {
             electron.ipcRenderer.invoke("user:updateUserById", userData),
         deleteUserById: (userId: string) =>
             electron.ipcRenderer.invoke("user:deleteUserById", userId),
+        deleteSelectedUsers: (userIds: string[], currentUserId: string) =>
+            electron.ipcRenderer.invoke("user:deleteSelectedUsers", userIds, currentUserId),
         deleteAllUsers: (userId: string) =>
             electron.ipcRenderer.invoke("user:deleteAllUsers", userId),
         exportAllUsers: () =>
@@ -44,6 +46,8 @@ electron.contextBridge.exposeInMainWorld("api", {
             electron.ipcRenderer.invoke("asset:updateAssetById", assetData),
         deleteAssetById: (assetId: string) =>
             electron.ipcRenderer.invoke("asset:deleteAssetById", assetId),
+        deleteSelectedAssets: (assetIds: string[]) =>
+            electron.ipcRenderer.invoke("asset:deleteSelectedAssets", assetIds),
         deleteAllAssets: () =>
             electron.ipcRenderer.invoke("asset:deleteAllAssets"),
         exportAllAssets: () =>

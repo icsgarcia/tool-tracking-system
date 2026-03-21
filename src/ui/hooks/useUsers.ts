@@ -110,6 +110,25 @@ export const useDeleteUser = () => {
     });
 };
 
+export const useDeleteSelectedUsers = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (data: { userIds: string[]; currentUserId: string }) =>
+            window.api.user.deleteSelectedUsers(data.userIds, data.currentUserId),
+        onSuccess: (data) => {
+            toast.success(data?.message || "Selected users deleted successfully!");
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+            queryClient.invalidateQueries({ queryKey: ["totalUsers"] });
+            queryClient.invalidateQueries({ queryKey: ["transactions"] });
+            queryClient.invalidateQueries({ queryKey: ["totalTransactions"] });
+        },
+        onError: (error) => {
+            toast.error(error?.message || "Failed to delete selected users");
+        },
+    });
+};
+
 export const useDeleteAllUsers = () => {
     const queryClient = useQueryClient();
 

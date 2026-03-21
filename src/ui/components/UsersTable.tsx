@@ -22,7 +22,11 @@ import {
     Trash2,
     MoreHorizontal,
 } from "lucide-react";
-import { type ColumnDef, type SortingState } from "@tanstack/react-table";
+import {
+    type ColumnDef,
+    type RowSelectionState,
+    type SortingState,
+} from "@tanstack/react-table";
 import DataTable from "./DataTable";
 import {
     DropdownMenu,
@@ -34,11 +38,13 @@ import {
 import DeleteUserDialog from "./DeleteUserDialog";
 import UpdateUserDialog from "./UpdateUserDialog";
 import DeleteAllUsersDialog from "./DeleteAllUsersDialog";
+import DeleteSelectedUsersDialog from "./DeleteSelectedUsersDialog";
 import { useLocation } from "react-router";
 import ExportPdfButton from "./ExportPdfButton";
 import { Separator } from "./ui/separator";
 import UserDetailDialog from "./UserDetailDialog";
 import { useGetAllUsers } from "@/hooks/useUsers";
+import { Checkbox } from "./ui/checkbox";
 
 const UsersTable = () => {
     const location = useLocation();
@@ -63,6 +69,9 @@ const UsersTable = () => {
     const [openUserDetailDialog, setOpenUserDetailDialog] = useState(false);
     const [openDeleteAllUsersDialog, setOpenDeleteAllUsersDialog] =
         useState(false);
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+    const [openDeleteSelectedDialog, setOpenDeleteSelectedDialog] =
+        useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -86,7 +95,34 @@ const UsersTable = () => {
     const users = data?.data ?? [];
     const pageCount = Math.ceil((data?.totalCount ?? 0) / pagination.pageSize);
 
+    const selectedUserIds = Object.keys(rowSelection);
+
     const userColumns: ColumnDef<User>[] = [
+        {
+            id: "select",
+            header: ({ table }) => (
+                <Checkbox
+                    checked={
+                        table.getIsAllPageRowsSelected() ||
+                        (table.getIsSomePageRowsSelected() && "indeterminate")
+                    }
+                    onCheckedChange={(value) =>
+                        table.toggleAllPageRowsSelected(!!value)
+                    }
+                    aria-label="Select all"
+                    className="print:hidden"
+                />
+            ),
+            cell: ({ row }) => (
+                <Checkbox
+                    checked={row.getIsSelected()}
+                    onCheckedChange={(value) => row.toggleSelected(!!value)}
+                    aria-label="Select row"
+                    className="print:hidden"
+                />
+            ),
+            enableSorting: false,
+        },
         {
             accessorKey: "qrCodeImage",
             header: "QR Code",
@@ -344,6 +380,19 @@ const UsersTable = () => {
                             </div>
                         </div>
                         <div className="flex items-center gap-1 print:hidden">
+                            {selectedUserIds.length > 0 && (
+                                <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    className="sm:size-default"
+                                    onClick={() =>
+                                        setOpenDeleteSelectedDialog(true)
+                                    }
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                    Delete ({selectedUserIds.length})
+                                </Button>
+                            )}
                             <Button
                                 size="sm"
                                 className="sm:size-default"
@@ -408,6 +457,9 @@ const UsersTable = () => {
                         onPaginationChange={setPagination}
                         sorting={sorting}
                         onSortingChange={setSorting}
+                        rowSelection={rowSelection}
+                        onRowSelectionChange={setRowSelection}
+                        getRowId={(row) => row.id}
                     />
                 </CardContent>
             </Card>
@@ -446,6 +498,15 @@ const UsersTable = () => {
                     openUserDetailDialog={openUserDetailDialog}
                     setOpenUserDetailDialog={setOpenUserDetailDialog}
                     user={selectedUser}
+                />
+            )}
+            {openDeleteSelectedDialog && selectedUserIds.length > 0 && (
+                <DeleteSelectedUsersDialog
+                    open={openDeleteSelectedDialog}
+                    setOpen={setOpenDeleteSelectedDialog}
+                    userIds={selectedUserIds}
+                    currentUserId={user.id}
+                    onSuccess={() => setRowSelection({})}
                 />
             )}
         </>

@@ -296,6 +296,27 @@ export function AssetHandlers() {
         };
     });
 
+    ipcMain.handle(
+        "asset:deleteSelectedAssets",
+        async (_, assetIds: string[]) => {
+            if (!assetIds || assetIds.length === 0) {
+                throw new Error("No tools selected for deletion.");
+            }
+
+            await prisma.transaction.deleteMany({
+                where: { assetId: { in: assetIds } },
+            });
+
+            const result = await prisma.asset.deleteMany({
+                where: { id: { in: assetIds } },
+            });
+
+            return {
+                message: `${result.count} tool(s) deleted successfully.`,
+            };
+        },
+    );
+
     ipcMain.handle("asset:deleteAllAssets", async () => {
         await prisma.transaction.deleteMany();
         await prisma.asset.deleteMany();

@@ -10,7 +10,11 @@ import { useEffect, useState } from "react";
 import CreateAssetsDialog from "./CreateAssetsDialog";
 import QrImageDialog from "./QrImageDialog";
 import DataTable from "./DataTable";
-import type { ColumnDef, SortingState } from "@tanstack/react-table";
+import type {
+    ColumnDef,
+    RowSelectionState,
+    SortingState,
+} from "@tanstack/react-table";
 import {
     ArrowUpDown,
     EllipsisVertical,
@@ -32,10 +36,12 @@ import {
 import DeleteAssetDialog from "./DeleteAssetDialog";
 import UpdateAssetDialog from "./UpdateAssetDialog";
 import DeleteAllAssetsDialog from "./DeleteAllAssetsDialog";
+import DeleteSelectedAssetsDialog from "./DeleteSelectedAssetsDialog";
 import ExportPdfButton from "./ExportPdfButton";
 import { Separator } from "./ui/separator";
 import AssetDetailDialog from "./AssetDetailDialog";
 import { useGetAllAssets } from "@/hooks/useAssets";
+import { Checkbox } from "./ui/checkbox";
 
 const AssetsTable = () => {
     const [openCreateAssetsDialog, setOpenCreateAssetsDialog] = useState(false);
@@ -57,6 +63,9 @@ const AssetsTable = () => {
     const [openDeleteAllAssetsDialog, setOpenDeleteAllAssetsDialog] =
         useState(false);
     const [openAssetDetailDialog, setOpenAssetDetailDialog] = useState(false);
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+    const [openDeleteSelectedDialog, setOpenDeleteSelectedDialog] =
+        useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -80,7 +89,34 @@ const AssetsTable = () => {
     const assets = data?.data ?? [];
     const pageCount = Math.ceil((data?.totalCount ?? 0) / pagination.pageSize);
 
+    const selectedAssetIds = Object.keys(rowSelection);
+
     const assetColumns: ColumnDef<Asset>[] = [
+        {
+            id: "select",
+            header: ({ table }) => (
+                <Checkbox
+                    checked={
+                        table.getIsAllPageRowsSelected() ||
+                        (table.getIsSomePageRowsSelected() && "indeterminate")
+                    }
+                    onCheckedChange={(value) =>
+                        table.toggleAllPageRowsSelected(!!value)
+                    }
+                    aria-label="Select all"
+                    className="print:hidden"
+                />
+            ),
+            cell: ({ row }) => (
+                <Checkbox
+                    checked={row.getIsSelected()}
+                    onCheckedChange={(value) => row.toggleSelected(!!value)}
+                    aria-label="Select row"
+                    className="print:hidden"
+                />
+            ),
+            enableSorting: false,
+        },
         {
             accessorKey: "qrCodeImage",
             header: "QR Code",
@@ -276,6 +312,19 @@ const AssetsTable = () => {
                             </div>
                         </div>
                         <div className="flex items-center gap-1 print:hidden">
+                            {selectedAssetIds.length > 0 && (
+                                <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    className="sm:size-default"
+                                    onClick={() =>
+                                        setOpenDeleteSelectedDialog(true)
+                                    }
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                    Delete ({selectedAssetIds.length})
+                                </Button>
+                            )}
                             <Button
                                 size="sm"
                                 className="sm:size-default"
@@ -340,6 +389,9 @@ const AssetsTable = () => {
                         onPaginationChange={setPagination}
                         sorting={sorting}
                         onSortingChange={setSorting}
+                        rowSelection={rowSelection}
+                        onRowSelectionChange={setRowSelection}
+                        getRowId={(row) => row.id}
                     />
                 </CardContent>
             </Card>
@@ -377,6 +429,14 @@ const AssetsTable = () => {
                     openAssetDetailDialog={openAssetDetailDialog}
                     setOpenAssetDetailDialog={setOpenAssetDetailDialog}
                     asset={selectedAsset}
+                />
+            )}
+            {openDeleteSelectedDialog && selectedAssetIds.length > 0 && (
+                <DeleteSelectedAssetsDialog
+                    open={openDeleteSelectedDialog}
+                    setOpen={setOpenDeleteSelectedDialog}
+                    assetIds={selectedAssetIds}
+                    onSuccess={() => setRowSelection({})}
                 />
             )}
         </>
