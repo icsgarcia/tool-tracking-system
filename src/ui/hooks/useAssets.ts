@@ -21,6 +21,13 @@ export const useGetAllAssets = (params: PaginationParams) => {
     });
 };
 
+export const useGetAssets = () => {
+    return useQuery({
+        queryKey: ["asst"],
+        queryFn: () => window.api.asset.getAssets(),
+    });
+};
+
 export const useGetAsset = (assetId: string) => {
     return useQuery({
         queryKey: ["asset", assetId],

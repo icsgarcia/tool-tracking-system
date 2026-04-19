@@ -1,9 +1,29 @@
 import { ipcMain } from "electron";
 import { getPrisma } from "../database/db.js";
+import * as XLSX from "xlsx";
+import * as fs from "fs";
+import { dialog } from "electron";
 
 export function TransactionHandlers() {
     const prisma = getPrisma();
 
+    // HELPER FUNCTIONS
+    const getColumnWidths = (data: any[]) => {
+        if (data.length === 0) return [];
+        const headers = Object.keys(data[0]);
+        return headers.map((header) => {
+            const maxLength = Math.max(
+                header.length,
+                ...data.map((row) => {
+                    const value = row[header];
+                    return value ? String(value).length : 0;
+                }),
+            );
+            return { wch: maxLength + 2 };
+        });
+    };
+
+    // MAIN FUNCTIONS
     ipcMain.handle("transaction:getTotalTransactions", async () => {
         const [totalTransactions, totalPendingTransactions] = await Promise.all(
             [
@@ -22,21 +42,55 @@ export function TransactionHandlers() {
     });
 
     ipcMain.handle(
-        "transaction:getAllTransactions",
+        "transaction:getTransactions",
         async (_, params: PaginationParams) => {
-            const { page, pageSize, search, sortBy, sortOrder } = params;
-            let orderBy;
-            if (sortBy === "userName") {
-                orderBy = { user: { lastName: sortOrder || "asc" } };
-            } else if (sortBy === "assetName") {
-                orderBy = { asset: { assetName: sortOrder || "asc" } };
-            } else if (sortBy === "borrowedAt") {
-                orderBy = { borrowedAt: sortOrder || "asc" };
-            } else if (sortBy) {
-                orderBy = { [sortBy]: sortOrder || "asc" };
+            const { page, pageSize, search, sortBy, sortOrder, range } = params;
+
+            let dateFilter = {};
+
+            if (range) {
+                const now = new Date();
+                let startDate: Date;
+                let endDate: Date;
+
+                switch (range) {
+                    case "today":
+                        startDate = new Date(now);
+                        startDate.setHours(0, 0, 0, 0);
+
+                        endDate = new Date(startDate);
+                        endDate.setDate(endDate.getDate() + 1);
+                        break;
+                    case "week":
+                        startDate = new Date(now);
+                        startDate.setHours(0, 0, 0, 0);
+                        startDate.setDate(now.getDate() - now.getDay());
+
+                        endDate = new Date(startDate);
+                        endDate.setDate(endDate.getDate() + 7);
+                        break;
+                    case "month":
+                        startDate = new Date(
+                            now.getFullYear(),
+                            now.getMonth(),
+                            1,
+                        );
+
+                        endDate = new Date(
+                            now.getFullYear(),
+                            now.getMonth() + 1,
+                            1,
+                        );
+                        break;
+
+                    default:
+                        throw new Error(`Invalid range: ${range}`);
+                }
+
+                dateFilter = { borrowedAt: { gte: startDate, lt: endDate } };
             }
 
-            const where = search
+            const searchFilter = search
                 ? {
                       OR: [
                           { id: { contains: search } },
@@ -46,7 +100,24 @@ export function TransactionHandlers() {
                           { asset: { assetName: { contains: search } } },
                       ],
                   }
-                : undefined;
+                : {};
+
+            const where = {
+                ...dateFilter,
+                ...searchFilter,
+            };
+
+            let orderBy;
+
+            if (sortBy === "userName") {
+                orderBy = { user: { lastName: sortOrder || "asc" } };
+            } else if (sortBy === "assetName") {
+                orderBy = { asset: { assetName: sortOrder || "asc" } };
+                // } else if (sortBy === "borrowedAt") {
+                //     orderBy = { borrowedAt: sortOrder || "asc" };
+            } else if (sortBy) {
+                orderBy = { [sortBy]: sortOrder || "asc" };
+            }
 
             const [transactions, totalCount] = await Promise.all([
                 prisma.transaction.findMany({
@@ -68,7 +139,66 @@ export function TransactionHandlers() {
     ipcMain.handle(
         "transaction:getUserTransactions",
         async (_, userId: string, params: PaginationParams) => {
-            const { page, pageSize, search, sortBy, sortOrder } = params;
+            const { page, pageSize, search, sortBy, sortOrder, range } = params;
+
+            let dateFilter = {};
+
+            if (range) {
+                const now = new Date();
+                let startDate: Date;
+                let endDate: Date;
+
+                switch (range) {
+                    case "today":
+                        startDate = new Date(now);
+                        startDate.setHours(0, 0, 0, 0);
+
+                        endDate = new Date(startDate);
+                        endDate.setDate(endDate.getDate() + 1);
+                        break;
+                    case "week":
+                        startDate = new Date(now);
+                        startDate.setHours(0, 0, 0, 0);
+                        startDate.setDate(now.getDate() - now.getDay());
+
+                        endDate = new Date(startDate);
+                        endDate.setDate(endDate.getDate() + 7);
+                        break;
+                    case "month":
+                        startDate = new Date(
+                            now.getFullYear(),
+                            now.getMonth(),
+                            1,
+                        );
+
+                        endDate = new Date(
+                            now.getFullYear(),
+                            now.getMonth() + 1,
+                            1,
+                        );
+                        break;
+
+                    default:
+                        throw new Error(`Invalid range: ${range}`);
+                }
+
+                dateFilter = { borrowedAt: { gte: startDate, lt: endDate } };
+            }
+
+            const searchFilter = search
+                ? {
+                      OR: [
+                          { id: { contains: search } },
+                          { asset: { assetName: { contains: search } } },
+                      ],
+                  }
+                : {};
+
+            const where = {
+                userId,
+                ...dateFilter,
+                ...searchFilter,
+            };
 
             let orderBy;
             if (sortBy === "assetName") {
@@ -85,21 +215,9 @@ export function TransactionHandlers() {
                 orderBy = { [sortBy]: sortOrder || "asc" };
             }
 
-            const where = search
-                ? {
-                      OR: [
-                          { id: { contains: search } },
-                          { asset: { assetName: { contains: search } } },
-                      ],
-                  }
-                : undefined;
-
             const [userTransactions, totalCount] = await Promise.all([
                 prisma.transaction.findMany({
-                    where: {
-                        userId,
-                        ...where,
-                    },
+                    where,
                     include: {
                         asset: true,
                     },
@@ -108,10 +226,7 @@ export function TransactionHandlers() {
                     take: pageSize,
                 }),
                 prisma.transaction.count({
-                    where: {
-                        userId,
-                        ...where,
-                    },
+                    where,
                 }),
             ]);
 
@@ -125,6 +240,265 @@ export function TransactionHandlers() {
             orderBy: { borrowedAt: "desc" },
         });
     });
+
+    ipcMain.handle(
+        "transaction:exportTransactionWithSpreadsheet",
+        async (_, params: Omit<PaginationParams, "page" | "pageSize">) => {
+            const { search, sortBy, sortOrder, range } = params;
+
+            let dateFilter = {};
+
+            if (range) {
+                const now = new Date();
+                let startDate: Date;
+                let endDate: Date;
+
+                switch (range) {
+                    case "today":
+                        startDate = new Date(now);
+                        startDate.setHours(0, 0, 0, 0);
+                        endDate = new Date(startDate);
+                        endDate.setDate(endDate.getDate() + 1);
+                        break;
+                    case "week":
+                        startDate = new Date(now);
+                        startDate.setHours(0, 0, 0, 0);
+                        startDate.setDate(now.getDate() - now.getDay());
+                        endDate = new Date(startDate);
+                        endDate.setDate(endDate.getDate() + 7);
+                        break;
+                    case "month":
+                        startDate = new Date(
+                            now.getFullYear(),
+                            now.getMonth(),
+                            1,
+                        );
+                        endDate = new Date(
+                            now.getFullYear(),
+                            now.getMonth() + 1,
+                            1,
+                        );
+                        break;
+                    default:
+                        throw new Error(`Invalid range: ${range}`);
+                }
+                dateFilter = { borrowedAt: { gte: startDate, lt: endDate } };
+            }
+
+            const searchFilter = search
+                ? {
+                      OR: [
+                          { id: { contains: search } },
+                          { user: { firstName: { contains: search } } },
+                          { user: { middleName: { contains: search } } },
+                          { user: { lastName: { contains: search } } },
+                          { asset: { assetName: { contains: search } } },
+                      ],
+                  }
+                : null;
+
+            const where =
+                searchFilter && range
+                    ? { AND: [searchFilter, dateFilter] }
+                    : (searchFilter ?? dateFilter ?? {});
+
+            let orderBy: any = { borrowedAt: "desc" };
+            if (sortBy === "userName")
+                orderBy = { user: { lastName: sortOrder || "asc" } };
+            else if (sortBy === "assetName")
+                orderBy = { asset: { assetName: sortOrder || "asc" } };
+            else if (sortBy) orderBy = { [sortBy]: sortOrder || "asc" };
+
+            const transactions = await prisma.transaction.findMany({
+                where,
+                include: { asset: true, user: true },
+                orderBy,
+            });
+
+            const formatted = transactions.map((transaction) => ({
+                ID: transaction.id,
+                Borrower: `${transaction.user.firstName} ${transaction.user.middleName} ${transaction.user.lastName}`,
+                "Borrowed Asset": transaction.asset.assetName,
+                "Borrowed At": new Date(transaction.borrowedAt).toLocaleString(
+                    "en-US",
+                    {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    },
+                ),
+                "Returned At": transaction.returnedAt
+                    ? new Date(transaction.returnedAt).toLocaleString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                      })
+                    : "-",
+                Status: transaction.status,
+            }));
+
+            const rangeLabel = range ?? "All";
+            const { filePath, canceled } = await dialog.showSaveDialog({
+                title: "Export Transactions",
+                defaultPath: `transactions_${rangeLabel}_${Date.now()}.xlsx`,
+                filters: [{ name: "Excel File", extensions: ["xlsx"] }],
+            });
+
+            if (canceled || !filePath) return { success: false };
+
+            const worksheet = XLSX.utils.json_to_sheet(formatted);
+            const workbook = XLSX.utils.book_new();
+
+            worksheet["!cols"] = getColumnWidths(formatted);
+
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
+
+            const buffer = XLSX.write(workbook, {
+                type: "buffer",
+                bookType: "xlsx",
+            });
+            fs.writeFileSync(filePath, buffer);
+
+            return { success: true, filePath };
+        },
+    );
+
+    ipcMain.handle(
+        "transaction:exportUserTransactionWithSpreadsheet",
+        async (
+            _,
+            userId: string,
+            params: Omit<PaginationParams, "page" | "pageSize">,
+        ) => {
+            const { search, sortBy, sortOrder, range } = params;
+
+            let dateFilter = {};
+
+            if (range) {
+                const now = new Date();
+                let startDate: Date;
+                let endDate: Date;
+
+                switch (range) {
+                    case "today":
+                        startDate = new Date(now);
+                        startDate.setHours(0, 0, 0, 0);
+                        endDate = new Date(startDate);
+                        endDate.setDate(endDate.getDate() + 1);
+                        break;
+                    case "week":
+                        startDate = new Date(now);
+                        startDate.setHours(0, 0, 0, 0);
+                        startDate.setDate(now.getDate() - now.getDay());
+                        endDate = new Date(startDate);
+                        endDate.setDate(endDate.getDate() + 7);
+                        break;
+                    case "month":
+                        startDate = new Date(
+                            now.getFullYear(),
+                            now.getMonth(),
+                            1,
+                        );
+                        endDate = new Date(
+                            now.getFullYear(),
+                            now.getMonth() + 1,
+                            1,
+                        );
+                        break;
+                    default:
+                        throw new Error(`Invalid range: ${range}`);
+                }
+                dateFilter = { borrowedAt: { gte: startDate, lt: endDate } };
+            }
+
+            const searchFilter = search
+                ? {
+                      OR: [
+                          { id: { contains: search } },
+                          { user: { firstName: { contains: search } } },
+                          { user: { middleName: { contains: search } } },
+                          { user: { lastName: { contains: search } } },
+                          { asset: { assetName: { contains: search } } },
+                      ],
+                  }
+                : null;
+
+            const userIdFilter = { userId };
+
+            const where =
+                searchFilter && range
+                    ? { AND: [userIdFilter, searchFilter, dateFilter] }
+                    : (searchFilter ?? dateFilter ?? {});
+
+            let orderBy: any = { borrowedAt: "desc" };
+            if (sortBy === "userName")
+                orderBy = { user: { lastName: sortOrder || "asc" } };
+            else if (sortBy === "assetName")
+                orderBy = { asset: { assetName: sortOrder || "asc" } };
+            else if (sortBy) orderBy = { [sortBy]: sortOrder || "asc" };
+
+            const transactions = await prisma.transaction.findMany({
+                where,
+                include: { asset: true },
+                orderBy,
+            });
+
+            const formatted = transactions.map((transaction) => ({
+                ID: transaction.id,
+                "Borrowed Asset": transaction.asset.assetName,
+                "Borrowed Quantity": transaction.borrowCount,
+                "Returned Quantity": transaction.returnCount ?? 0,
+                "Borrowed At": new Date(transaction.borrowedAt).toLocaleString(
+                    "en-US",
+                    {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    },
+                ),
+                "Returned At": transaction.returnedAt
+                    ? new Date(transaction.returnedAt).toLocaleString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                      })
+                    : "-",
+                Status: transaction.status,
+            }));
+
+            const rangeLabel = range ?? "All";
+            const { filePath, canceled } = await dialog.showSaveDialog({
+                title: "Export Transactions",
+                defaultPath: `user_transactions_${rangeLabel}_${Date.now()}.xlsx`,
+                filters: [{ name: "Excel File", extensions: ["xlsx"] }],
+            });
+
+            if (canceled || !filePath) return { success: false };
+
+            const worksheet = XLSX.utils.json_to_sheet(formatted);
+            const workbook = XLSX.utils.book_new();
+
+            worksheet["!cols"] = getColumnWidths(formatted);
+
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
+
+            const buffer = XLSX.write(workbook, {
+                type: "buffer",
+                bookType: "xlsx",
+            });
+            fs.writeFileSync(filePath, buffer);
+
+            return { success: true, filePath };
+        },
+    );
 
     ipcMain.handle(
         "transaction:borrowAsset",
@@ -206,7 +580,13 @@ export function TransactionHandlers() {
 
     ipcMain.handle(
         "transaction:returnAsset",
-        async (_, userId: string, assetQrCode: string, returnCount: number) => {
+        async (
+            _,
+            userId: string,
+            assetQrCode: string,
+            returnCount: number,
+            remarks: string,
+        ) => {
             return await prisma.$transaction(async (tx) => {
                 const asset = await tx.asset.findUnique({
                     where: { qrCode: assetQrCode },
@@ -246,6 +626,11 @@ export function TransactionHandlers() {
                 }
 
                 const isFullReturn = returnCount === remaining;
+
+                await tx.asset.update({
+                    where: { id: asset.id },
+                    data: { remarks },
+                });
 
                 const updatedTransaction = await tx.transaction.update({
                     where: { id: existingBorrow.id },

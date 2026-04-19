@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
+import {
+    useEffect,
+    useRef,
+    useState,
+    type Dispatch,
+    type SetStateAction,
+} from "react";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { useNavigate } from "react-router";
 import { useScanUser } from "@/hooks/useUsers";
@@ -7,8 +13,8 @@ import { Html5Qrcode } from "html5-qrcode";
 import { AlertCircle, Camera } from "lucide-react";
 
 interface CameraDialogProps {
-    open: boolean;
-    setOpen: Dispatch<SetStateAction<boolean>>;
+    open: string;
+    setOpen: Dispatch<SetStateAction<string | null>>;
 }
 
 const CameraDialog = ({ open, setOpen }: CameraDialogProps) => {
@@ -26,9 +32,13 @@ const CameraDialog = ({ open, setOpen }: CameraDialogProps) => {
 
         scanUser.mutate(code, {
             onSuccess: (user) => {
-                if (user.role !== "ADMIN") {
-                    toast.error("Only ADMIN users can log in here.");
-                    setError("Only ADMIN users can log in here.");
+                if (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN") {
+                    toast.error(
+                        "Only ADMIN and SUPER_ADMIN users can log in here.",
+                    );
+                    setError(
+                        "Only ADMIN and SUPER_ADMIN users can log in here.",
+                    );
                     isProcessing.current = false;
                     return;
                 }
@@ -41,7 +51,10 @@ const CameraDialog = ({ open, setOpen }: CameraDialogProps) => {
                 const scanner = scannerRef.current;
                 if (scanner) {
                     scannerRef.current = null;
-                    scanner.stop().then(() => scanner.clear()).catch(() => {});
+                    scanner
+                        .stop()
+                        .then(() => scanner.clear())
+                        .catch(() => {});
                 }
 
                 navigate("/admin", { state: { user } });
@@ -96,28 +109,32 @@ const CameraDialog = ({ open, setOpen }: CameraDialogProps) => {
             const scanner = scannerRef.current;
             if (scanner) {
                 scannerRef.current = null;
-                scanner.stop().then(() => scanner.clear()).catch(() => {});
+                scanner
+                    .stop()
+                    .then(() => scanner.clear())
+                    .catch(() => {});
             }
         };
     }, [open]);
 
-    const handleClose = async (value: boolean) => {
-        if (!value) {
+    const handleCloseModal = async () => {
+        setOpen(null);
+
+        if (!open) {
             if (scannerRef.current) {
                 try {
                     await scannerRef.current.stop();
                     scannerRef.current.clear();
-                } catch {
-                    // ignore
+                } catch (err) {
+                    console.error("Error stopping camera scanner:", err);
                 }
                 scannerRef.current = null;
             }
         }
-        setOpen(value);
     };
 
     return (
-        <Dialog open={open} onOpenChange={handleClose}>
+        <Dialog open={open === "camera"} onOpenChange={handleCloseModal}>
             <DialogContent className="sm:max-w-md">
                 <div className="flex flex-col items-center gap-4">
                     <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10">

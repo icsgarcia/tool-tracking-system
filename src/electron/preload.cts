@@ -4,10 +4,19 @@ const electron = require("electron");
 
 electron.contextBridge.exposeInMainWorld("api", {
     user: {
+        manualLogin: (loginData: LoginData) =>
+            electron.ipcRenderer.invoke("user:manualLogin", loginData),
         createUserByFile: (fileBuffer: ArrayBuffer) =>
             electron.ipcRenderer.invoke("user:createUserByFile", fileBuffer),
         createUser: (userData: CreateUserDto) =>
             electron.ipcRenderer.invoke("user:createUser", userData),
+        loginBySchoolNumber: (schoolNumber: string) =>
+            electron.ipcRenderer.invoke(
+                "user:loginBySchoolNumber",
+                schoolNumber,
+            ),
+        getStudentAndStaff: () =>
+            electron.ipcRenderer.invoke("user:getStudentAndStaff"),
         getUserQRCode: (userId: string) =>
             electron.ipcRenderer.invoke("user:getUserQRCode", userId),
         getUserQRCodeBuffer: (userId: string) =>
@@ -24,7 +33,11 @@ electron.contextBridge.exposeInMainWorld("api", {
         deleteUserById: (userId: string) =>
             electron.ipcRenderer.invoke("user:deleteUserById", userId),
         deleteSelectedUsers: (userIds: string[], currentUserId: string) =>
-            electron.ipcRenderer.invoke("user:deleteSelectedUsers", userIds, currentUserId),
+            electron.ipcRenderer.invoke(
+                "user:deleteSelectedUsers",
+                userIds,
+                currentUserId,
+            ),
         deleteAllUsers: (userId: string) =>
             electron.ipcRenderer.invoke("user:deleteAllUsers", userId),
         exportAllUsers: () =>
@@ -40,6 +53,7 @@ electron.contextBridge.exposeInMainWorld("api", {
             electron.ipcRenderer.invoke("asset:getTotalAssets"),
         getAllAssets: (params: PaginationParams) =>
             electron.ipcRenderer.invoke("asset:getAllAssets", params),
+        getAssets: () => electron.ipcRenderer.invoke("asset:getAssets"),
         getAssetById: (assetId: string) =>
             electron.ipcRenderer.invoke("asset:getAssetById", assetId),
         updateAssetById: (assetData: Asset) =>
@@ -57,17 +71,36 @@ electron.contextBridge.exposeInMainWorld("api", {
     transaction: {
         getTotalTransactions: () =>
             electron.ipcRenderer.invoke("transaction:getTotalTransactions"),
-        getAllTransactions: (params: PaginationParams) =>
-            electron.ipcRenderer.invoke(
-                "transaction:getAllTransactions",
-                params,
-            ),
+        getTransactions: (params: PaginationParams) =>
+            electron.ipcRenderer.invoke("transaction:getTransactions", params),
         getUserTransactions: (userId: string, params: PaginationParams) =>
             electron.ipcRenderer.invoke(
                 "transaction:getUserTransactions",
                 userId,
                 params,
             ),
+        getTransactionByRange: (range: "today" | "week" | "month") =>
+            electron.ipcRenderer.invoke(
+                "transaction:getTransactionByRange",
+                range,
+            ),
+        exportTransactionWithSpreadsheet: (
+            params: Omit<PaginationParams, "page" | "pageSize">,
+        ) =>
+            electron.ipcRenderer.invoke(
+                "transaction:exportTransactionWithSpreadsheet",
+                params,
+            ),
+        exportUserTransactionWithSpreadsheet: (
+            userId: string,
+            params: Omit<PaginationParams, "page" | "pageSize">,
+        ) =>
+            electron.ipcRenderer.invoke(
+                "transaction:exportUserTransactionWithSpreadsheet",
+                userId,
+                params,
+            ),
+
         borrowAsset: (data: {
             userId: string;
             assetQrCode: string;
@@ -83,12 +116,14 @@ electron.contextBridge.exposeInMainWorld("api", {
             userId: string;
             assetQrCode: string;
             returnCount: number;
+            remarks: string;
         }) =>
             electron.ipcRenderer.invoke(
                 "transaction:returnAsset",
                 data.userId,
                 data.assetQrCode,
                 data.returnCount,
+                data.remarks,
             ),
         scanAssetQrCode: (data: { userId: string; assetQrCode: string }) =>
             electron.ipcRenderer.invoke(

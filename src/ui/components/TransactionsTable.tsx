@@ -14,7 +14,16 @@ import { Button } from "./ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 import ExportPdfButton from "./ExportPdfButton";
 import { Separator } from "./ui/separator";
-import { useGetAllTransactions } from "@/hooks/useTransactions";
+import { useGetTransactions } from "@/hooks/useTransactions";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "./ui/select";
+import ExportExcel from "./ExportExcel";
 
 const TransactionsTable = () => {
     const [search, setSearch] = useState("");
@@ -24,6 +33,7 @@ const TransactionsTable = () => {
         pageSize: 10,
     });
     const [sorting, setSorting] = useState<SortingState>([]);
+    const [range, setRange] = useState<"today" | "week" | "month">();
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -36,12 +46,13 @@ const TransactionsTable = () => {
     const sortBy = sorting[0]?.id;
     const sortOrder = sorting[0]?.desc ? "desc" : "asc";
 
-    const { data } = useGetAllTransactions({
+    const { data } = useGetTransactions({
         page: pagination.pageIndex,
         pageSize: pagination.pageSize,
         search: debouncedSearch || undefined,
         sortBy,
         sortOrder,
+        range,
     });
 
     const transactions = data?.data ?? [];
@@ -218,17 +229,55 @@ const TransactionsTable = () => {
                 </div>
                 <Separator className="print:hidden" />
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between print:hidden pt-2">
-                    <InputGroup className="w-full sm:w-7/12 lg:w-4/12">
-                        <InputGroupInput
-                            id="inline-start-input"
-                            placeholder="Search by tool's name..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                        <InputGroupAddon align="inline-start">
-                            <SearchIcon className="text-muted-foreground" />
-                        </InputGroupAddon>
-                    </InputGroup>
+                    <div className="flex w-full gap-2">
+                        <InputGroup className="w-full sm:w-7/12 lg:w-4/12">
+                            <InputGroupInput
+                                id="inline-start-input"
+                                placeholder="Search by tool's name..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                            <InputGroupAddon align="inline-start">
+                                <SearchIcon className="text-muted-foreground" />
+                            </InputGroupAddon>
+                        </InputGroup>
+                        <Select
+                            value={range ?? "all"}
+                            onValueChange={(value) => {
+                                setRange(
+                                    value === "all"
+                                        ? undefined
+                                        : (value as "today" | "week" | "month"),
+                                );
+                                setPagination((prev) => ({
+                                    ...prev,
+                                    pageIndex: 0,
+                                }));
+                            }}
+                        >
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Filter by Date" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectItem value="all">All</SelectItem>
+                                    <SelectItem value="today">Today</SelectItem>
+                                    <SelectItem value="week">
+                                        This Week
+                                    </SelectItem>
+                                    <SelectItem value="month">
+                                        This Month
+                                    </SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <ExportExcel
+                        search={debouncedSearch}
+                        sortBy={sortBy}
+                        sortOrder={sortOrder}
+                        range={range}
+                    />
                     <ExportPdfButton type="transactions" />
                 </div>
             </CardHeader>

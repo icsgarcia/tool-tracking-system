@@ -6,6 +6,7 @@ import fs from "fs";
 import { isDev } from "../util.js";
 import Database from "better-sqlite3";
 import QRCode from "qrcode";
+import bcrypt from "bcryptjs";
 
 let prisma: PrismaClient;
 
@@ -22,6 +23,7 @@ CREATE TABLE IF NOT EXISTS "User" (
     "yearLevel" INTEGER,
     "email" TEXT,
     "number" TEXT,
+    "password" TEXT NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'ACTIVE'
 );
 
@@ -90,42 +92,44 @@ export async function initDatabase() {
 
 async function seedDefaultAdmin() {
     const existingAdmin = await prisma.user.findFirst({
-        where: { role: "ADMIN" },
+        where: { role: "SUPER_ADMIN" },
     });
 
     if (existingAdmin) {
-        console.log("[database] Admin already exists. Skipping seed.");
+        console.log("[database] Super Admin already exists. Skipping seed.");
         return;
     }
 
-    const qrCode = `USER-ADMIN-0001-${Date.now()}`;
+    const qrCode = `USER-SUPER-ADMIN-0000-${Date.now()}`;
+    const salt = bcrypt.genSaltSync(10);
 
     await prisma.user.create({
         data: {
             qrCode,
-            schoolNumber: "ADMIN-0001",
-            firstName: "System",
+            schoolNumber: "SUPER-ADMIN-0000",
+            firstName: "SUPER",
             middleName: "",
-            lastName: "Administrator",
-            role: "ADMIN",
+            lastName: "ADMINISTRATOR",
+            role: "SUPER_ADMIN",
             department: "BS AMT",
             yearLevel: 0,
-            email: "",
+            email: "super_admin@email.com",
             number: "",
+            password: bcrypt.hashSync("Password123!", salt),
             status: "ACTIVE",
         },
     });
 
     const desktopPath = app.getPath("desktop");
-    const qrImagePath = path.join(desktopPath, "ADMIN-QR-CODE.png");
+    const qrImagePath = path.join(desktopPath, "SUPER-ADMIN-QR-CODE.png");
 
     await QRCode.toFile(qrImagePath, qrCode, {
         width: 400,
         margin: 2,
     });
 
-    console.log("[database] Default admin created!");
-    console.log("[database] Admin QR Code: ", qrCode);
+    console.log("[database] Default Super Admin created!");
+    console.log("[database] Super Admin QR Code: ", qrCode);
     console.log("[database] QR Code image saved to:", qrImagePath);
 }
 

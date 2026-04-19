@@ -5,9 +5,68 @@ import * as XLSX from "xlsx";
 import { Role } from "../../../generated/prisma/enums.js";
 import { User } from "../../../generated/prisma/client.js";
 import { randomUUID } from "node:crypto";
+import bcrypt from "bcryptjs";
 
 export function UserHandlers() {
     const prisma = getPrisma();
+
+    ipcMain.handle("user:manualLogin", async (_, loginData: LoginData) => {
+        const { email, password } = loginData;
+
+        const user = await prisma.user.findUnique({
+            where: { email },
+        });
+
+        if (!user) {
+            throw new Error("Email or Password is incorrect");
+        }
+
+        const correctPassword = bcrypt.compareSync(password, user.password);
+
+        if (!correctPassword) {
+            throw new Error("Email or Password is incorrect");
+        }
+
+        const { password: _password, ...safeUser } = user;
+
+        return safeUser;
+    });
+
+    ipcMain.handle("user:getStudentAndStaff", async () => {
+        try {
+            const studentsAndStaff = await prisma.user.findMany({
+                where: {
+                    role: {
+                        in: ["STUDENT", "STAFF"],
+                    },
+                },
+            });
+
+            const formatted = studentsAndStaff.map((user) => ({
+                value: user.schoolNumber,
+                label: `${user.firstName} ${user.middleName} ${user.lastName}`.trim(),
+            }));
+
+            return formatted;
+        } catch (error) {
+            console.error(error);
+            throw new Error("Failed to fetch students and staff");
+        }
+    });
+
+    ipcMain.handle(
+        "user:loginBySchoolNumber",
+        async (_, schoolNumber: string) => {
+            const user = await prisma.user.findUnique({
+                where: { schoolNumber },
+            });
+
+            if (!user) throw new Error("User not found.");
+
+            const { password: _password, ...safeUser } = user;
+            return safeUser;
+        },
+    );
 
     ipcMain.handle(
         "user:createUserByFile",
@@ -35,7 +94,7 @@ export function UserHandlers() {
                 );
 
                 const createdUsers = [];
-
+                const salt = bcrypt.genSaltSync(10);
                 for (const row of jsonData) {
                     const qrCodeData = `USER-${row["schoolNumber"]}-${randomUUID()}`;
 
@@ -53,6 +112,7 @@ export function UserHandlers() {
                             number: row["number"]
                                 ? String(row["number"])
                                 : null,
+                            password: bcrypt.hashSync("Password123!", salt),
                         },
                     });
                     createdUsers.push(user);
@@ -75,6 +135,7 @@ export function UserHandlers() {
 
     ipcMain.handle("user:createUser", async (_, userData: CreateUserDto) => {
         const qrCodeData = `USER-${userData.schoolNumber}-${Date.now()}`;
+        const salt = bcrypt.genSaltSync(10);
 
         const user = await prisma.user.create({
             data: {
@@ -88,6 +149,7 @@ export function UserHandlers() {
                 yearLevel: userData.yearLevel,
                 email: userData.email,
                 number: userData.number ?? null,
+                password: bcrypt.hashSync("Password123!", salt),
             },
         });
 
@@ -239,7 +301,7 @@ export function UserHandlers() {
         }
 
         const qrCodeData = `USER-${userData.schoolNumber}-${Date.now()}`;
-
+        const salt = bcrypt.genSaltSync(10);
         const updatedUser = await prisma.user.update({
             where: {
                 id: userData.id,
@@ -255,6 +317,7 @@ export function UserHandlers() {
                 yearLevel: userData.yearLevel,
                 email: userData.email,
                 number: userData.number || null,
+                password: bcrypt.hashSync(userData.password, salt),
             },
         });
 

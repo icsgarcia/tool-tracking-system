@@ -12,7 +12,7 @@ import { printHandlers } from "./services/print.js";
 import { DatabaseHandlers } from "./services/database.js";
 
 app.on("ready", async () => {
-    Menu.setApplicationMenu(null);
+    // Menu.setApplicationMenu(null);
 
     await initDatabase();
 

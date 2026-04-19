@@ -10,6 +10,8 @@ import {
     useRef,
     useState,
     type Dispatch,
+    type FormEvent,
+    type MouseEvent,
     type SetStateAction,
 } from "react";
 import QrScan from "./QrScan";
@@ -28,6 +30,16 @@ import {
     X,
 } from "lucide-react";
 import { Html5Qrcode } from "html5-qrcode";
+import { Field, FieldLabel } from "./ui/field";
+import {
+    Combobox,
+    ComboboxContent,
+    ComboboxEmpty,
+    ComboboxInput,
+    ComboboxItem,
+    ComboboxList,
+} from "./ui/combobox";
+import { useGetAssets } from "@/hooks/useAssets";
 
 interface BorrowAssetDialogProps {
     user: User;
@@ -44,9 +56,10 @@ const BorrowAssetDialog = ({
     const isProcessing = useRef(false);
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const [borrowCount, setBorrowCount] = useState(1);
-    const [code, setCode] = useState("");
+    const [code, setCode] = useState<string | null>("");
     const [device, setDevice] = useState<string>("");
     const [cameraError, setCameraError] = useState<string | null>(null);
+    const { data: rawAssets = [] } = useGetAssets();
 
     const handleScan = useRef((scannedCode: string) => {
         if (isProcessing.current) return;
@@ -56,7 +69,10 @@ const BorrowAssetDialog = ({
         const scanner = scannerRef.current;
         if (scanner) {
             scannerRef.current = null;
-            scanner.stop().then(() => scanner.clear()).catch(() => {});
+            scanner
+                .stop()
+                .then(() => scanner.clear())
+                .catch(() => {});
         }
 
         setCode(scannedCode);
@@ -104,7 +120,10 @@ const BorrowAssetDialog = ({
             const scanner = scannerRef.current;
             if (scanner) {
                 scannerRef.current = null;
-                scanner.stop().then(() => scanner.clear()).catch(() => {});
+                scanner
+                    .stop()
+                    .then(() => scanner.clear())
+                    .catch(() => {});
             }
         };
     }, [device, code]);
@@ -135,10 +154,12 @@ const BorrowAssetDialog = ({
         isProcessing.current = false;
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (
+        e: FormEvent<HTMLFormElement> | MouseEvent<HTMLButtonElement>,
+    ) => {
         e.preventDefault();
         borrowAsset.mutate(
-            { userId: user.id, assetQrCode: code, borrowCount },
+            { userId: user.id, assetQrCode: code!, borrowCount },
             {
                 onSuccess: () => {
                     setOpenBorrowDialog(false);
@@ -190,7 +211,7 @@ const BorrowAssetDialog = ({
                 <Separator className="mx-4 sm:mx-6 w-auto" />
 
                 <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4 sm:px-6 sm:pb-6 pt-2">
-                    {code ? (
+                    {(device === "camera" || device === "qr") && code ? (
                         <form onSubmit={handleSubmit} className="space-y-5">
                             <div className="flex items-center gap-3 rounded-lg border p-3 bg-muted/50">
                                 <QrCode className="w-5 h-5 text-muted-foreground shrink-0" />
@@ -239,15 +260,14 @@ const BorrowAssetDialog = ({
                             {/* Device Selection */}
                             {device === "" && (
                                 <>
-                                    <Button
-                                        onClick={() => setDevice("camera")}
-                                    >
+                                    <Button onClick={() => setDevice("camera")}>
                                         Use Camera
                                     </Button>
-                                    <Button
-                                        onClick={() => setDevice("qrscanner")}
-                                    >
+                                    <Button onClick={() => setDevice("qr")}>
                                         Use QR Scanner
+                                    </Button>
+                                    <Button onClick={() => setDevice("manual")}>
+                                        Use Manual Input
                                     </Button>
                                 </>
                             )}
@@ -296,7 +316,7 @@ const BorrowAssetDialog = ({
                             )}
 
                             {/* QR Scanner Device */}
-                            {device === "qrscanner" && (
+                            {device === "qr" && (
                                 <>
                                     <Button
                                         variant="outline"
@@ -325,6 +345,80 @@ const BorrowAssetDialog = ({
                                         }
                                         className="opacity-0 pointer-events-none absolute"
                                     />
+                                </>
+                            )}
+
+                            {/* Manual Input */}
+                            {device === "manual" && (
+                                <>
+                                    <div className="flex flex-col gap-3 w-full">
+                                        <Field>
+                                            <FieldLabel htmlFor="asset-name">
+                                                Asset Name
+                                            </FieldLabel>
+                                            <Combobox
+                                                id="asset-name"
+                                                items={rawAssets}
+                                                value={code}
+                                                onValueChange={setCode}
+                                            >
+                                                <ComboboxInput placeholder="Type asset name..." />
+                                                <ComboboxContent>
+                                                    <ComboboxEmpty>
+                                                        No assets found.
+                                                    </ComboboxEmpty>
+                                                    <ComboboxList>
+                                                        {(item) => (
+                                                            <ComboboxItem
+                                                                key={item.label}
+                                                                value={
+                                                                    item.value
+                                                                }
+                                                            >
+                                                                <div>
+                                                                    <p className="font-medium">
+                                                                        {
+                                                                            item.label
+                                                                        }
+                                                                    </p>
+                                                                </div>
+                                                            </ComboboxItem>
+                                                        )}
+                                                    </ComboboxList>
+                                                </ComboboxContent>
+                                            </Combobox>
+                                        </Field>
+                                        <Field>
+                                            <FieldLabel htmlFor="asset-quantity">
+                                                Borrow Quantity
+                                            </FieldLabel>
+                                            <Input
+                                                id="asset-quantity"
+                                                type="number"
+                                                placeholder="Enter return quantity"
+                                                min={1}
+                                                value={borrowCount}
+                                                onChange={(e) =>
+                                                    setBorrowCount(
+                                                        Number(e.target.value),
+                                                    )
+                                                }
+                                            />
+                                        </Field>
+                                        <Field>
+                                            <Button onClick={handleSubmit}>
+                                                Borrow Asset
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                onClick={() =>
+                                                    handleSwitchDevice("")
+                                                }
+                                            >
+                                                Go Back
+                                            </Button>
+                                        </Field>
+                                    </div>
                                 </>
                             )}
                         </div>

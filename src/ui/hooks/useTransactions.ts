@@ -13,10 +13,10 @@ export const useGetTotalTransactions = () => {
     });
 };
 
-export const useGetAllTransactions = (params: PaginationParams) => {
+export const useGetTransactions = (params: PaginationParams) => {
     return useQuery({
         queryKey: ["transactions", params],
-        queryFn: () => window.api.transaction.getAllTransactions(params),
+        queryFn: () => window.api.transaction.getTransactions(params),
         placeholderData: keepPreviousData,
     });
 };
@@ -63,6 +63,7 @@ export const useReturnAsset = () => {
             userId: string;
             assetQrCode: string;
             returnCount: number;
+            remarks: string;
         }) => window.api.transaction.returnAsset(variables),
         onSuccess: (data, variables) => {
             queryClient.invalidateQueries({

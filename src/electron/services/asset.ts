@@ -176,6 +176,26 @@ export function AssetHandlers() {
         },
     );
 
+    ipcMain.handle("asset:getAssets", async () => {
+        try {
+            const assets = await prisma.asset.findMany({
+                select: {
+                    qrCode: true,
+                    assetName: true,
+                },
+            });
+
+            const formatted = assets.map((asset) => ({
+                value: asset.qrCode,
+                label: asset.assetName,
+            }));
+
+            return formatted;
+        } catch (error) {
+            throw new Error("Failed to fetch assets");
+        }
+    });
+
     ipcMain.handle("asset:exportAllAssets", async () => {
         const assets = await prisma.asset.findMany({
             orderBy: { assetName: "asc" },

@@ -7,8 +7,8 @@ import { toast } from "sonner";
 import { Dialog, DialogContent } from "./ui/dialog";
 
 interface QRScannerDialogProps {
-    open: boolean;
-    setOpen: Dispatch<SetStateAction<boolean>>;
+    open: string;
+    setOpen: Dispatch<SetStateAction<string | null>>;
 }
 
 const QRScannerDialog = ({ open, setOpen }: QRScannerDialogProps) => {
@@ -25,9 +25,13 @@ const QRScannerDialog = ({ open, setOpen }: QRScannerDialogProps) => {
 
         scanUser.mutate(code, {
             onSuccess: (user) => {
-                if (user.role !== "ADMIN") {
-                    toast.error("Only ADMIN users can log in here.");
-                    setError("Only ADMIN users can log in here.");
+                if (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN") {
+                    toast.error(
+                        "Only ADMIN and SUPER_ADMIN users can log in here.",
+                    );
+                    setError(
+                        "Only ADMIN and SUPER_ADMIN users can log in here.",
+                    );
                     isProcessing.current = false;
                     setScanning(false);
                     setTimeout(() => setScanning(true), 100);
@@ -50,8 +54,12 @@ const QRScannerDialog = ({ open, setOpen }: QRScannerDialogProps) => {
             },
         });
     };
+
+    const handleCloseModal = () => {
+        setOpen(null);
+    };
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open === "qr"} onOpenChange={handleCloseModal}>
             <DialogContent>
                 <div>
                     <div className="flex flex-col items-center gap-3">

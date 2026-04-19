@@ -16,12 +16,15 @@ const AdminDashboard = () => {
     const admin = location.state?.user;
 
     useEffect(() => {
-        if (!admin || admin.role !== "ADMIN") {
+        if (
+            !admin ||
+            (admin.role !== "ADMIN" && admin.role !== "SUPER_ADMIN")
+        ) {
             navigate("/");
         }
     }, [admin, navigate]);
 
-    if (!admin || admin.role !== "ADMIN") {
+    if (!admin || (admin.role !== "ADMIN" && admin.role !== "SUPER_ADMIN")) {
         return null;
     }
 

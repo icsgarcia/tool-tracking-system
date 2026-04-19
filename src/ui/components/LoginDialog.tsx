@@ -14,12 +14,24 @@ import {
 } from "react";
 import QrScan from "./QrScan";
 import { useNavigate } from "react-router";
-import { useScanUser } from "@/hooks/useUsers";
+import {
+    useGetStudentAndStaff,
+    useLoginBySchoolNumber,
+    useScanUser,
+} from "@/hooks/useUsers";
 import { toast } from "sonner";
 import { Separator } from "./ui/separator";
 import { AlertCircle, Camera, LogIn, ScanLine } from "lucide-react";
 import { Button } from "./ui/button";
 import { Html5Qrcode } from "html5-qrcode";
+import {
+    Combobox,
+    ComboboxContent,
+    ComboboxEmpty,
+    ComboboxInput,
+    ComboboxItem,
+    ComboboxList,
+} from "./ui/combobox";
 
 interface LoginDialogProps {
     admin: User;
@@ -34,12 +46,17 @@ const LoginDialog = ({
 }: LoginDialogProps) => {
     const navigate = useNavigate();
     const scanUser = useScanUser();
+    const loginBySchoolNumber = useLoginBySchoolNumber();
     const isProcessing = useRef(false);
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const [scanningUser, setScanningUser] = useState(true);
     const [device, setDevice] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
     const [cameraError, setCameraError] = useState<string | null>(null);
+    const [selectedSchoolNumber, setSelectedSchoolNumber] = useState<
+        string | null
+    >("");
+    const { data: students = [] } = useGetStudentAndStaff();
 
     const handleScanUser = useRef((code: string) => {
         if (isProcessing.current) return;
@@ -69,7 +86,10 @@ const LoginDialog = ({
                 const scanner = scannerRef.current;
                 if (scanner) {
                     scannerRef.current = null;
-                    scanner.stop().then(() => scanner.clear()).catch(() => {});
+                    scanner
+                        .stop()
+                        .then(() => scanner.clear())
+                        .catch(() => {});
                 }
 
                 navigate("/dashboard", { state: { user, admin } });
@@ -126,7 +146,10 @@ const LoginDialog = ({
             const scanner = scannerRef.current;
             if (scanner) {
                 scannerRef.current = null;
-                scanner.stop().then(() => scanner.clear()).catch(() => {});
+                scanner
+                    .stop()
+                    .then(() => scanner.clear())
+                    .catch(() => {});
             }
         };
     }, [device]);
@@ -144,14 +167,14 @@ const LoginDialog = ({
         }
     };
 
-    const handleSwitchDevice = async (newDevice: string) => {
-        await stopCamera();
-        isProcessing.current = false;
-        setScanningUser(true);
-        setError(null);
-        setCameraError(null);
-        setDevice(newDevice);
-    };
+    // const handleSwitchDevice = async (newDevice: string) => {
+    //     await stopCamera();
+    //     isProcessing.current = false;
+    //     setScanningUser(true);
+    //     setError(null);
+    //     setCameraError(null);
+    //     setDevice(newDevice);
+    // };
 
     const handleCloseDialog = async () => {
         await stopCamera();
@@ -159,6 +182,22 @@ const LoginDialog = ({
         setError(null);
         setCameraError(null);
         setOpenLoginDialog(false);
+    };
+
+    const handleSubmit = () => {
+        if (!selectedSchoolNumber) {
+            toast.error("Please select a school number.");
+            return;
+        }
+
+        loginBySchoolNumber.mutate(selectedSchoolNumber, {
+            onSuccess: (data) => {
+                navigate("/dashboard", { state: { user: data, admin } });
+            },
+            onError: (error) => {
+                toast.error(error.message);
+            },
+        });
     };
 
     return (
@@ -190,6 +229,9 @@ const LoginDialog = ({
                             <Button onClick={() => setDevice("qrscanner")}>
                                 Use QR Scanner
                             </Button>
+                            <Button onClick={() => setDevice("manual")}>
+                                Use Student or Staff Name
+                            </Button>
                         </>
                     )}
 
@@ -198,11 +240,12 @@ const LoginDialog = ({
                         <>
                             <Button
                                 variant="outline"
-                                onClick={() =>
-                                    handleSwitchDevice("qrscanner")
-                                }
+                                // onClick={() =>
+                                //     handleSwitchDevice("qrscanner")
+                                // }
+                                onClick={() => setDevice("")}
                             >
-                                Switch to QR Scanner
+                                Go Back
                             </Button>
 
                             <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10">
@@ -240,9 +283,10 @@ const LoginDialog = ({
                         <>
                             <Button
                                 variant="outline"
-                                onClick={() => handleSwitchDevice("camera")}
+                                // onClick={() => handleSwitchDevice("camera")}
+                                onClick={() => setDevice("")}
                             >
-                                Switch to Camera
+                                Go Back
                             </Button>
                             <div className="relative flex items-center justify-center w-20 h-20 rounded-full bg-primary/10">
                                 <ScanLine className="w-9 h-9 text-primary animate-pulse" />
@@ -265,6 +309,61 @@ const LoginDialog = ({
                                     className="opacity-0 pointer-events-none absolute"
                                 />
                             )}
+                        </>
+                    )}
+
+                    {device === "manual" && (
+                        <>
+                            <Button
+                                variant="outline"
+                                onClick={() => setDevice("")}
+                            >
+                                Go Back
+                            </Button>
+
+                            <div className="flex flex-col gap-3 w-full">
+                                <Combobox
+                                    items={students}
+                                    value={selectedSchoolNumber}
+                                    onValueChange={setSelectedSchoolNumber}
+                                >
+                                    <ComboboxInput placeholder="Type school number or name..." />
+                                    <ComboboxContent>
+                                        <ComboboxEmpty>
+                                            No student or staff found.
+                                        </ComboboxEmpty>
+                                        <ComboboxList>
+                                            {(item) => (
+                                                <ComboboxItem
+                                                    key={item.value}
+                                                    value={item.value}
+                                                >
+                                                    <div>
+                                                        <p className="font-medium">
+                                                            {item.label}
+                                                        </p>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {item.value}
+                                                        </p>
+                                                    </div>
+                                                </ComboboxItem>
+                                            )}
+                                        </ComboboxList>
+                                    </ComboboxContent>
+                                </Combobox>
+
+                                <Button
+                                    onClick={handleSubmit}
+                                    disabled={
+                                        !selectedSchoolNumber ||
+                                        loginBySchoolNumber.isPending
+                                    }
+                                >
+                                    {loginBySchoolNumber.isPending
+                                        ? "Logging in..."
+                                        : "Login"}
+                                </Button>
+                            </div>
                         </>
                     )}
 

@@ -5,17 +5,19 @@ import { ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CameraDialog from "@/components/CameraDialog";
 import QRScannerDialog from "@/components/QRScannerDialog";
+import ManualLogin from "@/components/auth/ManualLogin";
 
 const Login = () => {
-    const [openCamera, setOpenCamera] = useState<boolean>(false);
-    const [openQrScannner, setOpenQrScannner] = useState<boolean>(false);
+    // const [openCamera, setOpenCamera] = useState<boolean>(false);
+    // const [openQrScannner, setOpenQrScannner] = useState<boolean>(false);
+    const [loginMethod, setLoginMethod] = useState<string | null>(null);
 
     return (
         <div className="flex min-h-svh flex-col items-center justify-center p-4 sm:p-6 bg-muted/30">
             <Card className="max-w-md w-full shadow-lg border-none">
                 <CardContent className="flex flex-col items-center gap-5 sm:gap-6 p-6 sm:p-10">
                     <img
-                        src="./toolkeeper-logos/logo3.png"
+                        src="./toolkeeper-logos/final-logo.png"
                         alt="tool-keeper-logo"
                         className="w-48 sm:w-64 lg:w-72 h-auto"
                     />
@@ -23,11 +25,20 @@ const Login = () => {
                     <Separator />
 
                     <div className="flex flex-col items-center gap-3">
-                        <Button onClick={() => setOpenCamera(true)}>
+                        {/* <Button onClick={() => setOpenCamera(true)}>
                             Use Camera
                         </Button>
                         <Button onClick={() => setOpenQrScannner(true)}>
                             Use QR Scanner
+                        </Button> */}
+                        <Button onClick={() => setLoginMethod("camera")}>
+                            Use Camera
+                        </Button>
+                        <Button onClick={() => setLoginMethod("qr")}>
+                            Use QR Scanner
+                        </Button>
+                        <Button onClick={() => setLoginMethod("password")}>
+                            Use Password
                         </Button>
                     </div>
 
@@ -41,14 +52,14 @@ const Login = () => {
                 </CardContent>
             </Card>
 
-            {openCamera && (
-                <CameraDialog open={openCamera} setOpen={setOpenCamera} />
+            {loginMethod === "camera" && (
+                <CameraDialog open={loginMethod} setOpen={setLoginMethod} />
             )}
-            {openQrScannner && (
-                <QRScannerDialog
-                    open={openQrScannner}
-                    setOpen={setOpenQrScannner}
-                />
+            {loginMethod === "qr" && (
+                <QRScannerDialog open={loginMethod} setOpen={setLoginMethod} />
+            )}
+            {loginMethod === "password" && (
+                <ManualLogin open={loginMethod} setOpen={setLoginMethod} />
             )}
         </div>
     );

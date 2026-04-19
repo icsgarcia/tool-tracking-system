@@ -21,6 +21,7 @@ interface PaginationParams {
     search?: string;
     sortBy?: string;
     sortOrder?: "asc" | "desc";
+    range?: "today" | "week" | "month";
 }
 
 interface User {
@@ -124,11 +125,19 @@ interface Transactions extends UserTransactions {
     };
 }
 
+interface LoginData {
+    email: string;
+    password: string;
+}
+
 interface Window {
     api: {
         user: {
+            manualLogin: (loginData: LoginData) => Promise<any>;
             createUserByFile: (fileBuffer: ArrayBuffer) => Promise<any>;
             createUser: (userData: CreateUserDto) => Promise<any>;
+            loginBySchoolNumber: (schoolNumber: string) => Promise<any>;
+            getStudentAndStaff: () => Promise<any>;
             getUserQRCode: (userId: string) => Promise<any>;
             getUserQRCodeBuffer: (userId: string) => Promise<any>;
             getTotalUsers: () => Promise<any>;
@@ -137,7 +146,10 @@ interface Window {
             getUserByQRCode: (qrCode: string) => Promise<any>;
             updateUserById: (userData: UpdateUserDto) => Promise<any>;
             deleteUserById: (userId: string) => Promise<any>;
-            deleteSelectedUsers: (userIds: string[], currentUserId: string) => Promise<any>;
+            deleteSelectedUsers: (
+                userIds: string[],
+                currentUserId: string,
+            ) => Promise<any>;
             deleteAllUsers: (userId: string) => Promise<any>;
             exportAllUsers: () => Promise<any>;
         };
@@ -146,6 +158,7 @@ interface Window {
             createAsset: (assetData: CreateAssetDto) => Promise<any>;
             getTotalAssets: () => Promise<any>;
             getAllAssets: (params: PaginationParams) => Promise<any>;
+            getAssets: () => Promise<any>;
             getAssetById: (assetId: string) => Promise<any>;
             updateAssetById: (assetData: UpdateAssetDto) => Promise<any>;
             deleteAssetById: (assetId: string) => Promise<any>;
@@ -155,10 +168,17 @@ interface Window {
         };
         transaction: {
             getTotalTransactions: () => Promise<any>;
-            getAllTransactions: (params: PaginationParams) => Promise<any>;
+            getTransactions: (params: PaginationParams) => Promise<any>;
             getUserTransactions: (
                 userId: string,
                 params: PaginationParams,
+            ) => Promise<any>;
+            exportTransactionWithSpreadsheet: (
+                params: Omit<PaginationParams, "page" | "pageSize">,
+            ) => Promise<any>;
+            exportUserTransactionWithSpreadsheet: (
+                userId: string,
+                params: Omit<PaginationParams, "page" | "pageSize">,
             ) => Promise<any>;
             borrowAsset: (data: {
                 userId: string;
@@ -169,6 +189,7 @@ interface Window {
                 userId: string;
                 assetQrCode: string;
                 returnCount: number;
+                remarks: string;
             }) => Promise<any>;
             scanAssetQrCode: (data: {
                 userId: string;

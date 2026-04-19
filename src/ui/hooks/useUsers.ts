@@ -6,10 +6,30 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+export const useManualLogin = () => {
+    return useMutation({
+        mutationFn: (loginData: LoginData) =>
+            window.api.user.manualLogin(loginData),
+        onSuccess: () => {
+            toast.success("User logged in successfully!");
+        },
+        onError: (error) => {
+            toast.error(error.message || "Failed to log in user");
+        },
+    });
+};
+
 export const useGetTotalUsers = () => {
     return useQuery({
         queryKey: ["totalUsers"],
         queryFn: () => window.api.user.getTotalUsers(),
+    });
+};
+
+export const useGetStudentAndStaff = () => {
+    return useQuery({
+        queryKey: ["studentsAndStaffs"],
+        queryFn: () => window.api.user.getStudentAndStaff(),
     });
 };
 
@@ -32,6 +52,12 @@ export const useGetUser = (userId: string) => {
 export const useScanUser = () => {
     return useMutation({
         mutationFn: (qrCode: string) => window.api.user.getUserByQRCode(qrCode),
+    });
+};
+export const useLoginBySchoolNumber = () => {
+    return useMutation({
+        mutationFn: (schoolNumber: string) =>
+            window.api.user.loginBySchoolNumber(schoolNumber),
     });
 };
 
@@ -115,9 +141,14 @@ export const useDeleteSelectedUsers = () => {
 
     return useMutation({
         mutationFn: (data: { userIds: string[]; currentUserId: string }) =>
-            window.api.user.deleteSelectedUsers(data.userIds, data.currentUserId),
+            window.api.user.deleteSelectedUsers(
+                data.userIds,
+                data.currentUserId,
+            ),
         onSuccess: (data) => {
-            toast.success(data?.message || "Selected users deleted successfully!");
+            toast.success(
+                data?.message || "Selected users deleted successfully!",
+            );
             queryClient.invalidateQueries({ queryKey: ["users"] });
             queryClient.invalidateQueries({ queryKey: ["totalUsers"] });
             queryClient.invalidateQueries({ queryKey: ["transactions"] });

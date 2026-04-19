@@ -12,7 +12,7 @@ const Header = ({ user, handleLogout }: HeaderProps) => {
             <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <img
-                        src="./toolkeeper-logos/logo3.png"
+                        src="./toolkeeper-logos/final-logo.png"
                         alt="tool-keeper-logo"
                         className="h-8 sm:h-10 w-auto shrink-0 rounded"
                     />
