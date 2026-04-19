@@ -6,9 +6,40 @@ import { Role } from "../../../generated/prisma/enums.js";
 import { User } from "../../../generated/prisma/client.js";
 import { randomUUID } from "node:crypto";
 import bcrypt from "bcryptjs";
+import * as fs from "fs";
+import { dialog } from "electron";
+import ExcelJS from "exceljs";
 
 export function UserHandlers() {
     const prisma = getPrisma();
+
+    const getColumnWidths = (data: any[]) => {
+        if (data.length === 0) return [];
+        const headers = Object.keys(data[0]);
+        return headers.map((header) => {
+            const maxLength = Math.max(
+                header.length,
+                ...data.map((row) => {
+                    const value = row[header];
+                    return value ? String(value).length : 0;
+                }),
+            );
+            return { wch: maxLength + 2 };
+        });
+    };
+
+    const getFormattedDate = () => {
+        const now = new Date();
+        const formattedDate =
+            `${now.getMonth() + 1}-` +
+            `${now.getDate()}-` +
+            `${now.getFullYear()}_` +
+            `${now.getHours()}-` +
+            `${now.getMinutes()}-` +
+            `${now.getSeconds()}`;
+
+        return formattedDate;
+    };
 
     ipcMain.handle("user:manualLogin", async (_, loginData: LoginData) => {
         const { email, password } = loginData;
@@ -370,54 +401,132 @@ export function UserHandlers() {
     });
 
     ipcMain.handle(
-        "user:deleteSelectedUsers",
-        async (_, userIds: string[], currentUserId: string) => {
-            if (!userIds || userIds.length === 0) {
-                throw new Error("No users selected for deletion.");
-            }
+        "users:exportUsersWithSpreadsheet",
+        async (_, params: Omit<PaginationParams, "page" | "pageSize">) => {
+            const { search, sortBy, sortOrder } = params;
 
-            // Filter out the currently logged-in admin
-            const safeIds = userIds.filter((id) => id !== currentUserId);
+            const sortField = sortBy === "name" ? "lastName" : sortBy;
 
-            if (safeIds.length === 0) {
-                throw new Error(
-                    "Cannot delete the currently logged-in admin account.",
-                );
-            }
+            const where = search
+                ? {
+                      OR: [
+                          { firstName: { contains: search } },
+                          { middleName: { contains: search } },
+                          { lastName: { contains: search } },
+                          { schoolNumber: { contains: search } },
+                          { email: { contains: search } },
+                      ],
+                  }
+                : undefined;
 
-            await prisma.transaction.deleteMany({
-                where: { userId: { in: safeIds } },
+            const users = await prisma.user.findMany({
+                where,
+                orderBy: sortField
+                    ? { [sortField]: sortOrder || "asc" }
+                    : undefined,
             });
 
-            const result = await prisma.user.deleteMany({
-                where: { id: { in: safeIds } },
+            if (users.length === 0) {
+                return { success: false, error: "No users found to export." };
+            }
+
+            const { filePath, canceled } = await dialog.showSaveDialog({
+                title: "Export Users",
+                defaultPath: `users_${getFormattedDate()}.xlsx`,
+                filters: [{ name: "Excel File", extensions: ["xlsx"] }],
             });
 
-            return {
-                message: `${result.count} user(s) deleted successfully.`,
-            };
+            if (canceled || !filePath) return { success: false };
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("Users");
+
+            worksheet.columns = [
+                { header: "QR Code", key: "qrCode", width: 22 },
+                { header: "ID", key: "id", width: 30 },
+                { header: "School Number", key: "schoolNumber", width: 18 },
+                { header: "First Name", key: "firstName", width: 18 },
+                { header: "Middle Name", key: "middleName", width: 18 },
+                { header: "Last Name", key: "lastName", width: 18 },
+                { header: "Role", key: "role", width: 12 },
+                { header: "Department", key: "department", width: 20 },
+                { header: "Year Level", key: "yearLevel", width: 12 },
+                { header: "Email", key: "email", width: 25 },
+                { header: "Number", key: "number", width: 15 },
+                { header: "Status", key: "status", width: 12 },
+            ];
+
+            worksheet.getRow(1).eachCell((cell) => {
+                cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+                cell.fill = {
+                    type: "pattern",
+                    pattern: "solid",
+                    fgColor: { argb: "FF4F81BD" },
+                };
+                cell.alignment = { horizontal: "center", vertical: "middle" };
+                cell.border = {
+                    top: { style: "thin" },
+                    bottom: { style: "thin" },
+                    left: { style: "thin" },
+                    right: { style: "thin" },
+                };
+            });
+
+            worksheet.getColumn(1).width = 25;
+            const imageRowHeight = 150;
+
+            for (let i = 0; i < users.length; i++) {
+                const user = users[i];
+                const rowIndex = i + 2;
+
+                const row = worksheet.addRow({
+                    qrCode: "",
+                    id: user.id,
+                    schoolNumber: user.schoolNumber,
+                    firstName: user.firstName,
+                    middleName: user.middleName ?? "—",
+                    lastName: user.lastName,
+                    role: user.role,
+                    department: user.department ?? "—",
+                    yearLevel: user.yearLevel ?? "—",
+                    email: user.email ?? "—",
+                    number: user.number ?? "—",
+                    status: user.status,
+                });
+
+                row.height = imageRowHeight;
+
+                row.eachCell((cell) => {
+                    cell.alignment = {
+                        vertical: "middle",
+                        horizontal: "center",
+                    };
+                });
+
+                const qrCodeBuffer = await QRCode.toBuffer(user.qrCode, {
+                    width: 200,
+                    margin: 2,
+                });
+
+                const qrCodeBase64 = `data:image/png;base64,${qrCodeBuffer.toString("base64")}`;
+
+                const imageId = workbook.addImage({
+                    base64: qrCodeBase64,
+                    extension: "png",
+                });
+
+                worksheet.addImage(imageId, {
+                    tl: { col: 0, row: rowIndex - 1 },
+                    // br: { col: 0.9, row: rowIndex - 0.1 },
+                    ext: { width: 140, height: 140 },
+                    editAs: "oneCell",
+                } as any);
+            }
+
+            const buffer = await workbook.xlsx.writeBuffer();
+            fs.writeFileSync(filePath, Buffer.from(buffer));
+
+            return { success: true, filePath };
         },
     );
-
-    ipcMain.handle("user:deleteAllUsers", async (_, userId: string) => {
-        await prisma.transaction.deleteMany({
-            where: {
-                userId: {
-                    not: userId,
-                },
-            },
-        });
-
-        await prisma.user.deleteMany({
-            where: {
-                NOT: {
-                    id: userId,
-                },
-            },
-        });
-
-        return {
-            message: "All users except the logged in user have been deleted.",
-        };
-    });
 }

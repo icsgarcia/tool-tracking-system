@@ -23,7 +23,21 @@ export function TransactionHandlers() {
         });
     };
 
+    const getFormattedDate = () => {
+        const now = new Date();
+        const formattedDate =
+            `${now.getMonth() + 1}-` +
+            `${now.getDate()}-` +
+            `${now.getFullYear()}_` +
+            `${now.getHours()}-` +
+            `${now.getMinutes()}-` +
+            `${now.getSeconds()}`;
+
+        return formattedDate;
+    };
+
     // MAIN FUNCTIONS
+    // GET TOTAL TRANSACTIONS
     ipcMain.handle("transaction:getTotalTransactions", async () => {
         const [totalTransactions, totalPendingTransactions] = await Promise.all(
             [
@@ -41,6 +55,7 @@ export function TransactionHandlers() {
         return { totalTransactions, totalPendingTransactions };
     });
 
+    // GET TRANSACTIONS
     ipcMain.handle(
         "transaction:getTransactions",
         async (_, params: PaginationParams) => {
@@ -136,6 +151,7 @@ export function TransactionHandlers() {
         },
     );
 
+    // GET USER TRANSACTIONS
     ipcMain.handle(
         "transaction:getUserTransactions",
         async (_, userId: string, params: PaginationParams) => {
@@ -234,6 +250,7 @@ export function TransactionHandlers() {
         },
     );
 
+    // EXPORT ALL TRANSACTIONS W/ PDF
     ipcMain.handle("transaction:exportAllTransactions", async () => {
         return prisma.transaction.findMany({
             include: { user: true, asset: true },
@@ -241,6 +258,7 @@ export function TransactionHandlers() {
         });
     });
 
+    // EXPORT TRANSACTION W/ SPREADSHEET
     ipcMain.handle(
         "transaction:exportTransactionWithSpreadsheet",
         async (_, params: Omit<PaginationParams, "page" | "pageSize">) => {
@@ -339,12 +357,12 @@ export function TransactionHandlers() {
                       })
                     : "-",
                 Status: transaction.status,
+                Remarks: transaction.remarks,
             }));
 
-            const rangeLabel = range ?? "All";
             const { filePath, canceled } = await dialog.showSaveDialog({
                 title: "Export Transactions",
-                defaultPath: `transactions_${rangeLabel}_${Date.now()}.xlsx`,
+                defaultPath: `transactions_${getFormattedDate()}.xlsx`,
                 filters: [{ name: "Excel File", extensions: ["xlsx"] }],
             });
 
@@ -367,6 +385,7 @@ export function TransactionHandlers() {
         },
     );
 
+    // EXPORT USER TRANSACTION W/ SPREADSHEET
     ipcMain.handle(
         "transaction:exportUserTransactionWithSpreadsheet",
         async (
@@ -429,10 +448,14 @@ export function TransactionHandlers() {
 
             const userIdFilter = { userId };
 
+            const filters = [
+                userIdFilter, // always present
+                searchFilter, // only if search
+                range ? dateFilter : null, // only if range
+            ].filter(Boolean);
+
             const where =
-                searchFilter && range
-                    ? { AND: [userIdFilter, searchFilter, dateFilter] }
-                    : (searchFilter ?? dateFilter ?? {});
+                filters.length > 1 ? { AND: filters } : (filters[0] ?? {});
 
             let orderBy: any = { borrowedAt: "desc" };
             if (sortBy === "userName")
@@ -472,12 +495,12 @@ export function TransactionHandlers() {
                       })
                     : "-",
                 Status: transaction.status,
+                Remarks: transaction.remarks ?? "-",
             }));
 
-            const rangeLabel = range ?? "All";
             const { filePath, canceled } = await dialog.showSaveDialog({
                 title: "Export Transactions",
-                defaultPath: `user_transactions_${rangeLabel}_${Date.now()}.xlsx`,
+                defaultPath: `user_transactions_${getFormattedDate()}.xlsx`,
                 filters: [{ name: "Excel File", extensions: ["xlsx"] }],
             });
 
@@ -500,6 +523,7 @@ export function TransactionHandlers() {
         },
     );
 
+    // BORROW ASSET
     ipcMain.handle(
         "transaction:borrowAsset",
         async (_, userId: string, assetQrCode: string, borrowCount: number) => {
@@ -578,6 +602,7 @@ export function TransactionHandlers() {
         },
     );
 
+    // RETURN ASSET
     ipcMain.handle(
         "transaction:returnAsset",
         async (
@@ -627,11 +652,6 @@ export function TransactionHandlers() {
 
                 const isFullReturn = returnCount === remaining;
 
-                await tx.asset.update({
-                    where: { id: asset.id },
-                    data: { remarks },
-                });
-
                 const updatedTransaction = await tx.transaction.update({
                     where: { id: existingBorrow.id },
                     data: {
@@ -640,11 +660,17 @@ export function TransactionHandlers() {
                             ? "RETURNED"
                             : existingBorrow.status,
                         returnedAt: isFullReturn ? new Date() : null,
+                        remarks,
                     },
                     include: {
                         user: true,
                         asset: true,
                     },
+                });
+
+                await tx.asset.update({
+                    where: { id: asset.id },
+                    data: { remarks: updatedTransaction.remarks },
                 });
 
                 return {

@@ -18,7 +18,6 @@ import { useReturnAsset } from "@/hooks/useTransactions";
 import { toast } from "sonner";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
 import { AlertCircle, Camera, Undo2, QrCode, ScanLine, X } from "lucide-react";
 import { Html5Qrcode } from "html5-qrcode";
@@ -220,10 +219,10 @@ const ReturnAssetDialog = ({
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="return-count">
+                            <Field className="space-y-2">
+                                <FieldLabel htmlFor="return-count">
                                     Quantity to Return
-                                </Label>
+                                </FieldLabel>
                                 <Input
                                     id="return-count"
                                     type="number"
@@ -233,7 +232,19 @@ const ReturnAssetDialog = ({
                                         setReturnCount(Number(e.target.value))
                                     }
                                 />
-                            </div>
+                            </Field>
+
+                            <Field>
+                                <FieldLabel htmlFor="remarks">
+                                    Message
+                                </FieldLabel>
+                                <Textarea
+                                    id="remarks"
+                                    value={remarks}
+                                    onChange={(e) => setRemarks(e.target.value)}
+                                    placeholder="GOOD, DAMAGED, BROKEN, LOST, etc..."
+                                />
+                            </Field>
 
                             <div className="flex justify-end gap-2 pt-2">
                                 <Button

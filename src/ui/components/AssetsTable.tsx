@@ -42,6 +42,7 @@ import { Separator } from "./ui/separator";
 import AssetDetailDialog from "./AssetDetailDialog";
 import { useGetAllAssets } from "@/hooks/useAssets";
 import { Checkbox } from "./ui/checkbox";
+import ExportExcel from "./ExportExcel";
 
 const AssetsTable = () => {
     const [openCreateAssetsDialog, setOpenCreateAssetsDialog] = useState(false);
@@ -377,7 +378,15 @@ const AssetsTable = () => {
                                 <SearchIcon className="text-muted-foreground" />
                             </InputGroupAddon>
                         </InputGroup>
-                        <ExportPdfButton type="assets" />
+                        <div className="flex gap-4">
+                            <ExportExcel
+                                files="assets"
+                                search={debouncedSearch}
+                                sortBy={sortBy}
+                                sortOrder={sortOrder}
+                            />
+                            <ExportPdfButton type="assets" />
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent>

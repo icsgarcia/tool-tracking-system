@@ -70,6 +70,7 @@ model Transaction {
   status      TransactionStatus @default(BORROWED)
   borrowedAt  DateTime          @default(now())
   returnedAt  DateTime?
+  remarks String?
 
   user  User  @relation(fields: [userId], references: [id])
   asset Asset @relation(fields: [assetId], references: [id])

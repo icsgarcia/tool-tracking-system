@@ -207,6 +207,27 @@ const TransactionsTable = () => {
                 );
             },
         },
+        {
+            id: "remarks",
+            accessorKey: "remarks",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                    >
+                        Remarks
+                        <ArrowUpDown className="h-4 w-4 print:hidden" />
+                    </Button>
+                );
+            },
+            cell: ({ row }) => {
+                const transaction = row.original;
+                return transaction.remarks;
+            },
+        },
     ];
 
     return (
@@ -273,6 +294,7 @@ const TransactionsTable = () => {
                         </Select>
                     </div>
                     <ExportExcel
+                        files="transactions"
                         search={debouncedSearch}
                         sortBy={sortBy}
                         sortOrder={sortOrder}

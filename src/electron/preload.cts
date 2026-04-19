@@ -42,6 +42,13 @@ electron.contextBridge.exposeInMainWorld("api", {
             electron.ipcRenderer.invoke("user:deleteAllUsers", userId),
         exportAllUsers: () =>
             electron.ipcRenderer.invoke("user:exportAllUsers"),
+        exportUsersWithSpreadsheet: (
+            params: Omit<PaginationParams, "page" | "pageSize">,
+        ) =>
+            electron.ipcRenderer.invoke(
+                "users:exportUsersWithSpreadsheet",
+                params,
+            ),
     },
 
     asset: {
@@ -66,6 +73,13 @@ electron.contextBridge.exposeInMainWorld("api", {
             electron.ipcRenderer.invoke("asset:deleteAllAssets"),
         exportAllAssets: () =>
             electron.ipcRenderer.invoke("asset:exportAllAssets"),
+        exportAssetsWithSpreadsheet: (
+            params: Omit<PaginationParams, "page" | "pageSize">,
+        ) =>
+            electron.ipcRenderer.invoke(
+                "asset:exportAssetsWithSpreadsheet",
+                params,
+            ),
     },
 
     transaction: {

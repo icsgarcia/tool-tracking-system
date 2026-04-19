@@ -100,6 +100,7 @@ interface UserTransactions {
     status: Status;
     borrowedAt: string;
     returnedAt?: string;
+    remarks?: string;
     asset: {
         id: string;
         qrCode: string;
@@ -122,6 +123,20 @@ interface Transactions extends UserTransactions {
         email: string;
         number: string;
         status: UserStatus;
+    };
+    asset: {
+        id: string;
+        temporaryTagNumber: string;
+        qrCode: string;
+        assetName: string;
+        assetDescription: string;
+        serialNumber: string;
+        assetCategoryCode: string;
+        roomName: string;
+        locationCode: string;
+        assetCount: number;
+        assetCondition: string;
+        remarks: string;
     };
 }
 
@@ -152,6 +167,9 @@ interface Window {
             ) => Promise<any>;
             deleteAllUsers: (userId: string) => Promise<any>;
             exportAllUsers: () => Promise<any>;
+            exportUsersWithSpreadsheet: (
+                params: Omit<PaginationParams, "page" | "pageSize">,
+            ) => Promise<any>;
         };
         asset: {
             createAssetByFile: (fileBuffer: ArrayBuffer) => Promise<any>;
@@ -165,6 +183,9 @@ interface Window {
             deleteSelectedAssets: (assetIds: string[]) => Promise<any>;
             deleteAllAssets: () => Promise<any>;
             exportAllAssets: () => Promise<any>;
+            exportAssetsWithSpreadsheet: (
+                params: Omit<PaginationParams, "page" | "pageSize">,
+            ) => Promise<any>;
         };
         transaction: {
             getTotalTransactions: () => Promise<any>;

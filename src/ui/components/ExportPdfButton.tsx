@@ -76,18 +76,18 @@ function buildUsersTable(users: User[]) {
         </td>
         <td>${user.schoolNumber}</td>
         <td>${capitalize(`${user.firstName} ${user.middleName} ${user.lastName}`)}</td>
-        <td>${user.email || "-"}</td>
+        <td>${user.email ?? "-"}</td>
+        <td>${user.number ?? "-"}</td>
         <td>${user.role}</td>
-        <td>${user.department || "-"}</td>
+        <td>${user.department ?? "-"}</td>
         <td>${user.yearLevel}</td>
-        <td><span class="badge ${user.status === "ACTIVE" ? "badge-active" : "badge-inactive"}">${user.status}</span></td>
     </tr>`,
         )
         .join("");
 
     return `<table>
         <thead><tr>
-            <th>QR Code</th><th>School No.</th><th>Name</th><th>Email</th><th>Role</th><th>Department</th><th>Year</th><th>Status</th>
+            <th>QR Code</th><th>School No.</th><th>Name</th><th>Email</th><th>Number</th><th>Role</th><th>Department</th><th>Year</th>
         </tr></thead>
         <tbody>${rows}</tbody>
     </table>`;
@@ -101,18 +101,19 @@ function buildAssetsTable(assets: Asset[]) {
             <img src="${asset.qrCodeImage}" alt="QR Code" style="width: 80px; height: 80px;" />
         
         </td>
-        <td>${asset.temporaryTagNumber || "-"}</td>
+        <td>${asset.temporaryTagNumber ?? "-"}</td>
         <td>${asset.assetName}</td>
         <td>${asset.assetCount}</td>
         <td>${asset.borrowedCount}</td>
         <td>${asset.availableCount}</td>
+        <td>${asset.remarks}</td>
     </tr>`,
         )
         .join("");
 
     return `<table>
         <thead><tr>
-            <th>QR Code</th><th>Tag No.</th><th>Tool Name</th><th>Total Qty</th><th>Checked Out</th><th>Available</th>
+            <th>QR Code</th><th>Tag No.</th><th>Tool Name</th><th>Total Qty</th><th>Checked Out</th><th>Available</th><th>Remarks</th>
         </tr></thead>
         <tbody>${rows}</tbody>
     </table>`;
@@ -128,14 +129,14 @@ function buildTransactionsTable(transactions: Transactions[]) {
         <td>${t.returnCount ?? "0"}</td>
         <td>${formatDate(t.borrowedAt)}</td>
         <td>${t.returnedAt ? formatDate(t.returnedAt) : "-"}</td>
-        <td><span class="badge ${t.status === "RETURNED" ? "badge-returned" : t.status === "BORROWED" ? "badge-borrowed" : "badge-unreturned"}">${t.status}</span></td>
+        <td>${t.remarks ?? "-"}</td>
     </tr>`,
         )
         .join("");
 
     return `<table>
         <thead><tr>
-            <th>User Name</th><th>Tool</th><th>Borrowed Qty</th><th>Returned Qty</th><th>Borrowed At</th><th>Returned At</th><th>Status</th>
+            <th>User Name</th><th>Tool</th><th>Borrowed Qty</th><th>Returned Qty</th><th>Borrowed At</th><th>Returned At</th><th>Remarks</th>
         </tr></thead>
         <tbody>${rows}</tbody>
     </table>`;
@@ -150,14 +151,14 @@ function buildUserTransactionsTable(transactions: UserTransactions[]) {
         <td>${t.returnCount ?? "0"}</td>
         <td>${formatDate(t.borrowedAt)}</td>
         <td>${t.returnedAt ? formatDate(t.returnedAt) : "-"}</td>
-        <td><span class="badge ${t.status === "RETURNED" ? "badge-returned" : t.status === "BORROWED" ? "badge-borrowed" : "badge-unreturned"}">${t.status}</span></td>
+        <td>${t.remarks ?? "-"}</td>
     </tr>`,
         )
         .join("");
 
     return `<table>
         <thead><tr>
-            <th>Tool Name</th><th>Borrowed Qty</th><th>Returned Qty</th><th>Borrowed Date</th><th>Returned Date</th><th>Status</th>
+            <th>Tool Name</th><th>Borrowed Qty</th><th>Returned Qty</th><th>Borrowed Date</th><th>Returned Date</th><th>Remarks</th>
         </tr></thead>
         <tbody>${rows}</tbody>
     </table>`;

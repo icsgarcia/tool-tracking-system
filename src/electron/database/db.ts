@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS "Transaction" (
     "status" TEXT NOT NULL DEFAULT 'BORROWED',
     "borrowedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "returnedAt" DATETIME,
+    "remarks" TEXT,
     CONSTRAINT "Transaction_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "Transaction_assetId_fkey" FOREIGN KEY ("assetId") REFERENCES "Asset" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );

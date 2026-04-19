@@ -45,6 +45,7 @@ import { Separator } from "./ui/separator";
 import UserDetailDialog from "./UserDetailDialog";
 import { useGetAllUsers } from "@/hooks/useUsers";
 import { Checkbox } from "./ui/checkbox";
+import ExportExcel from "./ExportExcel";
 
 const UsersTable = () => {
     const location = useLocation();
@@ -445,7 +446,15 @@ const UsersTable = () => {
                                 <SearchIcon className="text-muted-foreground" />
                             </InputGroupAddon>
                         </InputGroup>
-                        <ExportPdfButton type="users" />
+                        <div className="flex gap-4">
+                            <ExportExcel
+                                files="users"
+                                search={debouncedSearch}
+                                sortBy={sortBy}
+                                sortOrder={sortOrder}
+                            />
+                            <ExportPdfButton type="users" />
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent>

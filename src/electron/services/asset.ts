@@ -4,9 +4,25 @@ import QRCode from "qrcode";
 import * as XLSX from "xlsx";
 import { Asset } from "../../../generated/prisma/client.js";
 import { randomUUID } from "crypto";
+import * as fs from "fs";
+import { dialog } from "electron";
+import ExcelJS from "exceljs";
 
 export function AssetHandlers() {
     const prisma = getPrisma();
+
+    const getFormattedDate = () => {
+        const now = new Date();
+        const formattedDate =
+            `${now.getMonth() + 1}-` +
+            `${now.getDate()}-` +
+            `${now.getFullYear()}_` +
+            `${now.getHours()}-` +
+            `${now.getMinutes()}-` +
+            `${now.getSeconds()}`;
+
+        return formattedDate;
+    };
 
     ipcMain.handle(
         "asset:createAssetByFile",
@@ -345,4 +361,139 @@ export function AssetHandlers() {
             message: "All tools have been deleted.",
         };
     });
+
+    ipcMain.handle(
+        "asset:exportAssetsWithSpreadsheet",
+        async (_, params: Omit<PaginationParams, "page" | "pageSize">) => {
+            const { search, sortBy, sortOrder } = params;
+
+            const sortField = sortBy === "name" ? "lastName" : sortBy;
+
+            const where = search
+                ? {
+                      OR: [
+                          { temporaryTagNumber: { contains: search } },
+                          { assetName: { contains: search } },
+                      ],
+                  }
+                : undefined;
+
+            const assets = await prisma.asset.findMany({
+                where,
+                orderBy: sortField
+                    ? { [sortField]: sortOrder || "asc" }
+                    : undefined,
+            });
+
+            if (assets.length === 0) {
+                return { success: false, error: "No assets found to export." };
+            }
+
+            const { filePath, canceled } = await dialog.showSaveDialog({
+                title: "Export Assets",
+                defaultPath: `assets_${getFormattedDate()}.xlsx`,
+                filters: [{ name: "Excel File", extensions: ["xlsx"] }],
+            });
+
+            if (canceled || !filePath) return { success: false };
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("Assets");
+
+            worksheet.columns = [
+                { header: "QR Code", key: "qrCode", width: 20 },
+                { header: "ID", key: "id", width: 30 },
+                { header: "Tag Number", key: "temporaryTagNumber", width: 18 },
+                { header: "Asset Name", key: "assetName", width: 18 },
+                {
+                    header: "Asset Description",
+                    key: "assetDescription",
+                    width: 18,
+                },
+                { header: "Serial Number", key: "serialNumber", width: 18 },
+                {
+                    header: "Asset Category Code",
+                    key: "assetCategoryCode",
+                    width: 12,
+                },
+                { header: "Room Name", key: "roomName", width: 20 },
+                { header: "Location Code", key: "locationCode", width: 12 },
+                { header: "Asset Count", key: "assetCount", width: 25 },
+                { header: "Asset Condition", key: "assetCondition", width: 15 },
+                { header: "Remarks", key: "remarks", width: 12 },
+            ];
+
+            worksheet.getRow(1).eachCell((cell) => {
+                cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+                cell.fill = {
+                    type: "pattern",
+                    pattern: "solid",
+                    fgColor: { argb: "FF4F81BD" },
+                };
+                cell.alignment = { horizontal: "center", vertical: "middle" };
+                cell.border = {
+                    top: { style: "thin" },
+                    bottom: { style: "thin" },
+                    left: { style: "thin" },
+                    right: { style: "thin" },
+                };
+            });
+
+            worksheet.getColumn(1).width = 25;
+            const imageRowHeight = 150;
+
+            for (let i = 0; i < assets.length; i++) {
+                const asset = assets[i];
+                const rowIndex = i + 2;
+
+                const row = worksheet.addRow({
+                    qrCode: "",
+                    id: asset.id,
+                    temporaryTagNumber: asset.temporaryTagNumber,
+                    assetName: asset.assetName,
+                    assetDescription: asset.assetDescription ?? "—",
+                    serialNumber: asset.serialNumber ?? "—",
+                    assetCategoryCode: asset.assetCategoryCode ?? "—",
+                    roomName: asset.roomName ?? "—",
+                    locationCode: asset.locationCode ?? "—",
+                    assetCount: asset.assetCount ?? 0,
+                    assetCondition: asset.assetCondition ?? "—",
+                    remarks: asset.remarks ?? "—",
+                });
+
+                row.height = imageRowHeight;
+
+                row.eachCell((cell) => {
+                    cell.alignment = {
+                        vertical: "middle",
+                        horizontal: "center",
+                    };
+                });
+
+                const qrCodeBuffer = await QRCode.toBuffer(asset.qrCode, {
+                    width: 100,
+                    margin: 1,
+                });
+
+                const qrCodeBase64 = `data:image/png;base64,${qrCodeBuffer.toString("base64")}`;
+
+                const imageId = workbook.addImage({
+                    base64: qrCodeBase64,
+                    extension: "png",
+                });
+
+                worksheet.addImage(imageId, {
+                    tl: { col: 0, row: rowIndex - 1 },
+                    // br: { col: 0.9, row: rowIndex - 0.1 },
+                    ext: { width: 140, height: 140 },
+                    editAs: "oneCell",
+                } as any);
+            }
+
+            const buffer = await workbook.xlsx.writeBuffer();
+            fs.writeFileSync(filePath, Buffer.from(buffer));
+
+            return { success: true, filePath };
+        },
+    );
 }
