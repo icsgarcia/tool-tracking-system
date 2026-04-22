@@ -32,21 +32,22 @@ import {
     ComboboxItem,
     ComboboxList,
 } from "./ui/combobox";
+// import { useAdminStore } from "@/store/useAdminStore";
+import { useUserStore } from "@/store/useUserStore";
 
 interface LoginDialogProps {
-    admin: User;
     openLoginDialog: boolean;
     setOpenLoginDialog: Dispatch<SetStateAction<boolean>>;
 }
 
 const LoginDialog = ({
-    admin,
     openLoginDialog,
     setOpenLoginDialog,
 }: LoginDialogProps) => {
     const navigate = useNavigate();
     const scanUser = useScanUser();
     const loginBySchoolNumber = useLoginBySchoolNumber();
+    const userLogin = useUserStore((state) => state.login);
     const isProcessing = useRef(false);
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const [scanningUser, setScanningUser] = useState(true);
@@ -75,9 +76,8 @@ const LoginDialog = ({
                     isProcessing.current = false;
                     return;
                 }
-
                 setScanningUser(false);
-
+                userLogin(user);
                 toast.success(
                     `Login successful! Welcome, ${user.firstName} ${user.lastName}`,
                 );
@@ -92,7 +92,7 @@ const LoginDialog = ({
                         .catch(() => {});
                 }
 
-                navigate("/dashboard", { state: { user, admin } });
+                navigate("/dashboard");
             },
             onError: () => {
                 toast.error("Login failed. Please check your QR/barcode.");
@@ -191,8 +191,9 @@ const LoginDialog = ({
         }
 
         loginBySchoolNumber.mutate(selectedSchoolNumber, {
-            onSuccess: (data) => {
-                navigate("/dashboard", { state: { user: data, admin } });
+            onSuccess: (user) => {
+                userLogin(user);
+                navigate("/dashboard");
             },
             onError: (error) => {
                 toast.error(error.message);
@@ -240,9 +241,6 @@ const LoginDialog = ({
                         <>
                             <Button
                                 variant="outline"
-                                // onClick={() =>
-                                //     handleSwitchDevice("qrscanner")
-                                // }
                                 onClick={() => setDevice("")}
                             >
                                 Go Back
@@ -283,7 +281,6 @@ const LoginDialog = ({
                         <>
                             <Button
                                 variant="outline"
-                                // onClick={() => handleSwitchDevice("camera")}
                                 onClick={() => setDevice("")}
                             >
                                 Go Back

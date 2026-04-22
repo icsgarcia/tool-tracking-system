@@ -27,6 +27,7 @@
         "@tanstack/react-table": "^8.21.3",
         "axios": "^1.13.4",
         "bcryptjs": "^3.0.3",
+        "better-sqlite3": "^12.9.0",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "dotenv": "^17.3.1",
@@ -43,7 +44,8 @@
         "sonner": "^2.0.7",
         "tailwind-merge": "^3.4.0",
         "tailwindcss": "^4.1.18",
-        "xlsx": "^0.18.5"
+        "xlsx": "^0.18.5",
+        "zustand": "^5.0.12"
     },
     "devDependencies": {
         "@electron/rebuild": "^4.0.3",
@@ -57,6 +59,7 @@
         "cross-env": "^10.1.0",
         "electron": "^40.1.0",
         "electron-builder": "^26.7.0",
+        "electron-rebuild": "^3.2.9",
         "eslint": "^9.39.1",
         "eslint-plugin-react-hooks": "^7.0.1",
         "eslint-plugin-react-refresh": "^0.4.24",

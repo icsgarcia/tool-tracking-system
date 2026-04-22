@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ShieldAlert } from "lucide-react";
@@ -6,11 +6,23 @@ import { Button } from "@/components/ui/button";
 import CameraDialog from "@/components/CameraDialog";
 import QRScannerDialog from "@/components/QRScannerDialog";
 import ManualLogin from "@/components/auth/ManualLogin";
+import { useAdminStore } from "@/store/useAdminStore";
+import { useNavigate } from "react-router";
 
 const Login = () => {
-    // const [openCamera, setOpenCamera] = useState<boolean>(false);
-    // const [openQrScannner, setOpenQrScannner] = useState<boolean>(false);
+    const navigate = useNavigate();
+    const admin = useAdminStore((state) => state.admin);
     const [loginMethod, setLoginMethod] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (admin) {
+            if (admin.role === "ADMIN" || admin.role === "SUPER_ADMIN") {
+                navigate("/admin");
+            }
+        }
+    }, [admin, navigate]);
+
+    if (admin?.role === "ADMIN" || admin?.role === "SUPER_ADMIN") return null;
 
     return (
         <div className="flex min-h-svh flex-col items-center justify-center p-4 sm:p-6 bg-muted/30">
@@ -25,12 +37,6 @@ const Login = () => {
                     <Separator />
 
                     <div className="flex flex-col items-center gap-3">
-                        {/* <Button onClick={() => setOpenCamera(true)}>
-                            Use Camera
-                        </Button>
-                        <Button onClick={() => setOpenQrScannner(true)}>
-                            Use QR Scanner
-                        </Button> */}
                         <Button onClick={() => setLoginMethod("camera")}>
                             Use Camera
                         </Button>

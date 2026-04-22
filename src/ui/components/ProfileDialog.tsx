@@ -19,25 +19,30 @@ import {
     Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useAdminStore } from "@/store/useAdminStore";
+import { useUserStore } from "@/store/useUserStore";
 
 interface ProfileDialogProps {
-    user: User;
     openProfileDialog: boolean;
     setOpenProfileDialog: Dispatch<SetStateAction<boolean>>;
 }
 
 const ProfileDialog = ({
-    user,
     openProfileDialog,
     setOpenProfileDialog,
 }: ProfileDialogProps) => {
+    const admin = useAdminStore((state) => state.admin);
+    const user = useUserStore((state) => state.user);
     const [exporting, setExporting] = useState(false);
 
-    const fullName = `${user.firstName} ${user.middleName} ${user.lastName}`
-        .toLowerCase()
-        .split(" ")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
+    const activeUser = user ?? admin!;
+
+    const fullName =
+        `${activeUser.firstName} ${activeUser.middleName} ${activeUser.lastName}`
+            .toLowerCase()
+            .split(" ")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
 
     const handleExportProfile = async () => {
         setExporting(true);
@@ -55,19 +60,19 @@ const ProfileDialog = ({
     .qr { text-align: center; margin-top: 16px; }
     .qr img { width: 120px; height: 120px; border: 1px solid #ddd; border-radius: 8px; }
 </style></head><body>
-    <h1>${user.firstName} ${user.middleName ? `${user.middleName.charAt(0)}.` : ""} ${user.lastName}</h1>
-    <p class="subtitle">${user.schoolNumber}</p>
+    <h1>${activeUser.firstName} ${activeUser.middleName ? `${activeUser.middleName.charAt(0)}.` : ""} ${activeUser.lastName}</h1>
+    <p class="subtitle">${activeUser.schoolNumber}</p>
     <div class="badges">
-        <span class="badge">${user.role}</span>
-        <span class="badge">${user.department} - ${user.yearLevel}</span>
+        <span class="badge">${activeUser.role}</span>
+        <span class="badge">${activeUser.department} - ${activeUser.yearLevel}</span>
     </div>
-    <div class="field"><p class="label">Email</p><p class="value">${user.email ?? "N/A"}</p></div>
-    <div class="field"><p class="label">Phone</p><p class="value">${user.number ?? "N/A"}</p></div>
-    <div class="qr"><p class="label">QR Code</p><img src="${user.qrCodeImage}" alt="QR Code" /></div>
+    <div class="field"><p class="label">Email</p><p class="value">${activeUser.email ?? "N/A"}</p></div>
+    <div class="field"><p class="label">Phone</p><p class="value">${activeUser.number ?? "N/A"}</p></div>
+    <div class="qr"><p class="label">QR Code</p><img src="${activeUser.qrCodeImage}" alt="QR Code" /></div>
 </body></html>`;
             const result = await window.api.print.exportPdf(
                 html,
-                `${user.lastName}-${user.firstName}-profile.pdf`,
+                `${activeUser.lastName}-${activeUser.firstName}-profile.pdf`,
             );
             if (result.success) {
                 toast.success("Profile exported successfully.");
@@ -115,15 +120,16 @@ const ProfileDialog = ({
                                             {fullName}
                                         </p>
                                         <p className="text-sm text-muted-foreground">
-                                            {user.schoolNumber}
+                                            {activeUser.schoolNumber}
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <Badge variant="outline">
-                                            {user.role}
+                                            {activeUser.role}
                                         </Badge>
                                         <Badge className="bg-primary/10 text-primary border-transparent">
-                                            {user.department} - {user.yearLevel}
+                                            {activeUser.department} -{" "}
+                                            {activeUser.yearLevel}
                                         </Badge>
                                     </div>
                                 </div>
@@ -138,7 +144,7 @@ const ProfileDialog = ({
                                                 Email
                                             </p>
                                             <p className="text-sm font-medium truncate">
-                                                {user.email ?? "N/A"}
+                                                {activeUser.email ?? "N/A"}
                                             </p>
                                         </div>
                                     </div>
@@ -149,7 +155,7 @@ const ProfileDialog = ({
                                                 Phone
                                             </p>
                                             <p className="text-sm font-medium truncate">
-                                                {user.number ?? "N/A"}
+                                                {activeUser.number ?? "N/A"}
                                             </p>
                                         </div>
                                     </div>
@@ -163,7 +169,7 @@ const ProfileDialog = ({
                                         </p>
                                     </div>
                                     <img
-                                        src={user.qrCodeImage}
+                                        src={activeUser.qrCodeImage}
                                         alt="user-qr-code"
                                         className="w-14 h-14 border border-border rounded-md object-contain bg-white"
                                     />

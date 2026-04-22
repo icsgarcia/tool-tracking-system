@@ -1,7 +1,7 @@
 import { useGetUserTransactions } from "@/hooks/useTransactions";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router";
-import { toast } from "sonner";
+import { useNavigate } from "react-router";
+// import { toast } from "sonner";
 import Header from "@/components/Header";
 import {
     Card,
@@ -39,12 +39,13 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import ExportExcel from "@/components/ExportExcel";
+import { useUserStore } from "@/store/useUserStore";
+// import { useAdminStore } from "@/store/useAdminStore";
 
 const Dashboard = () => {
-    const location = useLocation();
     const navigate = useNavigate();
-    const user = location.state?.user;
-    const admin = location.state?.admin;
+    // const admin = useAdminStore((state) => state.admin);
+    const user = useUserStore((state) => state.user);
     const [search, setSearch] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
     const [pagination, setPagination] = useState({
@@ -57,6 +58,12 @@ const Dashboard = () => {
     const [openReturnDialog, setOpenReturnDialog] = useState(false);
 
     useEffect(() => {
+        if (!user) {
+            navigate("/admin");
+        }
+    }, [user, navigate]);
+
+    useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedSearch(search);
             setPagination((prev) => ({ ...prev, pageIndex: 0 }));
@@ -67,7 +74,7 @@ const Dashboard = () => {
     const sortBy = sorting[0]?.id;
     const sortOrder = sorting[0]?.desc ? "desc" : "asc";
 
-    const { data } = useGetUserTransactions(user.id, {
+    const { data } = useGetUserTransactions(user?.id ?? "", {
         page: pagination.pageIndex,
         pageSize: pagination.pageSize,
         search: debouncedSearch || undefined,
@@ -79,25 +86,27 @@ const Dashboard = () => {
     const transactions = data?.data ?? [];
     const pageCount = Math.ceil((data?.totalCount ?? 0) / pagination.pageSize);
 
-    const handleLogout = () => {
-        if (admin) {
-            toast.success("Logged out successfully.");
-            navigate("/admin", { state: { user: admin } });
-        } else {
-            navigate("/");
-        }
-    };
+    // const handleLogout = () => {
+    //     if (admin) {
+    //         toast.success("Logged out successfully.");
+    //         navigate("/admin", { state: { user: admin } });
+    //     } else {
+    //         navigate("/");
+    //     }
+    // };
 
-    if (!user) {
-        return (
-            <div className="flex min-h-svh flex-col items-center justify-center gap-4 p-4">
-                <p className="text-muted-foreground text-sm sm:text-base text-center">
-                    No user data. Please scan your QR code.
-                </p>
-                <Button onClick={() => navigate("/")}>Go to Login</Button>
-            </div>
-        );
-    }
+    // if (!user) {
+    //     return (
+    //         <div className="flex min-h-svh flex-col items-center justify-center gap-4 p-4">
+    //             <p className="text-muted-foreground text-sm sm:text-base text-center">
+    //                 No user data. Please scan your QR code.
+    //             </p>
+    //             <Button onClick={() => navigate("/")}>Go to Login</Button>
+    //         </div>
+    //     );
+    // }
+
+    if (!user) return null;
 
     const userTransactionColumns: ColumnDef<UserTransactions>[] = [
         {
@@ -298,7 +307,7 @@ const Dashboard = () => {
 
     return (
         <div className="mx-auto max-w-7xl min-h-svh">
-            <Header user={user} handleLogout={handleLogout} />
+            <Header />
 
             <div className="flex flex-col gap-4 px-3 sm:px-4 py-4 sm:py-6 mb-8">
                 <Card>

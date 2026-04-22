@@ -11,6 +11,7 @@ import { useScanUser } from "@/hooks/useUsers";
 import { toast } from "sonner";
 import { Html5Qrcode } from "html5-qrcode";
 import { AlertCircle, Camera } from "lucide-react";
+import { useAdminStore } from "@/store/useAdminStore";
 
 interface CameraDialogProps {
     open: string;
@@ -20,6 +21,8 @@ interface CameraDialogProps {
 const CameraDialog = ({ open, setOpen }: CameraDialogProps) => {
     const navigate = useNavigate();
     const scanUser = useScanUser();
+    const admin = useAdminStore((state) => state.admin);
+    const login = useAdminStore((state) => state.login);
     const isProcessing = useRef(false);
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -43,6 +46,8 @@ const CameraDialog = ({ open, setOpen }: CameraDialogProps) => {
                     return;
                 }
 
+                login(user);
+
                 toast.success(
                     `Login successful! Welcome, ${user.firstName} ${user.lastName}`,
                 );
@@ -57,7 +62,7 @@ const CameraDialog = ({ open, setOpen }: CameraDialogProps) => {
                         .catch(() => {});
                 }
 
-                navigate("/admin", { state: { user } });
+                if (admin) navigate("/admin");
             },
             onError: () => {
                 toast.error("Login failed. Please check your QR code.");

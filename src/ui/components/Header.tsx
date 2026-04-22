@@ -1,12 +1,7 @@
 import NavUser from "./NavUser";
 import { Separator } from "./ui/separator";
 
-interface HeaderProps {
-    user: User;
-    handleLogout: () => void;
-}
-
-const Header = ({ user, handleLogout }: HeaderProps) => {
+const Header = () => {
     return (
         <header className="bg-primary py-2 px-3 sm:py-3 sm:px-4 shadow-md">
             <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
@@ -24,7 +19,7 @@ const Header = ({ user, handleLogout }: HeaderProps) => {
                         Tool Keeper
                     </span>
                 </div>
-                <NavUser user={user} onLogout={handleLogout} />
+                <NavUser />
             </div>
         </header>
     );

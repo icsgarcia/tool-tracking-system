@@ -11,6 +11,7 @@ import { Input } from "../ui/input";
 import type React from "react";
 import { useManualLogin } from "@/hooks/useUsers";
 import { useNavigate } from "react-router";
+import { useAdminStore } from "@/store/useAdminStore";
 
 interface ManualLoginProps {
     open: string;
@@ -19,15 +20,13 @@ interface ManualLoginProps {
 
 const ManualLogin = ({ open, setOpen }: ManualLoginProps) => {
     const navigate = useNavigate();
+    const admin = useAdminStore((state) => state.admin);
+    const adminLogin = useAdminStore((state) => state.login);
     const manualLogin = useManualLogin();
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
-
-    const handleCloseModal = () => {
-        setOpen(null);
-    };
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -46,16 +45,18 @@ const ManualLogin = ({ open, setOpen }: ManualLoginProps) => {
                 password: formData.password,
             },
             {
-                onSuccess: (data) => {
-                    if (data.role === "ADMIN" || data.role === "SUPER_ADMIN") {
-                        navigate("/admin", { state: { user: data } });
+                onSuccess: (user) => {
+                    adminLogin(user);
+
+                    if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
+                        navigate("/admin");
                     }
                 },
             },
         );
     };
     return (
-        <Dialog open={open === "password"} onOpenChange={handleCloseModal}>
+        <Dialog open={open === "password"} onOpenChange={() => setOpen(null)}>
             <DialogContent className="sm:max-w-md">
                 <form onSubmit={handleSubmit}>
                     <FieldGroup>

@@ -12,22 +12,40 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import ProfileDialog from "./ProfileDialog";
+import { useUserStore } from "@/store/useUserStore";
+import { useAdminStore } from "@/store/useAdminStore";
+import { toast } from "sonner";
+import { useNavigate } from "react-router";
 
-interface NavUserType {
-    user: User;
-    onLogout: () => void;
-}
-
-const NavUser = ({ user, onLogout }: NavUserType) => {
+const NavUser = () => {
+    const navigate = useNavigate();
+    const admin = useAdminStore((state) => state.admin);
+    const user = useUserStore((state) => state.user);
+    const adminLogout = useAdminStore((state) => state.logout);
+    const userLogout = useUserStore((state) => state.logout);
     const [openProfileDialog, setOpenProfileDialog] = useState(false);
 
-    const initials = `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`;
+    const activeUser = user ?? admin!;
+
+    const initials = `${activeUser.firstName?.[0] ?? ""}${activeUser.lastName?.[0] ?? ""}`;
     const fullName =
-        `${user.firstName}${user.middleName ? ` ${user.middleName.charAt(0)}.` : ""} ${user.lastName}`
+        `${activeUser.firstName}${activeUser.middleName ? ` ${activeUser.middleName.charAt(0)}.` : ""} ${activeUser.lastName}`
             .toLowerCase()
             .split(" ")
             .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
             .join(" ");
+    const email = activeUser.email;
+
+    const handleLogout = () => {
+        toast.success("Logged out successfully.");
+        if (user) {
+            userLogout();
+            navigate("/admin");
+        } else {
+            adminLogout();
+            navigate("/");
+        }
+    };
 
     return (
         <>
@@ -44,7 +62,7 @@ const NavUser = ({ user, onLogout }: NavUserType) => {
                                 {fullName}
                             </span>
                             <span className="truncate text-xs text-white/70">
-                                {user.email}
+                                {email}
                             </span>
                         </div>
                         <ChevronsUpDown className="ml-auto hidden sm:block size-4 shrink-0" />
@@ -67,7 +85,7 @@ const NavUser = ({ user, onLogout }: NavUserType) => {
                                     {fullName}
                                 </span>
                                 <span className="truncate text-xs text-muted-foreground">
-                                    {user.email}
+                                    {email}
                                 </span>
                             </div>
                         </div>
@@ -84,7 +102,7 @@ const NavUser = ({ user, onLogout }: NavUserType) => {
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                        onClick={onLogout}
+                        onClick={handleLogout}
                         className="cursor-pointer text-destructive focus:text-destructive"
                     >
                         <LogOut className="w-4 h-4" />
@@ -93,7 +111,6 @@ const NavUser = ({ user, onLogout }: NavUserType) => {
                 </DropdownMenuContent>
             </DropdownMenu>
             <ProfileDialog
-                user={user}
                 openProfileDialog={openProfileDialog}
                 setOpenProfileDialog={setOpenProfileDialog}
             />
