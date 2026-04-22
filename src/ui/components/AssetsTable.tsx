@@ -259,7 +259,8 @@ const AssetsTable = () => {
             cell: ({ row }) => (
                 <div className="print:hidden">
                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                        {/* <DropdownMenuTrigger asChild> */}
+                        <DropdownMenuTrigger>
                             <Button variant="ghost" size="icon-xs">
                                 <MoreHorizontal className="h-4 w-4" />
                             </Button>
@@ -337,7 +338,8 @@ const AssetsTable = () => {
                                 Add Tools
                             </Button>
                             <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
+                                {/* <DropdownMenuTrigger asChild> */}
+                                <DropdownMenuTrigger>
                                     <Button
                                         variant="outline"
                                         size="sm"

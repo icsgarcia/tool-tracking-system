@@ -50,46 +50,47 @@ const NavUser = () => {
     return (
         <>
             <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <button className="flex items-center gap-2 rounded-lg p-1 max-w-55 sm:max-w-70 hover:bg-white/15 text-primary-foreground outline-none transition-colors">
-                        <Avatar className="h-8 w-8 shrink-0 rounded-lg">
-                            <AvatarFallback className="rounded-lg bg-white/20 text-primary-foreground">
-                                {initials}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="hidden sm:grid flex-1 min-w-0 text-left text-sm leading-tight">
-                            <span className="truncate font-medium">
-                                {fullName}
-                            </span>
-                            <span className="truncate text-xs text-white/70">
-                                {email}
-                            </span>
-                        </div>
-                        <ChevronsUpDown className="ml-auto hidden sm:block size-4 shrink-0" />
-                    </button>
+                {/* <DropdownMenuTrigger asChild> */}
+                <DropdownMenuTrigger className="flex items-center gap-2 rounded-lg p-1 max-w-55 sm:max-w-70 hover:bg-white/15 text-primary-foreground outline-none transition-colors">
+                    {/* <button className="flex items-center gap-2 rounded-lg p-1 max-w-55 sm:max-w-70 hover:bg-white/15 text-primary-foreground outline-none transition-colors"> */}
+                    <Avatar className="h-8 w-8 shrink-0 rounded-lg">
+                        <AvatarFallback className="rounded-lg bg-white/20 text-primary-foreground">
+                            {initials}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div className="hidden sm:grid flex-1 min-w-0 text-left text-sm leading-tight">
+                        <span className="truncate font-medium">{fullName}</span>
+                        <span className="truncate text-xs text-white/70">
+                            {email}
+                        </span>
+                    </div>
+                    <ChevronsUpDown className="ml-auto hidden sm:block size-4 shrink-0" />
+                    {/* </button> */}
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                     className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
                     align="end"
                     sideOffset={4}
                 >
-                    <DropdownMenuLabel className="p-0 font-normal">
-                        <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                            <Avatar className="h-8 w-8 shrink-0 rounded-lg">
-                                <AvatarFallback className="rounded-lg">
-                                    {initials}
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="grid flex-1 min-w-0 text-left text-sm leading-tight">
-                                <span className="truncate font-medium">
-                                    {fullName}
-                                </span>
-                                <span className="truncate text-xs text-muted-foreground">
-                                    {email}
-                                </span>
+                    <DropdownMenuGroup>
+                        <DropdownMenuLabel className="p-0 font-normal">
+                            <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                                <Avatar className="h-8 w-8 shrink-0 rounded-lg">
+                                    <AvatarFallback className="rounded-lg">
+                                        {initials}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="grid flex-1 min-w-0 text-left text-sm leading-tight">
+                                    <span className="truncate font-medium">
+                                        {fullName}
+                                    </span>
+                                    <span className="truncate text-xs text-muted-foreground">
+                                        {email}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    </DropdownMenuLabel>
+                        </DropdownMenuLabel>
+                    </DropdownMenuGroup>
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
                         <DropdownMenuItem
@@ -101,13 +102,15 @@ const NavUser = () => {
                         </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                        onClick={handleLogout}
-                        className="cursor-pointer text-destructive focus:text-destructive"
-                    >
-                        <LogOut className="w-4 h-4" />
-                        Log out
-                    </DropdownMenuItem>
+                    <DropdownMenuGroup>
+                        <DropdownMenuItem
+                            onClick={handleLogout}
+                            className="cursor-pointer text-destructive focus:text-destructive"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            Log out
+                        </DropdownMenuItem>
+                    </DropdownMenuGroup>
                 </DropdownMenuContent>
             </DropdownMenu>
             <ProfileDialog

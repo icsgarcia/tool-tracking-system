@@ -211,7 +211,8 @@ const UpdateAssetDialog = ({
                                 </Field>
                             </FieldGroup>
                             <DialogFooter>
-                                <DialogClose asChild>
+                                {/* <DialogClose asChild> */}
+                                <DialogClose>
                                     <Button variant="outline">
                                         <X className="w-4 h-4" />
                                         Cancel

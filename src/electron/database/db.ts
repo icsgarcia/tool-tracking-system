@@ -80,6 +80,13 @@ export async function initDatabase() {
 
     const db = new Database(dbPath);
     db.exec(CREATE_TABLES_SQL);
+
+    db.exec("PRAGMA journal_mode=WAL;");
+    db.exec("PRAGMA synchronous=NORMAL;");
+    db.exec("PRAGMA cache_size=10000;");
+    db.exec("PRAGMA temp_store=MEMORY;");
+    db.exec("PRAGMA foreign_keys=ON;");
+
     db.close();
 
     console.log("[database] Tables created/verified.");

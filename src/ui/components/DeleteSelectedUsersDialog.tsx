@@ -32,12 +32,15 @@ const DeleteSelectedUsersDialog = ({
 
     const handleDelete = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        deleteSelectedUsers.mutate({ userIds, currentUserId }, {
-            onSuccess: () => {
-                setOpen(false);
-                onSuccess();
+        deleteSelectedUsers.mutate(
+            { userIds, currentUserId },
+            {
+                onSuccess: () => {
+                    setOpen(false);
+                    onSuccess();
+                },
             },
-        });
+        );
     };
 
     return (
@@ -76,7 +79,8 @@ const DeleteSelectedUsersDialog = ({
                     </p>
 
                     <DialogFooter>
-                        <DialogClose asChild>
+                        {/* <DialogClose asChild> */}
+                        <DialogClose>
                             <Button variant="outline">
                                 <X className="w-4 h-4" />
                                 Cancel

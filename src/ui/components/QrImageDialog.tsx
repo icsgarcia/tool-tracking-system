@@ -36,7 +36,8 @@ const QrImageDialog = ({ open, onOpenChange, qrCode }: QrImageDialogType) => {
                         alt={`QR Code for ${qrCode.name}`}
                         className="w-full max-h-[50svh] object-contain rounded-md border"
                     />
-                    <Button asChild className="w-full">
+                    {/* <Button asChild className="w-full"> */}
+                    <Button className="w-full">
                         <a href={qrCode.image} download={fileName}>
                             Download QR Code
                         </a>

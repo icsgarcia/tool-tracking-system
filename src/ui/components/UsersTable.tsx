@@ -328,7 +328,8 @@ const UsersTable = () => {
             cell: ({ row }) => (
                 <div className="print:hidden">
                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                        {/* <DropdownMenuTrigger asChild> */}
+                        <DropdownMenuTrigger>
                             <Button variant="ghost" size="icon-xs">
                                 <MoreHorizontal className="h-4 w-4" />
                             </Button>
@@ -405,7 +406,8 @@ const UsersTable = () => {
                                 Add Users
                             </Button>
                             <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
+                                {/* <DropdownMenuTrigger asChild> */}
+                                <DropdownMenuTrigger>
                                     <Button
                                         variant="outline"
                                         size="sm"

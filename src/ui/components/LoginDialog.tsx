@@ -32,7 +32,6 @@ import {
     ComboboxItem,
     ComboboxList,
 } from "./ui/combobox";
-// import { useAdminStore } from "@/store/useAdminStore";
 import { useUserStore } from "@/store/useUserStore";
 
 interface LoginDialogProps {
@@ -193,6 +192,9 @@ const LoginDialog = ({
         loginBySchoolNumber.mutate(selectedSchoolNumber, {
             onSuccess: (user) => {
                 userLogin(user);
+                toast.success(
+                    `Login successful! Welcome, ${user.firstName} ${user.lastName}`,
+                );
                 navigate("/dashboard");
             },
             onError: (error) => {
@@ -310,10 +312,11 @@ const LoginDialog = ({
                     )}
 
                     {device === "manual" && (
-                        <>
+                        <div className="w-full">
                             <Button
                                 variant="outline"
                                 onClick={() => setDevice("")}
+                                className="block mx-auto"
                             >
                                 Go Back
                             </Button>
@@ -361,7 +364,7 @@ const LoginDialog = ({
                                         : "Login"}
                                 </Button>
                             </div>
-                        </>
+                        </div>
                     )}
 
                     {/* Error Display */}
