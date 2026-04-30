@@ -72,6 +72,6 @@ model Transaction {
   returnedAt  DateTime?
   remarks String?
 
-  user  User  @relation(fields: [userId], references: [id])
-  asset Asset @relation(fields: [assetId], references: [id])
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
 }

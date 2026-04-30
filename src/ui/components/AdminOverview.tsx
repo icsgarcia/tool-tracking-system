@@ -12,11 +12,7 @@ import { useGetTotalUsers } from "@/hooks/useUsers";
 import { useGetTotalAssets } from "@/hooks/useAssets";
 import { useGetTotalTransactions } from "@/hooks/useTransactions";
 
-interface AdminOverviewProps {
-    admin: User;
-}
-
-const AdminOverview = ({ admin }: AdminOverviewProps) => {
+const AdminOverview = () => {
     const { data: totalUsersData } = useGetTotalUsers();
     const { data: totalAssetsData } = useGetTotalAssets();
     const { data: totalTransactionsData } = useGetTotalTransactions();
@@ -128,7 +124,6 @@ const AdminOverview = ({ admin }: AdminOverviewProps) => {
                 </div>
             </div>
             <LoginDialog
-                admin={admin}
                 openLoginDialog={openLoginDialog}
                 setOpenLoginDialog={setOpenLoginDialog}
             />

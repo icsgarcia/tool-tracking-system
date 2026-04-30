@@ -146,9 +146,7 @@ export const useDeleteSelectedUsers = () => {
                 data.currentUserId,
             ),
         onSuccess: (data) => {
-            toast.success(
-                data?.message || "Selected users deleted successfully!",
-            );
+            toast.success(data?.message);
             queryClient.invalidateQueries({ queryKey: ["users"] });
             queryClient.invalidateQueries({ queryKey: ["totalUsers"] });
             queryClient.invalidateQueries({ queryKey: ["transactions"] });
@@ -164,12 +162,10 @@ export const useDeleteAllUsers = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (userId: string) => window.api.user.deleteAllUsers(userId),
+        mutationFn: (currentUserId: string) =>
+            window.api.user.deleteAllUsers(currentUserId),
         onSuccess: (data) => {
-            toast.success(
-                data?.message ||
-                    "All users except the logged in user have been deleted successfully!",
-            );
+            toast.success(data?.message);
             queryClient.invalidateQueries({ queryKey: ["users"] });
             queryClient.invalidateQueries({ queryKey: ["totalUsers"] });
             queryClient.invalidateQueries({ queryKey: ["transactions"] });

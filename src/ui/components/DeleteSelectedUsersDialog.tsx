@@ -12,12 +12,12 @@ import {
 import { Separator } from "./ui/separator";
 import { useDeleteSelectedUsers } from "@/hooks/useUsers";
 import { UsersRound, Trash2, X } from "lucide-react";
+import { useAdminStore } from "@/store/useAdminStore";
 
 interface DeleteSelectedUsersDialogProps {
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
     userIds: string[];
-    currentUserId: string;
     onSuccess: () => void;
 }
 
@@ -25,15 +25,15 @@ const DeleteSelectedUsersDialog = ({
     open,
     setOpen,
     userIds,
-    currentUserId,
     onSuccess,
 }: DeleteSelectedUsersDialogProps) => {
     const deleteSelectedUsers = useDeleteSelectedUsers();
+    const admin = useAdminStore((state) => state.admin);
 
     const handleDelete = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         deleteSelectedUsers.mutate(
-            { userIds, currentUserId },
+            { userIds, currentUserId: admin!.id },
             {
                 onSuccess: () => {
                     setOpen(false);

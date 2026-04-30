@@ -178,7 +178,7 @@ const UpdateUserDialog = ({
                                             onValueChange={(value) =>
                                                 setUpdateUserData((prev) => ({
                                                     ...prev,
-                                                    department: value,
+                                                    department: value!,
                                                 }))
                                             }
                                         >
@@ -228,7 +228,7 @@ const UpdateUserDialog = ({
                                         <Input
                                             id="number"
                                             name="number"
-                                            value={updateUserData?.number}
+                                            value={updateUserData?.number ?? ""}
                                             onChange={handleOnChange}
                                         />
                                     </Field>

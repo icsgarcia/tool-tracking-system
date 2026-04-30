@@ -354,7 +354,6 @@ export function AssetHandlers() {
     );
 
     ipcMain.handle("asset:deleteAllAssets", async () => {
-        await prisma.transaction.deleteMany();
         await prisma.asset.deleteMany();
 
         return {

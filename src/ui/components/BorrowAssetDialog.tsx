@@ -275,15 +275,6 @@ const BorrowAssetDialog = ({
                             {/* Camera Device */}
                             {device === "camera" && (
                                 <>
-                                    <Button
-                                        variant="outline"
-                                        onClick={() =>
-                                            handleSwitchDevice("qrscanner")
-                                        }
-                                    >
-                                        Switch to QR Scanner
-                                    </Button>
-
                                     <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10">
                                         <Camera className="w-6 h-6 text-primary" />
                                     </div>
@@ -312,20 +303,19 @@ const BorrowAssetDialog = ({
                                             />
                                         </div>
                                     )}
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => handleSwitchDevice("")}
+                                        className="block w-full"
+                                    >
+                                        Go Back
+                                    </Button>
                                 </>
                             )}
 
                             {/* QR Scanner Device */}
                             {device === "qr" && (
                                 <>
-                                    <Button
-                                        variant="outline"
-                                        onClick={() =>
-                                            handleSwitchDevice("camera")
-                                        }
-                                    >
-                                        Switch to Camera
-                                    </Button>
                                     <div className="relative flex items-center justify-center w-20 h-20 rounded-full bg-primary/10">
                                         <ScanLine className="w-9 h-9 text-primary animate-pulse" />
                                     </div>
@@ -345,6 +335,13 @@ const BorrowAssetDialog = ({
                                         }
                                         className="opacity-0 pointer-events-none absolute"
                                     />
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => handleSwitchDevice("")}
+                                        className="block w-full"
+                                    >
+                                        Go Back
+                                    </Button>
                                 </>
                             )}
 

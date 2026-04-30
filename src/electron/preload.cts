@@ -38,8 +38,8 @@ electron.contextBridge.exposeInMainWorld("api", {
                 userIds,
                 currentUserId,
             ),
-        deleteAllUsers: (userId: string) =>
-            electron.ipcRenderer.invoke("user:deleteAllUsers", userId),
+        deleteAllUsers: (currentUserId: string) =>
+            electron.ipcRenderer.invoke("user:deleteAllUsers", currentUserId),
         exportAllUsers: () =>
             electron.ipcRenderer.invoke("user:exportAllUsers"),
         exportUsersWithSpreadsheet: (

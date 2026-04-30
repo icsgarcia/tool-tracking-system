@@ -39,7 +39,6 @@ import DeleteUserDialog from "./DeleteUserDialog";
 import UpdateUserDialog from "./UpdateUserDialog";
 import DeleteAllUsersDialog from "./DeleteAllUsersDialog";
 import DeleteSelectedUsersDialog from "./DeleteSelectedUsersDialog";
-import { useLocation } from "react-router";
 import ExportPdfButton from "./ExportPdfButton";
 import { Separator } from "./ui/separator";
 import UserDetailDialog from "./UserDetailDialog";
@@ -48,8 +47,6 @@ import { Checkbox } from "./ui/checkbox";
 import ExportExcel from "./ExportExcel";
 
 const UsersTable = () => {
-    const location = useLocation();
-    const user = location?.state?.user;
     const [openCreateUsersDialog, setOpenCreateUsersDialog] =
         useState<boolean>(false);
     const [openQrImageDialog, setOpenQrImageDialog] = useState(false);
@@ -103,10 +100,12 @@ const UsersTable = () => {
             id: "select",
             header: ({ table }) => (
                 <Checkbox
-                    checked={
-                        table.getIsAllPageRowsSelected() ||
-                        (table.getIsSomePageRowsSelected() && "indeterminate")
-                    }
+                    // checked={
+                    //     table.getIsAllPageRowsSelected() ||
+                    //     (table.getIsSomePageRowsSelected() && "indeterminate")
+                    // }
+                    checked={table.getIsAllPageRowsSelected()}
+                    indeterminate={table.getIsSomePageRowsSelected()}
                     onCheckedChange={(value) =>
                         table.toggleAllPageRowsSelected(!!value)
                     }
@@ -406,7 +405,6 @@ const UsersTable = () => {
                                 Add Users
                             </Button>
                             <DropdownMenu>
-                                {/* <DropdownMenuTrigger asChild> */}
                                 <DropdownMenuTrigger>
                                     <Button
                                         variant="outline"
@@ -501,7 +499,6 @@ const UsersTable = () => {
                 <DeleteAllUsersDialog
                     openDeleteAllUsersDialog={openDeleteAllUsersDialog}
                     setOpenDeleteAllUsersDialog={setOpenDeleteAllUsersDialog}
-                    userId={user.id}
                 />
             )}
             {openUserDetailDialog && selectedUser && (
@@ -516,7 +513,6 @@ const UsersTable = () => {
                     open={openDeleteSelectedDialog}
                     setOpen={setOpenDeleteSelectedDialog}
                     userIds={selectedUserIds}
-                    currentUserId={user.id}
                     onSuccess={() => setRowSelection({})}
                 />
             )}

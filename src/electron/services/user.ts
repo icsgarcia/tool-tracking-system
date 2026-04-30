@@ -366,7 +366,7 @@ export function UserHandlers() {
         });
 
         if (!user) {
-            throw new Error("User not found");
+            throw new Error("User not found!");
         }
 
         await prisma.user.delete({
@@ -376,9 +376,64 @@ export function UserHandlers() {
         });
 
         return {
-            message: `User "${user.firstName} ${user.lastName}" deleted successfully.`,
+            message: `${user.role} - "${user.firstName} ${user.lastName}" deleted successfully.`,
         };
     });
+
+    ipcMain.handle("user:deleteAllUsers", async (_, currentUserId: string) => {
+        const currentUser = await prisma.user.findUnique({
+            where: {
+                id: currentUserId,
+            },
+        });
+
+        if (!currentUser) {
+            throw new Error("Current user not found!");
+        }
+
+        await prisma.user.deleteMany({
+            where: {
+                OR: [
+                    { id: { not: currentUserId } },
+                    { role: { not: "SUPER_ADMIN" } },
+                ],
+            },
+        });
+
+        return {
+            message:
+                "All users deleted successfully except the currently logged in user and other SUPER_ADMIN users.",
+        };
+    });
+
+    ipcMain.handle(
+        "user:deleteSelectedUsers",
+        async (_, userIds: string[], currentUserId: string) => {
+            const currentUser = await prisma.user.findUnique({
+                where: {
+                    id: currentUserId,
+                },
+            });
+
+            if (!currentUser) {
+                throw new Error("Current user not found!");
+            }
+
+            const result = await prisma.user.deleteMany({
+                where: {
+                    AND: [
+                        { id: { in: userIds } },
+                        { id: { not: currentUserId } },
+                        { role: { not: "SUPER_ADMIN" } },
+                    ],
+                },
+            });
+
+            return {
+                message: `${result.count} user(s) deleted successfully.`,
+            };
+        },
+    );
 
     ipcMain.handle("user:exportAllUsers", async () => {
         const users = await prisma.user.findMany({

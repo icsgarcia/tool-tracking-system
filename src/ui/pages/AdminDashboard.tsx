@@ -55,7 +55,7 @@ const AdminDashboard = () => {
 
                 <main className="py-4 sm:py-6">
                     <TabsContent value="overview">
-                        <AdminOverview admin={admin!} />
+                        <AdminOverview />
                     </TabsContent>
                     <TabsContent value="users">
                         <UsersTable />

@@ -20,7 +20,6 @@ interface ManualLoginProps {
 
 const ManualLogin = ({ open, setOpen }: ManualLoginProps) => {
     const navigate = useNavigate();
-    const admin = useAdminStore((state) => state.admin);
     const adminLogin = useAdminStore((state) => state.login);
     const manualLogin = useManualLogin();
     const [formData, setFormData] = useState({
@@ -83,7 +82,7 @@ const ManualLogin = ({ open, setOpen }: ManualLoginProps) => {
                             />
                         </Field>
                         <Field>
-                            <Button type="submit">Submit</Button>
+                            <Button type="submit">Login</Button>
                         </Field>
                     </FieldGroup>
                 </form>

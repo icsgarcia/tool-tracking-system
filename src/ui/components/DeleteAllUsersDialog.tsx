@@ -12,23 +12,23 @@ import {
 import { Separator } from "./ui/separator";
 import { useDeleteAllUsers } from "@/hooks/useUsers";
 import { UsersRound, Trash2, X, Info } from "lucide-react";
+import { useAdminStore } from "@/store/useAdminStore";
 
 interface DeleteAllUsersDialogProps {
     openDeleteAllUsersDialog: boolean;
     setOpenDeleteAllUsersDialog: Dispatch<SetStateAction<boolean>>;
-    userId: string;
 }
 
 const DeleteAllUsersDialog = ({
     openDeleteAllUsersDialog,
     setOpenDeleteAllUsersDialog,
-    userId,
 }: DeleteAllUsersDialogProps) => {
     const deleteAllUsers = useDeleteAllUsers();
+    const admin = useAdminStore((state) => state.admin);
 
     const handleDeleteAllUsers = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        deleteAllUsers.mutate(userId, {
+        deleteAllUsers.mutate(admin!.id, {
             onSuccess: () => {
                 setOpenDeleteAllUsersDialog(false);
             },
@@ -73,7 +73,6 @@ const DeleteAllUsersDialog = ({
                         </span>
                     </div>
                     <DialogFooter>
-                        {/* <DialogClose asChild> */}
                         <DialogClose>
                             <Button variant="outline">
                                 <X className="w-4 h-4" />

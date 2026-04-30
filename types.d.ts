@@ -36,7 +36,7 @@ interface User {
     department: string;
     yearLevel: number;
     email: string;
-    number?: string;
+    number?: string | null;
     status: string;
 }
 
@@ -49,7 +49,7 @@ interface CreateUserDto {
     department: string;
     yearLevel: number;
     email: string;
-    number?: string;
+    number?: string | null;
 }
 
 interface UpdateUserDto extends CreateUserDto {
@@ -164,8 +164,10 @@ interface Window {
             deleteSelectedUsers: (
                 userIds: string[],
                 currentUserId: string,
-            ) => Promise<any>;
-            deleteAllUsers: (userId: string) => Promise<any>;
+            ) => Promise<{
+                message: string;
+            }>;
+            deleteAllUsers: (currentUserId: string) => Promise<any>;
             exportAllUsers: () => Promise<any>;
             exportUsersWithSpreadsheet: (
                 params: Omit<PaginationParams, "page" | "pageSize">,

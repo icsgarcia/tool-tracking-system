@@ -241,13 +241,6 @@ const LoginDialog = ({
                     {/* Camera Device */}
                     {device === "camera" && (
                         <>
-                            <Button
-                                variant="outline"
-                                onClick={() => setDevice("")}
-                            >
-                                Go Back
-                            </Button>
-
                             <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10">
                                 <Camera className="w-6 h-6 text-primary" />
                             </div>
@@ -275,18 +268,20 @@ const LoginDialog = ({
                                     />
                                 </div>
                             )}
+
+                            <Button
+                                variant="outline"
+                                onClick={() => setDevice("")}
+                                className="block w-full"
+                            >
+                                Go Back
+                            </Button>
                         </>
                     )}
 
                     {/* QR Scanner Device */}
                     {device === "qrscanner" && (
                         <>
-                            <Button
-                                variant="outline"
-                                onClick={() => setDevice("")}
-                            >
-                                Go Back
-                            </Button>
                             <div className="relative flex items-center justify-center w-20 h-20 rounded-full bg-primary/10">
                                 <ScanLine className="w-9 h-9 text-primary animate-pulse" />
                             </div>
@@ -308,50 +303,50 @@ const LoginDialog = ({
                                     className="opacity-0 pointer-events-none absolute"
                                 />
                             )}
+
+                            <Button
+                                variant="outline"
+                                onClick={() => setDevice("")}
+                                className="block w-full"
+                            >
+                                Go Back
+                            </Button>
                         </>
                     )}
 
                     {device === "manual" && (
-                        <div className="w-full">
-                            <Button
-                                variant="outline"
-                                onClick={() => setDevice("")}
-                                className="block mx-auto"
+                        <div className="flex flex-col gap-4 w-full">
+                            <Combobox
+                                items={students}
+                                value={selectedSchoolNumber}
+                                onValueChange={setSelectedSchoolNumber}
                             >
-                                Go Back
-                            </Button>
+                                <ComboboxInput placeholder="Type school number or name..." />
+                                <ComboboxContent>
+                                    <ComboboxEmpty>
+                                        No student or staff found.
+                                    </ComboboxEmpty>
+                                    <ComboboxList>
+                                        {(item) => (
+                                            <ComboboxItem
+                                                key={item.value}
+                                                value={item.value}
+                                            >
+                                                <div>
+                                                    <p className="font-medium">
+                                                        {item.label}
+                                                    </p>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {item.value}
+                                                    </p>
+                                                </div>
+                                            </ComboboxItem>
+                                        )}
+                                    </ComboboxList>
+                                </ComboboxContent>
+                            </Combobox>
 
-                            <div className="flex flex-col gap-3 w-full">
-                                <Combobox
-                                    items={students}
-                                    value={selectedSchoolNumber}
-                                    onValueChange={setSelectedSchoolNumber}
-                                >
-                                    <ComboboxInput placeholder="Type school number or name..." />
-                                    <ComboboxContent>
-                                        <ComboboxEmpty>
-                                            No student or staff found.
-                                        </ComboboxEmpty>
-                                        <ComboboxList>
-                                            {(item) => (
-                                                <ComboboxItem
-                                                    key={item.value}
-                                                    value={item.value}
-                                                >
-                                                    <div>
-                                                        <p className="font-medium">
-                                                            {item.label}
-                                                        </p>
-                                                        <p className="text-sm text-muted-foreground">
-                                                            {item.value}
-                                                        </p>
-                                                    </div>
-                                                </ComboboxItem>
-                                            )}
-                                        </ComboboxList>
-                                    </ComboboxContent>
-                                </Combobox>
-
+                            <div className="flex flex-col gap-2">
                                 <Button
                                     onClick={handleSubmit}
                                     disabled={
@@ -362,6 +357,12 @@ const LoginDialog = ({
                                     {loginBySchoolNumber.isPending
                                         ? "Logging in..."
                                         : "Login"}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setDevice("")}
+                                >
+                                    Go Back
                                 </Button>
                             </div>
                         </div>

@@ -236,7 +236,7 @@ const CreateUsersDialog = ({
                                             onValueChange={(value) =>
                                                 setUserData((prev) => ({
                                                     ...prev,
-                                                    department: value,
+                                                    department: value!,
                                                 }))
                                             }
                                         >
@@ -286,7 +286,7 @@ const CreateUsersDialog = ({
                                         <Input
                                             id="number"
                                             name="number"
-                                            value={userData.number}
+                                            value={userData.number ?? ""}
                                             onChange={handleOnChange}
                                         />
                                     </Field>
